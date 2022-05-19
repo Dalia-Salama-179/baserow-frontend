@@ -1,0 +1,149 @@
+.clearfix::after {
+  clear: both;
+  content: '';
+  display: table;
+}
+
+.hidden {
+  display: none;
+}
+
+.visibility-hidden {
+  visibility: hidden;
+  transform: translateX(-10000px) translateY(-10000px);
+}
+
+.align-right {
+  text-align: right;
+}
+
+.background-white {
+  background-color: $white;
+}
+
+.color-primary {
+  color: $color-primary-500 !important;
+}
+
+.color-success {
+  color: $color-success-500 !important;
+}
+
+.color-warning {
+  color: $color-warning-500 !important;
+}
+
+.color-error {
+  color: $color-error-500 !important;
+}
+
+.margin-top-0 {
+  margin-top: 0 !important;
+}
+
+.margin-top-1 {
+  margin-top: 8px !important;
+}
+
+.margin-top-2 {
+  margin-top: 16px !important;
+}
+
+.margin-top-3 {
+  margin-top: 30px !important;
+}
+
+.margin-top-4 {
+  margin-top: 40px !important;
+}
+
+.margin-bottom-0 {
+  margin-bottom: 0 !important;
+}
+
+.margin-bottom-1 {
+  margin-bottom: 8px !important;
+}
+
+.margin-bottom-2 {
+  margin-bottom: 16px !important;
+}
+
+.margin-bottom-3 {
+  margin-bottom: 30px !important;
+}
+
+.margin-bottom-4 {
+  margin-bottom: 40px !important;
+}
+
+.margin-left-auto {
+  margin-left: auto !important;
+}
+
+.margin-left-0 {
+  margin-left: 0 !important;
+}
+
+.margin-left-1 {
+  margin-left: 8px !important;
+}
+
+.margin-left-2 {
+  margin-left: 16px !important;
+}
+
+.margin-right-auto {
+  margin-right: auto !important;
+}
+
+.margin-right-0 {
+  margin-right: 0 !important;
+}
+
+.margin-right-1 {
+  margin-right: 8px !important;
+}
+
+.margin-right-2 {
+  margin-right: 16px !important;
+}
+
+.resizing-horizontal {
+  cursor: col-resize;
+}
+
+// This selector can only be used to temporarily show an element for calculating
+// positions.
+.forced-block {
+  display: block !important;
+}
+
+// Sometimes we forcefully want to disable the the user-select property to initial
+// because the element is for example being edited via a contenteditable attribute
+// which does not work in combination with the user-select: none; property in Safari.
+.forced-user-select-initial {
+  user-select: initial !important;
+}
+
+.forced-text-overflow-initial {
+  text-overflow: initial !important;
+}
+
+.prevent-scroll {
+  overflow: hidden !important;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0);
+  }
+
+  50% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(720deg);
+  }
+}

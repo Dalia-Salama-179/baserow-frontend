@@ -1,0 +1,122 @@
+.context {
+  position: absolute;
+  z-index: $z-index-context;
+  white-space: nowrap;
+  background-color: $white;
+  border-radius: 6px;
+  border: 1px solid $color-neutral-200;
+  box-shadow: 0 2px 6px 0 rgba($black, 0.16);
+
+  &.context--loading-overlay {
+    &::before {
+      content: '';
+      border-radius: 6px;
+      background-color: rgba(0, 0, 0, 0.16);
+      z-index: 2;
+
+      @include absolute(0, 0, 0, 0);
+    }
+
+    &::after {
+      content: '';
+      z-index: 2;
+      margin: -7px auto auto -7px;
+
+      @include loading(14px);
+      @include absolute(50%, auto, auto, 50%);
+    }
+  }
+}
+
+.context--loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+}
+
+.context__description {
+  padding: 32px 0;
+  text-align: center;
+}
+
+.context__menu-title {
+  color: $color-neutral-600;
+  padding: 12px 8px 2px 8px;
+  line-height: 13px;
+  margin-bottom: 10px;
+}
+
+.context__menu {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+
+  li {
+    margin-bottom: 4px;
+    padding: 0 8px;
+  }
+
+  a {
+    position: relative;
+    display: block;
+    border-radius: 3px;
+    color: $color-primary-900;
+    padding: 0 10px;
+    user-select: none;
+
+    @include fixed-height(32px, 14px);
+
+    &:hover {
+      background-color: $color-neutral-100;
+      text-decoration: none;
+    }
+
+    &.context__menu-item--loading {
+      background-color: transparent;
+      cursor: initial;
+
+      &::before {
+        content: '';
+        margin-top: -7px;
+        z-index: 1;
+
+        @include loading(14px);
+        @include absolute(50%, auto, auto, 8px);
+      }
+    }
+  }
+}
+
+.context__menu-icon {
+  position: relative;
+  font-size: 13px;
+  color: $color-neutral-400;
+  margin-right: 4px;
+  text-align: left;
+
+  .context__menu-item--loading & {
+    color: $white;
+  }
+}
+
+.context__form {
+  min-width: 260px;
+  padding: 16px;
+}
+
+.context__form-actions {
+  border-top: 1px solid $color-neutral-200;
+  padding-top: 20px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+.context__alert {
+  max-width: 228px;
+  white-space: normal;
+  margin: 16px 0;
+  padding: 14px;
+  width: inherit;
+}

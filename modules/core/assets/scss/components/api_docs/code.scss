@@ -1,0 +1,17 @@
+.api-docs__code {
+  display: inline-block;
+  font-size: 14px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  background-color: $color-neutral-100;
+
+  &.api-docs__code--small {
+    font-size: 11px;
+    padding: 2px 4px;
+  }
+
+  &.api-docs__code--clickable:hover {
+    background-color: $color-neutral-200;
+    cursor: pointer;
+  }
+}
