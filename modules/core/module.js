@@ -151,7 +151,7 @@ export default function CoreModule(options) {
     src: path.resolve(__dirname, 'plugins/clientHandler.js'),
   })
   this.appendPlugin({
-    // src: path.resolve(__dirname, 'plugins/realTimeHandler.js'),
+    src: path.resolve(__dirname, 'plugins/realTimeHandler.js'),
   })
   this.appendPlugin({ src: path.resolve(__dirname, 'plugins/auth.js') })
 
