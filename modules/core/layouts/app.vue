@@ -31,7 +31,7 @@ export default {
   },
   mounted() {
     // Connect to the web socket so we can start receiving real time updates.
-    this.$realtime.connect()
+    // this.$realtime.connect()
   },
   beforeDestroy() {
     this.$realtime.disconnect()

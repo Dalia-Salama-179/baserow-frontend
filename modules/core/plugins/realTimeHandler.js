@@ -58,17 +58,17 @@ export class RealTimeHandler {
     url.pathname = '/ws/core/'
 
     this.socket = new WebSocket(`${url}?jwt_token=${token}`)
-    this.socket.onopen = () => {
-      this.context.store.dispatch('notification/setConnecting', false)
-      this.connected = true
-      this.attempts = 0
+    // this.socket.onopen = () => {
+    //   this.context.store.dispatch('notification/setConnecting', false)
+    //   this.connected = true
+    //   this.attempts = 0
 
-      // If the client needs to be subscribed to a page we can do that directly
-      // after connecting.
-      if (!this.subscribedToPage) {
-        this.subscribeToPage()
-      }
-    }
+    //   // If the client needs to be subscribed to a page we can do that directly
+    //   // after connecting.
+    //   if (!this.subscribedToPage) {
+    //     this.subscribeToPage()
+    //   }
+    // }
 
     /**
      * The received messages are always JSON so we need to the parse it, extract the
@@ -115,7 +115,7 @@ export class RealTimeHandler {
     }
 
     this.attempts++
-    this.context.store.dispatch('notification/setConnecting', true)
+    // this.context.store.dispatch('notification/setConnecting', true)
 
     this.reconnectTimeout = setTimeout(
       () => {
@@ -165,7 +165,7 @@ export class RealTimeHandler {
       this.socket.close()
     }
 
-    this.context.store.dispatch('notification/setConnecting', false)
+    // this.context.store.dispatch('notification/setConnecting', false)
     this.context.store.dispatch('notification/setFailedConnecting', false)
     clearTimeout(this.reconnectTimeout)
     this.reconnect = false
