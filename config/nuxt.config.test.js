@@ -8,8 +8,8 @@ export default Object.assign({}, base(), {
   dev: false,
   debug: false,
   env: {
-    PRIVATE_BACKEND_URL: 'http://44.242.171.154:8000',
-    PUBLIC_BACKEND_URL: 'http://44.242.171.154:8000',
+    PRIVATE_BACKEND_URL: 'http://localhost',
+    PUBLIC_BACKEND_URL: 'http://localhost',
     PUBLIC_WEB_FRONTEND_URL: 'http://localhost',
     INITIAL_TABLE_DATA_LIMIT: null,
   },

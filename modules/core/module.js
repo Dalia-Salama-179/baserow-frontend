@@ -46,7 +46,7 @@ export default function CoreModule(options) {
       keys: [
         {
           key: 'PRIVATE_BACKEND_URL',
-          default: 'http://44.242.171.154:8000',
+          default: process.env.PUBLIC_BACKEND_URL,
         },
         {
           key: 'BASEROW_DISABLE_PUBLIC_URL_CHECK',
@@ -54,7 +54,7 @@ export default function CoreModule(options) {
         },
         {
           key: 'PUBLIC_BACKEND_URL',
-          default: 'http://44.242.171.154:8000',
+          default: process.env.PUBLIC_BACKEND_URL,
         },
         {
           key: 'PUBLIC_WEB_FRONTEND_URL',

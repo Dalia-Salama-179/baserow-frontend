@@ -274,8 +274,8 @@ export default function ({ store, app }, inject) {
 
   const url =
     (process.client
-      ? 'http://44.242.171.154:8000'
-      : 'http://44.242.171.154:8000') + '/api'
+      ? app.$env.PUBLIC_BACKEND_URL
+      : app.$env.PRIVATE_BACKEND_URL) + '/api'
   const client = axios.create({
     baseURL: url,
     withCredentials: false,
