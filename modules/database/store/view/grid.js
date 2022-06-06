@@ -155,6 +155,21 @@ export const mutations = {
   SET_PUBLIC(state, newPublicValue) {
     state.public = newPublicValue
   },
+  async SET_ROWS(state, { idTable, idRow, idField, value }) {
+    // console.log(idTable);
+    // console.log(idRow);
+    // console.log(idField);
+    state.rows[idRow][`field_${idField}`] = value
+    let values = state.rows[idRow]
+    idRow = idRow + 1
+    const updatedRow = await RowService(this.$client).update(
+      idTable,
+      idRow,
+      values
+    )
+    // console.log('updatedRow', updatedRow);
+    // state.rows = rows
+  },
   SET_SEARCH(state, { activeSearchTerm, hideRowsNotMatchingSearch }) {
     state.activeSearchTerm = activeSearchTerm
     state.hideRowsNotMatchingSearch = hideRowsNotMatchingSearch
@@ -527,12 +542,12 @@ export const actions = {
     const bufferRequestSize = getters.getBufferRequestSize
     const bufferStartIndex = Math.max(
       Math.ceil((visibleStartIndex - bufferRequestSize) / bufferRequestSize) *
-        bufferRequestSize,
+      bufferRequestSize,
       0
     )
     const bufferEndIndex = Math.min(
       Math.ceil((visibleEndIndex + bufferRequestSize) / bufferRequestSize) *
-        bufferRequestSize,
+      bufferRequestSize,
       getters.getCount
     )
     const bufferLimit = bufferEndIndex - bufferStartIndex
@@ -1265,6 +1280,82 @@ export const actions = {
       throw error
     }
   },
+  async createNewRowWithvalue(
+    { commit, getters, dispatch },
+    { view, table, fields, primary, values = {}, valueOne, nameColumn, before = null }
+  ) {
+    // Fill the not provided values with the empty value of the field type so we can
+    // immediately commit the created row to the state.
+    const valuesForApiRequest = {}
+    const allFields = [primary].concat(fields)
+    allFields.forEach((field) => {
+      const name = `field_${field.id}`
+      if (!(name in values)) {
+        const fieldType = this.$registry.get('field', field._.type.type)
+        let empty = fieldType.getNewRowValue(field)
+        // console.log('nameColumn', nameColumn);
+        if (field.id == nameColumn) {
+          empty = valueOne
+        }
+        values[name] = empty
+
+        // In case the fieldType is a read only field, we
+        // need to create a second values dictionary, which gets
+        // sent to the API without the fieldType.
+        if (!fieldType.isReadOnly) {
+          valuesForApiRequest[name] = empty
+        }
+      }
+    })
+
+    // If before is not provided, then the row is added last. Because we don't know
+    // the total amount of rows in the table, we are going to add find the highest
+    // existing order in the buffer and increase that by one.
+    let order = getters.getHighestOrder
+      .integerValue(BigNumber.ROUND_CEIL)
+      .plus('1')
+      .toString()
+    let index = getters.getBufferEndIndex
+    if (before !== null) {
+      // If the row has been placed before another row we can specifically insert to
+      // the row at a calculated index.
+      const change = new BigNumber('0.00000000000000000001')
+      order = new BigNumber(before.order).minus(change).toString()
+      index = getters.getAllRows.findIndex((r) => r.id === before.id)
+    }
+
+    // Populate the row and set the loading state to indicate that the row has not
+    // yet been added.
+    const row = Object.assign({}, values)
+    populateRow(row)
+    row.id = uuid()
+    row.order = order
+    row._.loading = true
+
+    commit('INSERT_NEW_ROW_IN_BUFFER_AT_INDEX', { row, index })
+    dispatch('visibleByScrollTop')
+
+    try {
+      const { data } = await RowService(this.$client).create(
+        table.id,
+        valuesForApiRequest,
+        before !== null ? before.id : null
+      )
+      commit('FINALIZE_ROW_IN_BUFFER', {
+        oldId: row.id,
+        id: data.id,
+        order: data.order,
+        values: data,
+      })
+      dispatch('onRowChange', { view, row, fields, primary })
+      dispatch('fetchAllFieldAggregationData', {
+        view,
+      })
+    } catch (error) {
+      commit('DELETE_ROW_IN_BUFFER', row)
+      throw error
+    }
+  },
   /**
    * Called after a new row has been created, which could be by the user or via
    * another channel. It will only add the row if it belongs inside the views and it
@@ -1742,12 +1833,12 @@ export const actions = {
     const matches = view.filters_disabled
       ? true
       : matchSearchFilters(
-          this.$registry,
-          view.filter_type,
-          view.filters,
-          primary === null ? fields : [primary, ...fields],
-          values
-        )
+        this.$registry,
+        view.filter_type,
+        view.filters,
+        primary === null ? fields : [primary, ...fields],
+        values
+      )
     commit('SET_ROW_MATCH_FILTERS', { row, value: matches })
   },
   /**

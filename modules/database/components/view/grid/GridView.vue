@@ -173,7 +173,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters,mapState } from 'vuex'
 
 import { notifyIf } from '@baserow/modules/core/utils/error'
 import GridViewSection from '@baserow/modules/database/components/view/grid/GridViewSection'
@@ -273,6 +273,9 @@ export default {
         0
       )
     },
+    rows(){
+      return this.$store.state['page/view/grid'].rows
+    },
     leftWidth() {
       return this.leftFieldsWidth + this.gridViewRowDetailsWidth
     },
@@ -310,6 +313,7 @@ export default {
     this.$bus.$on('field-deleted', this.fieldDeleted)
   },
   mounted() {
+    let _this = this
     this.$el.resizeEvent = () => {
       const height = this.$refs.left.$refs.body.clientHeight
       this.$store.dispatch(
@@ -318,6 +322,9 @@ export default {
       )
     }
     this.$el.resizeEvent()
+    window.addEventListener("paste", async e =>  {
+      _this.pasteFun(e)
+    });
     window.addEventListener('resize', this.$el.resizeEvent)
     window.addEventListener('keydown', this.arrowEvent)
     window.addEventListener('copy', this.exportMultiSelect)
@@ -333,7 +340,11 @@ export default {
     )
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.$el.resizeEvent)
+    let _this = this
+    window.removeEventListener('resize', async e =>  {
+      _this.pasteFun(e)
+    });
+    window.removeEventListener('paste', this.$el.resizeEvent)
     window.removeEventListener('keydown', this.arrowEvent)
     window.removeEventListener('copy', this.exportMultiSelect)
     window.removeEventListener('click', this.cancelMultiSelect)
@@ -346,6 +357,82 @@ export default {
     this.$store.dispatch(this.storePrefix + 'view/grid/clearMultiSelect')
   },
   methods: {
+    async pasteFun(e){
+      // console.log('eeeeeeeeeeeee',e.target.closest(".grid-view__column").getAttribute('data-field'));
+        let dataField = e.target.closest(".grid-view__column").getAttribute('data-field');
+        let datarow = e.target.closest(".grid-view__column").getAttribute('data-row');
+        if(dataField && datarow) { 
+            let text = e.clipboardData.getData("text");
+            let array = this.csvParse(text)
+            let newRows = this.rows;
+        // console.log(newRows);
+        // console.log(array);
+        // console.log(newRows[datarow - 1]);
+        // console.log(newRows[datarow - 1][`field_${dataField}`]);
+          let index = datarow - 1;
+          let body = document.getElementsByTagName('body')[0];
+          if(body) body.click();
+          for(let item in array) {
+            if(array[item] != 0){
+              // console.log('newRows.length',newRows.length);
+              // console.log('==============================================');
+              // console.log(index);
+              if(newRows.length > index){
+                // console.log('fffffffffffffffffff');
+                this.$store.commit(this.storePrefix + 'view/grid/SET_ROWS',{idTable:this.$props.table.id,idRow:index,idField:dataField,value:array[item]})
+              } else {
+                // console.log('dddddddddddddddddddddddddd');
+                let before = null
+                try {
+                  await this.$store.dispatch(
+                    this.storePrefix + 'view/grid/createNewRowWithvalue',
+                    {
+                      view: this.view,
+                      table: this.table,
+                      valueOne: array[item],
+                      nameColumn: dataField,
+                      // We need a list of all fields including the primary one here.
+                      fields: this.fields,
+                      primary: this.primary,
+                      values: {},
+                      before,
+                    }
+                  )
+                } catch (error) {
+                  notifyIf(error, 'row')
+                }
+              }
+              index = index + 1
+            }
+          }
+        }
+    },
+    dumbComaSplit(inputString) {
+        var strArray = [];
+        var tmpStr = "";
+        for (var i = 0; i < inputString.length; i++) {
+              if (inputString.charAt(i) == '\n') {
+                  strArray.push(tmpStr);
+                  tmpStr = "";
+                  continue;
+              }
+              tmpStr += inputString.charAt(i);
+          }
+          strArray.push(tmpStr);
+          return strArray;
+    },
+    csvParse(inputString) {
+        var outputArray = [];
+        var inputArray = this.dumbComaSplit(inputString);
+        for (var i =0; i < inputArray.length; i++) {
+          if (!Number.isNaN(+inputArray[i])) {
+            outputArray.push(+inputArray[i]);
+        } else {
+          outputArray.push(inputArray[i].replace(/['"]+/g,'').trim());
+        }
+        }
+        return outputArray;
+    },
     /**
      * When a field is deleted we need to check if that field was related to any
      * filters or sortings. If that is the case then the view needs to be refreshed so
@@ -478,6 +565,8 @@ export default {
           {
             view: this.view,
             table: this.table,
+            // valueOne:'ffffffffffffffffffffffffffffff',
+            // nameColumn:"Notes",
             // We need a list of all fields including the primary one here.
             fields: this.fields,
             primary: this.primary,

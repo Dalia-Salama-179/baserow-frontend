@@ -335,7 +335,7 @@ export class FieldType extends Registerable {
    * than the table that they belong to. So action might be required when that table
    * is deleted.
    */
-  tableDeleted(context, field, table, database) {}
+  tableDeleted(context, field, table, database) { }
 
   /**
    * Should return a string indicating which data type is expected. (e.g. string). The
@@ -823,8 +823,8 @@ export class NumberFieldType extends FieldType {
           ? -1
           : 1
         : numberB.isLessThan(numberA)
-        ? -1
-        : 1
+          ? -1
+          : 1
     }
   }
 
@@ -856,7 +856,7 @@ export class NumberFieldType extends FieldType {
       isNaN(parseFloat(value)) ||
       !isFinite(value) ||
       value.split('.')[0].replace('-', '').length >
-        NumberFieldType.getMaxNumberLength()
+      NumberFieldType.getMaxNumberLength()
     ) {
       return null
     }
@@ -973,8 +973,8 @@ export class RatingFieldType extends FieldType {
           ? -1
           : 1
         : numberB < numberA
-        ? -1
-        : 1
+          ? -1
+          : 1
     }
   }
 

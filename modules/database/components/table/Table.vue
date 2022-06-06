@@ -117,7 +117,7 @@
         @refresh="refresh"
       />
     </header>
-    <div class="layout__col-2-2 content">
+    <div class="layout__col-2-2 content"> 
       <component
         :is="getViewComponent(view)"
         v-if="hasSelectedView && !tableLoading"

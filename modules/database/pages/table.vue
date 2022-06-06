@@ -1,5 +1,5 @@
 <template>
-  <Table
+ <Table
     :database="database"
     :table="table"
     :fields="fields"
@@ -9,7 +9,7 @@
     :table-loading="tableLoading"
     store-prefix="page/"
     @selected-view="selectedView"
-  ></Table>
+  ></Table> 
 </template>
 
 <script>

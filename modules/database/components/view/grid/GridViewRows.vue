@@ -5,10 +5,12 @@
       transform: `translateY(${rowsTop}px) translateX(${leftOffset}px)`,
     }"
   >
-    <GridViewRow
-      v-for="row in rows"
+     <GridViewRow
+       v-for="row in rows"
       :key="'row-' + '-' + row.id"
       :row="row"
+      :table="table"
+      :view="view"
       :fields="fields"
       :all-field-ids="allFieldIds"
       :field-widths="fieldWidths"
@@ -17,7 +19,7 @@
       :can-drag="view.sortings.length === 0"
       :store-prefix="storePrefix"
       v-on="$listeners"
-    ></GridViewRow>
+    ></GridViewRow> 
   </div>
 </template>
 
@@ -37,6 +39,10 @@ export default {
       required: true,
     },
     allFieldIds: {
+      type: Array,
+      required: true,
+    },
+    allFieldName: {
       type: Array,
       required: true,
     },
@@ -77,6 +83,7 @@ export default {
       ...(this.$options.computed || {}),
       ...mapGetters({
         rows: this.$options.propsData.storePrefix + 'view/grid/getRows',
+        getAllFieldOptions: this.$options.propsData.storePrefix + 'view/grid/getAllFieldOptions',
         rowsTop: this.$options.propsData.storePrefix + 'view/grid/getRowsTop',
       }),
     }

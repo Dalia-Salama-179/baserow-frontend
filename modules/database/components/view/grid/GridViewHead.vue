@@ -8,6 +8,7 @@
     <GridViewFieldType
       v-for="field in fields"
       :key="'field-type-' + field.id"
+      :data-column="field.id"
       :table="table"
       :view="view"
       :field="field"

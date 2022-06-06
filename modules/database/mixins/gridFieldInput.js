@@ -20,7 +20,8 @@ export default {
   watch: {
     copy(value) {
       if (this.editing) {
-        this.$emit('edit', value, this.value)
+        this.$emit('edit', value, this.value);
+        // console.log('this.value', this.value);
       }
     },
   },
@@ -102,6 +103,7 @@ export default {
      * Method that can be called to initiate the edit state.
      */
     edit(value = null, event = null) {
+      console.log('value', value);
       if (this.readOnly) {
         return
       }
@@ -140,19 +142,20 @@ export default {
      * Method that is called after initiating the edit state. This can be overridden
      * in the component.
      */
-    afterEdit() {},
+    afterEdit() { },
     /**
      * This method is called before saving the value. Optionally the value can be
      * changed or formatted here if necessary.
      */
     beforeSave(value) {
+
       return value
     },
     /**
      * Method that is called after saving the value. This can be overridden in the
      * component.
      */
-    afterSave() {},
+    afterSave() { },
     /**
      * Small helper method that stops the propagation of the context menu when the
      * field is being edited. Can be used on the element like:

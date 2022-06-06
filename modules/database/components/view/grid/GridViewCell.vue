@@ -2,6 +2,8 @@
   <div
     ref="wrapper"
     class="grid-view__column"
+    :data-field="props.field.id"
+    :data-row="props.row.id"
     :class="{
       'grid-view__column--matches-search':
         props.row._.matchSearch &&

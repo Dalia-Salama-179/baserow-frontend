@@ -53,6 +53,7 @@
           <component
             :is="rowExpandButton"
             :row="row"
+            
             @edit-modal="$emit('edit-modal', row)"
           ></component>
         </div>
@@ -68,6 +69,9 @@
       :key="'row-field-' + row.id + '-' + field.id.toString()"
       :field="field"
       :row="row"
+      :table="table"
+      :view="view"
+      :fields="fields"
       :state="state"
       :multi-select-position="getMultiSelectPosition(row.id, field)"
       :read-only="readOnly"
@@ -97,6 +101,14 @@ export default {
   mixins: [gridViewHelpers],
   props: {
     row: {
+      type: Object,
+      required: true,
+    },
+    table: {
+      type: Object,
+      required: true,
+    },
+    view: {
       type: Object,
       required: true,
     },

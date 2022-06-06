@@ -49,10 +49,12 @@
           ></GridViewPlaceholder>
           <GridViewRows
             ref="rows"
+            :data-columnIndex="fieldsToRender.id"
             :table="table"
             :view="view"
             :fields="fieldsToRender"
             :all-field-ids="allFieldIds"
+            :all-field-name="allFieldName"
             :left-offset="fieldsLeftOffset"
             :include-row-details="includeRowDetails"
             :read-only="readOnly"
@@ -193,6 +195,9 @@ export default {
     },
     allFieldIds() {
       return this.fields.map((field) => field.id)
+    },
+    allFieldName() {
+      return this.fields.map((field) => field.name)
     },
   },
   watch: {
