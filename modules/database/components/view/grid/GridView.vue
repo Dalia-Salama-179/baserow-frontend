@@ -366,6 +366,26 @@ export default {
     )
   },
   methods: {
+     copyToClipboard(textToCopy) {
+    // navigator clipboard api needs a secure context (https)
+      if (navigator.clipboard && window.isSecureContext) {
+          // navigator clipboard api method'
+           navigator.clipboard.writeText(textToCopy);
+      } else {
+        // text area method
+        let textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        // make the textarea out of viewport
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        textArea.remove();       
+      }
+    },
     /**
      * When a field is deleted we need to check if that field was related to any
      * filters or sortings. If that is the case then the view needs to be refreshed so
@@ -866,7 +886,8 @@ export default {
         // If the output is undefined, it means that there is no multiple selection.
         if (output !== undefined) {
           const tsv = this.$papa.unparse(output, { delimiter: '\t' })
-          navigator.clipboard.writeText(tsv)
+          // navigator.clipboard.writeText(tsv)
+          this.copyToClipboard(tsv)
         }
       } catch (error) {
         notifyIf(error, 'view')
