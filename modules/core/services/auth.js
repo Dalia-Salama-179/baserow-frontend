@@ -44,9 +44,6 @@ export default (client) => {
         base_url: baseUrl,
       })
     },
-    createGroup(name) {
-      return client.post('/custom/group/', name)
-    },
     resetPassword(token, password) {
       return client.post('/user/reset-password/', {
         token,

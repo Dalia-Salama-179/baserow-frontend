@@ -7,8 +7,12 @@ import {
 import { createFields } from '@baserow/test/fixtures/fields'
 import {
   createPublicGridViewRows,
-  createRows,
+  createGridRows,
 } from '@baserow/test/fixtures/grid'
+import {
+  createGalleryRows,
+  createGalleryView,
+} from '@baserow/test/fixtures/gallery'
 
 /**
  * MockServer is responsible for being the single place where we mock out calls to the
@@ -36,10 +40,16 @@ export class MockServer {
     return { id: 1, name: 'Test Table 1' }
   }
 
-  createGridView(application, table, { filters = [], sortings = [] }) {
+  createGridView(
+    application,
+    table,
+    { filters = [], sortings = [], decorations = [], ...rest }
+  ) {
     return createGridView(this.mock, application, table, {
       filters,
       sortings,
+      decorations,
+      ...rest,
     })
   }
 
@@ -51,12 +61,29 @@ export class MockServer {
     return createPublicGridViewRows(this.mock, viewSlug, fields, rows)
   }
 
+  createGalleryView(
+    application,
+    table,
+    { filters = [], sortings = [], decorations = [], ...rest }
+  ) {
+    return createGalleryView(this.mock, application, table, {
+      filters,
+      sortings,
+      decorations,
+      ...rest,
+    })
+  }
+
   createFields(application, table, fields) {
     return createFields(this.mock, application, table, fields)
   }
 
-  createRows(gridView, fields, rows) {
-    return createRows(this.mock, gridView, fields, rows)
+  createGridRows(gridView, fields, rows) {
+    return createGridRows(this.mock, gridView, fields, rows)
+  }
+
+  createGalleryRows(gridView, fields, rows) {
+    return createGalleryRows(this.mock, gridView, fields, rows)
   }
 
   nextSearchForTermWillReturn(searchTerm, gridView, results) {
@@ -131,6 +158,33 @@ export class MockServer {
     } else {
       mock.replyOnce(200, result)
     }
+  }
+
+  getAllFieldAggregationData(viewId, result, error = false) {
+    const mock = this.mock.onGet(`/database/views/grid/${viewId}/aggregations/`)
+    if (error) {
+      mock.replyOnce(500)
+    } else {
+      mock.replyOnce(200, result)
+    }
+  }
+
+  createDecoration(view, values, result) {
+    this.mock
+      .onPost(`/database/views/${view.id}/decorations/`, values)
+      .replyOnce(200, result)
+  }
+
+  updateDecoration(decoration, values, result) {
+    this.mock
+      .onPatch(`/database/views/decoration/${decoration.id}/`, values)
+      .replyOnce(200, result)
+  }
+
+  deleteDecoration(decoration) {
+    this.mock
+      .onDelete(`/database/views/decoration/${decoration.id}/`)
+      .replyOnce(200)
   }
 
   resetMockEndpoints() {

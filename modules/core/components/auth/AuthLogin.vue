@@ -21,7 +21,7 @@
     </div>
     <Error :error="error"></Error>
     <form @submit.prevent="login">
-      <div class="control">
+      <FormElement :error="fieldHasErrors('email')" class="control">
         <label class="control__label">{{ $t('field.emailAddress') }}</label>
         <div class="control__elements">
           <input
@@ -30,38 +30,38 @@
             type="email"
             class="input input--large"
             disabled
-            :value="credentials.email"
+            :value="values.email"
           />
           <input
             v-else
             ref="email"
-            v-model="credentials.email"
-            :class="{ 'input--error': $v.credentials.email.$error }"
+            v-model="values.email"
+            :class="{ 'input--error': fieldHasErrors('email') }"
             type="email"
             class="input input--large"
-            @blur="$v.credentials.email.$touch()"
+            @blur="$v.values.email.$touch()"
           />
-          <div v-if="$v.credentials.email.$error" class="error">
+          <div v-if="fieldHasErrors('email')" class="error">
             {{ $t('error.invalidEmail') }}
           </div>
         </div>
-      </div>
-      <div class="control">
+      </FormElement>
+      <FormElement :error="fieldHasErrors('password')" class="control">
         <label class="control__label">{{ $t('field.password') }}</label>
         <div class="control__elements">
           <input
             ref="password"
-            v-model="credentials.password"
-            :class="{ 'input--error': $v.credentials.password.$error }"
+            v-model="values.password"
+            :class="{ 'input--error': fieldHasErrors('password') }"
             type="password"
             class="input input--large"
-            @blur="$v.credentials.password.$touch()"
+            @blur="$v.values.password.$touch()"
           />
-          <div v-if="$v.credentials.password.$error" class="error">
+          <div v-if="fieldHasErrors('password')" class="error">
             {{ $t('error.passwordRequired') }}
           </div>
         </div>
-      </div>
+      </FormElement>
       <div class="actions">
         <slot></slot>
         <button
@@ -79,12 +79,13 @@
 
 <script>
 import { required, email } from 'vuelidate/lib/validators'
+import form from '@baserow/modules/core/mixins/form'
 import error from '@baserow/modules/core/mixins/error'
 import GroupService from '@baserow/modules/core/services/group'
 
 export default {
   name: 'AuthLogin',
-  mixins: [error],
+  mixins: [form, error],
   props: {
     invitation: {
       required: false,
@@ -95,7 +96,7 @@ export default {
   data() {
     return {
       loading: false,
-      credentials: {
+      values: {
         email: '',
         password: '',
       },
@@ -103,40 +104,41 @@ export default {
   },
   beforeMount() {
     if (this.invitation !== null) {
-      this.credentials.email = this.invitation.email
+      this.values.email = this.invitation.email
     }
   },
   async mounted() {
-    if (!this.$env.BASEROW_DISABLE_PUBLIC_URL_CHECK) {
-      const publicBackendUrl = new URL(this.$env.PUBLIC_BACKEND_URL)
-      if (publicBackendUrl.host !== window.location.host) {
-        // If the host of the browser location does not match the PUBLIC_BACKEND_URL
-        // then we are probably mis-configured.
-        try {
-          // Attempt to connect to the backend using the configured PUBLIC_BACKEND_URL
-          // just in-case it is actually configured correctly.
-          await this.$client.get('_health')
-        } catch (error) {
-          const publicBackendUrlWithProto =
-            publicBackendUrl.protocol + '//' + publicBackendUrl.host
-          const browserWindowUrl = location.protocol + '//' + location.host
-          this.showError(
-            'Backend URL mis-configuration detected',
-            `Cannot connect to the backend at ${publicBackendUrlWithProto}.` +
-              ` You visited Baserow at ${browserWindowUrl} ` +
-              ' which indicates you have mis-configured the Baserow ' +
-              ' BASEROW_PUBLIC_URL or PUBLIC_BACKEND_URL environment variables. ' +
-              ' Please visit https://baserow.io/docs/debugging-connection-issues ' +
-              ' on how to fix this error.'
-          )
-        }
-      }
-    }
+    // if (!this.$env.BASEROW_DISABLE_PUBLIC_URL_CHECK) {
+    //   const publicBackendUrl = new URL(this.$env.PUBLIC_BACKEND_URL)
+    //   // if (publicBackendUrl.host !== window.location.host) {
+    //     // If the host of the browser location does not match the PUBLIC_BACKEND_URL
+    //     // then we are probably mis-configured.
+    //     try {
+    //       // Attempt to connect to the backend using the configured PUBLIC_BACKEND_URL
+    //       // just in-case it is actually configured correctly.
+    //       await this.$client.get('_health')
+    //     } catch (error) {
+    //       const publicBackendUrlWithProto =
+    //         publicBackendUrl.protocol + '//' + publicBackendUrl.host
+    //       const browserWindowUrl = location.protocol + '//' + location.host
+    //       this.showError(
+    //         'Backend URL mis-configuration detected',
+    //         `Cannot connect to the backend at ${publicBackendUrlWithProto}.` +
+    //           ` You visited Baserow at ${browserWindowUrl} ` +
+    //           ' which indicates you have mis-configured the Baserow ' +
+    //           ' BASEROW_PUBLIC_URL or PUBLIC_BACKEND_URL environment variables. ' +
+    //           ' Please visit https://baserow.io/docs/debugging-connection-issues ' +
+    //           ' on how to fix this error.'
+    //       )
+    //     }
+    //   // }
+    // }
   },
   methods: {
     async login() {
       this.$v.$touch()
       if (this.$v.$invalid) {
+        this.focusOnFirstError()
         return
       }
 
@@ -144,17 +146,15 @@ export default {
       this.hideError()
 
       try {
+        const { email, password } = this.values
         const data = await this.$store.dispatch('auth/login', {
-          email: this.credentials.email,
-          password: this.credentials.password,
+          email,
+          password,
         })
 
         // If there is an invitation we can immediately accept that one after the user
         // successfully signs in.
-        if (
-          this.invitation !== null &&
-          this.invitation.email === this.credentials.email
-        ) {
+        if (this.invitation?.email === email) {
           await GroupService(this.$client).acceptInvitation(this.invitation.id)
         }
 
@@ -182,7 +182,7 @@ export default {
                 this.$t('error.incorrectCredentialMessage')
               )
             }
-            this.credentials.password = ''
+            this.values.password = ''
             this.$v.$reset()
             this.$refs.password.focus()
           } else {
@@ -199,7 +199,7 @@ export default {
     },
   },
   validations: {
-    credentials: {
+    values: {
       email: { required, email },
       password: { required },
     },

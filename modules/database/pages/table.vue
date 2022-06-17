@@ -1,5 +1,5 @@
 <template>
- <Table
+  <Table
     :database="database"
     :table="table"
     :fields="fields"
@@ -9,7 +9,7 @@
     :table-loading="tableLoading"
     store-prefix="page/"
     @selected-view="selectedView"
-  ></Table> 
+  ></Table>
 </template>
 
 <script>
@@ -29,6 +29,7 @@ export default {
    * way it will not be highlighted the left sidebar.
    */
   beforeRouteLeave(to, from, next) {
+    this.$store.dispatch('view/unselect')
     this.$store.dispatch('table/unselect')
     next()
   },

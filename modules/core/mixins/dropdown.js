@@ -29,6 +29,11 @@ export default {
       required: false,
       default: false,
     },
+    tabindex: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -48,6 +53,14 @@ export default {
     selectedIcon() {
       return this.getSelectedProperty(this.value, 'icon')
     },
+    realTabindex() {
+      // We don't want to be able focus if the dropdown is disabled or if we have
+      // opened it and the search input is currently focused
+      if (this.disabled || (this.open && this.showSearch)) {
+        return ''
+      }
+      return this.tabindex
+    },
   },
   watch: {
     value() {
@@ -64,6 +77,12 @@ export default {
     this.forceRefreshSelectedValue()
   },
   methods: {
+    focusout(event) {
+      // Hide only if we loose focus in profit of another element
+      if (event.relatedTarget) {
+        this.hide()
+      }
+    },
     /**
      * Toggles the open state of the dropdown menu.
      */
@@ -82,7 +101,7 @@ export default {
      * Shows the lists of choices, so a user can change the value.
      */
     show(target) {
-      if (this.disabled) {
+      if (this.disabled || this.open) {
         return
       }
 
@@ -132,7 +151,7 @@ export default {
           this.open &&
           // Check if the user has hit either of the keys we care about. If not,
           // ignore.
-          (event.code === 'ArrowUp' || event.code === 'ArrowDown')
+          (event.key === 'ArrowUp' || event.key === 'ArrowDown')
         ) {
           // Prevent scrolling up and down while pressing the up and down key.
           event.stopPropagation()
@@ -141,11 +160,15 @@ export default {
         }
         // Allow the Enter key to select the value that is currently being hovered
         // over.
-        if (this.open && event.code === 'Enter') {
+        if (this.open && event.key === 'Enter') {
           // Prevent submitting the whole form when pressing the enter key while the
           // dropdown is open.
           event.preventDefault()
           this.select(this.hover)
+        }
+        // Close on escape
+        if (this.open && event.key === 'Escape') {
+          this.hide()
         }
       }
       document.body.addEventListener('keydown', this.$el.keydownEvent)
@@ -232,7 +255,7 @@ export default {
         (child) => !child.disabled && child.isVisible(this.query)
       )
 
-      const isArrowUp = event.code === 'ArrowUp'
+      const isArrowUp = event.key === 'ArrowUp'
       let index = children.findIndex((item) => item.value === this.hover)
       index = isArrowUp ? index - 1 : index + 1
 

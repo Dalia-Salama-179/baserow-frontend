@@ -2,11 +2,10 @@
   <Context ref="context">
     <div class="context__menu-title">{{ group.name }} ({{ group.id }})</div>
     <ul class="context__menu">
-      <li>
+      <li v-if="group.permissions === 'ADMIN'">
         <a @click="$emit('rename')">
           <i class="context__menu-icon fas fa-fw fa-pen"></i>
-          <!-- {{ $t('groupContext.renameGroup') }} -->
-          {{type == 'group' ? $t('groupContext.renameGroup') : 'Edit User' }}
+          {{ $t('groupContext.renameGroup') }}
         </a>
       </li>
       <li v-if="group.permissions === 'ADMIN'">
@@ -21,19 +20,10 @@
           {{ $t('groupContext.viewTrash') }}
         </a>
       </li>
-      <!-- <li>
+      <li>
         <a @click="$refs.leaveGroupModal.show()">
           <i class="context__menu-icon fas fa-fw fa-door-open"></i>
           {{ $t('groupContext.leaveGroup') }}
-        </a>
-      </li> -->
-      <li>
-        <a
-          :class="{ 'context__menu-item--loading': loading }"
-          @click="deleteGroup"
-        >
-          <i class="context__menu-icon fas fa-fw fa-trash"></i>
-          {{type == 'group' ? $t('groupContext.deleteGroup') : 'Delete User' }}
         </a>
       </li>
       <li v-if="group.permissions === 'ADMIN'">
@@ -77,10 +67,6 @@ export default {
       type: Object,
       required: true,
     },
-    type: {
-      type: String,
-      default: 'group',
-    },
   },
   data() {
     return {
@@ -104,7 +90,7 @@ export default {
       this.loading = true
 
       try {
-        await this.$store.dispatch(`${this.$props.type}/delete`, this.group)
+        await this.$store.dispatch('group/delete', this.group)
         await this.$store.dispatch('notification/restore', {
           trash_item_type: 'group',
           trash_item_id: this.group.id,

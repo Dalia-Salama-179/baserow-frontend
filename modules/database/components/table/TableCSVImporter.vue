@@ -103,7 +103,6 @@
 </template>
 
 <script>
-import Papa from 'papaparse'
 import { required } from 'vuelidate/lib/validators'
 
 import form from '@baserow/modules/core/mixins/form'
@@ -149,13 +148,13 @@ export default {
       }
 
       const file = event.target.files[0]
-      const maxSize = 1024 * 1024 * 150
+      const maxSize = 1024 * 1024 * 15
 
       if (file.size > maxSize) {
         this.filename = ''
         this.values.data = ''
         this.error = this.$t('tableCSVImporter.limitFileSize', {
-          limit: 150,
+          limit: 15,
         })
         this.preview = {}
         this.$emit('input', this.value)
@@ -189,7 +188,7 @@ export default {
         return
       }
 
-      Papa.parse(decodedData, {
+      this.$papa.parse(decodedData, {
         delimiter: this.columnSeparator === 'auto' ? '' : this.columnSeparator,
         complete: (data) => {
           if (data.data.length === 0) {
@@ -206,7 +205,15 @@ export default {
               data.data,
               this.values.firstRowHeader
             )
+
             this.values.data = JSON.stringify(dataWithHeader)
+            if (!this.values.firstRowHeader) {
+              // Remove first row (the genereated header)
+              // The genereated header is only needed for the preview and needs to be
+              // exluded from the data used to create the table, as the backend will
+              // generate a new header if `firstRowHeader` is set to false.
+              this.values.data = JSON.stringify(dataWithHeader.slice(1))
+            }
             this.error = ''
             this.preview = this.getPreview(dataWithHeader)
           }

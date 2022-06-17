@@ -24,13 +24,12 @@
         "retry": "Retry",
         "search": "Search",
         "copy": "Copy",
+        "paste": "Paste",
         "activate": "Activate",
         "deactivate": "Deactivate"
     },
     "adminType": {
-        "settings": "Settings",
-        "users": "users",
-        "groups": "groups"
+        "settings": "Settings"
     },
     "applicationType": {
         "database": "Database",
@@ -55,7 +54,6 @@
         "minLength": "A minimum of {min} characters is required here.",
         "maxLength": "A maximum of {max} characters is allowed here.",
         "minMaxLength": "A minimum of {min} and a maximum of {max} characters is allowed here.",
-        "minMaxLength2": "A minimum of {min} and a maximum of {max} characters and only letters not spaces is allowed here.",
         "requiredField": "This field is required."
     },
     "permission": {
@@ -134,6 +132,7 @@
         "isAfterDate": "is after date",
         "isNotDate": "is not date",
         "isToday": "is today",
+        "isDaysAgo": "is days ago",
         "inThisMonth": "in this month",
         "inThisYear": "in this year",
         "lowerThan": "lower than",
@@ -157,7 +156,9 @@
         "application": "application",
         "table": "table",
         "field": "field",
-        "row": "row"
+        "row": "row",
+        "rows": "rows",
+        "view": "view"
     },
     "webhook": {
         "request": "Request",
@@ -229,13 +230,18 @@
         "listRows": "List rows",
         "getRow": "Get row",
         "createRow": "Create row",
+        "createRows": "Create rows",
         "updateRow": "Update row",
+        "updateRows": "Update rows",
         "moveRow": "Move row",
         "deleteRow": "Delete row",
+        "deleteRows": "Delete rows",
         "queryParameters": "Query parameters",
         "pathParameters": "Path parameters",
         "requestBodySchema": "Request body schema",
-        "userFieldNamesDescription": "When any value is provided for the `user_field_names` GET param then field names returned by this endpoint will be the actual names of the fields.\n\n If the `user_field_names` GET param is not provided, then all returned field names will be `field_` followed by the id of the field. For example `field_1` refers to the field with an id of `1`."
+        "userFieldNamesDescription": "When any value is provided for the `user_field_names` GET param then field names returned by this endpoint will be the actual names of the fields.\n\n If the `user_field_names` GET param is not provided, then all returned field names will be `field_` followed by the id of the field. For example `field_1` refers to the field with an id of `1`.",
+        "singleRow": "Single",
+        "batchRows": "Batch"
     },
     "exporterType": {
         "csv": "Export to CSV"

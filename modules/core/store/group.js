@@ -4,6 +4,7 @@ import {
   setGroupCookie,
   unsetGroupCookie,
 } from '@baserow/modules/core/utils/group'
+import { CORE_ACTION_SCOPES } from '@baserow/modules/core/utils/undoRedoConstants'
 
 function populateGroup(group) {
   group._ = { loading: false, selected: false }
@@ -14,7 +15,6 @@ export const state = () => ({
   loaded: false,
   loading: false,
   items: [],
-  itemsUsers: [],
   selected: {},
 })
 
@@ -28,13 +28,6 @@ export const mutations = {
   SET_ITEMS(state, items) {
     // Set some default values that we might need later.
     state.items = items.map((item) => {
-      item = populateGroup(item)
-      return item
-    })
-  },
-  SET_ITEMS_Users(state, itemsUsers) {
-    // Set some default values that we might need later.
-    state.itemsUsers = itemsUsers.map((item) => {
       item = populateGroup(item)
       return item
     })
@@ -93,7 +86,6 @@ export const actions = {
    */
   clearAll({ commit, dispatch }) {
     commit('SET_ITEMS', [])
-    commit('SET_ITEMS_Users', [])
     commit('UNSELECT')
     commit('SET_LOADED', false)
     return dispatch('application/clearAll', undefined, { root: true })
@@ -116,19 +108,6 @@ export const actions = {
       commit('SET_ITEMS', data)
     } catch {
       commit('SET_ITEMS', [])
-    }
-
-    commit('SET_LOADING', false)
-  },
-  async fetchAllUsers({ commit }) {
-    commit('SET_LOADING', true)
-
-    try {
-      const { data } = await GroupService(this.$client).fetchAll()
-      commit('SET_LOADED', true)
-      commit('SET_ITEMS_Users', data)
-    } catch {
-      commit('SET_ITEMS_Users', [])
     }
 
     commit('SET_LOADING', false)
@@ -164,6 +143,12 @@ export const actions = {
    */
   forceUpdate({ commit }, { group, values }) {
     commit('UPDATE_ITEM', { id: group.id, values })
+  },
+  /**
+   * Forcefully reorders the items in the store without making a call to the server.
+   */
+  forceOrder({ commit }, order) {
+    commit('ORDER_ITEMS', order)
   },
   /**
    * Updates the order of the groups for the current user.
@@ -226,6 +211,13 @@ export const actions = {
   select({ commit, dispatch }, group) {
     commit('SET_SELECTED', group)
     setGroupCookie(group.id, this.app)
+    dispatch(
+      'undoRedo/updateCurrentScopeSet',
+      CORE_ACTION_SCOPES.group(group.id),
+      {
+        root: true,
+      }
+    )
   },
   /**
    * Select a group by a given group id.
@@ -243,6 +235,9 @@ export const actions = {
   unselect({ commit, dispatch, getters }, group) {
     commit('UNSELECT', {})
     unsetGroupCookie(this.app)
+    dispatch('undoRedo/updateCurrentScopeSet', CORE_ACTION_SCOPES.group(null), {
+      root: true,
+    })
     return dispatch('application/clearAll', group, { root: true })
   },
 }

@@ -67,7 +67,7 @@ export class AdminType extends Registerable {
   /**
    * If the admin type is disabled, this text will be visible explaining why.
    */
-  getDeactivatedText() { }
+  getDeactivatedText() {}
 
   /**
    * Indicates if the admin type is disabled.
@@ -99,48 +99,3 @@ export class SettingsAdminType extends AdminType {
     return 9999
   }
 }
-export class UsersAdminType extends AdminType {
-  static getType() {
-    return 'users'
-  }
-
-  getIconClass() {
-    return 'users'
-  }
-
-  getName() {
-    const { i18n } = this.app
-    return i18n.t('adminType.users')
-  }
-
-  getRouteName() {
-    return 'admin-users'
-  }
-
-  getOrder() {
-    return 2
-  }
-}
-export class GroupsAdminType extends AdminType {
-  static getType() {
-    return 'groups'
-  }
-
-  getIconClass() {
-    return 'users'
-  }
-
-  getName() {
-    const { i18n } = this.app
-    return i18n.t('adminType.groups')
-  }
-
-  getRouteName() {
-    return 'admin-groups'
-  }
-
-  getOrder() {
-    return 6
-  }
-}
-

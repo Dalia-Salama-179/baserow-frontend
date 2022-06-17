@@ -187,6 +187,10 @@
         "title": "Kopieren...",
         "content": "Vorbereiten ihre Daten"
     },
+    "pastingNotification": {
+        "title": "Einfügen...",
+        "content": "Vorbereiten ihre Daten"
+    },
     "errorLayout": {
         "notFound": "Die Seite, die Sie suchen, wurde nicht gefunden. Dies könnte daran liegen, dass die URL nicht korrekt ist oder dass Sie keine Berechtigung haben, diese Seite anzuzeigen.",
         "error": "Beim Laden der Seite ist ein Fehler aufgetreten. Unsere Entwickler wurden über das Problem informiert. Bitte versuchen Sie, die Seite zu aktualisieren oder zum Dashboard zurückzukehren.",
@@ -223,7 +227,9 @@
         "errorInvalidLinkTitle": "Ungültiger Link",
         "errorInvalidLinkMessage": "Das Passwort konnte nicht zurückgesetzt werden, da der Link ungültig ist.",
         "errorLinkExpiredTitle": "Link abgelaufen",
-        "errorLinkExpiredMessage": "Der Link zum Zurücksetzen des Passworts ist abgelaufen. Bitte fordern Sie ein neues an."
+        "errorLinkExpiredMessage": "Der Link zum Zurücksetzen des Passworts ist abgelaufen. Bitte fordern Sie ein neues an.",
+        "disabled": "Passwort-Zurücksetzung ist deaktiviert",
+        "disabledMessage": "Es ist nicht möglich, ein Passwort zurückzusetzen, da es deaktiviert wurde."
     },
     "signup": {
         "headTitle": "Neues Konto erstellen",
@@ -235,17 +241,104 @@
         "title": "Passwort vergessen",
         "message": "Bitte geben Sie Ihre E-Mail-Adresse in das Formular ein. Wenn wir ein Konto finden, senden wir Ihnen eine E-Mail mit einem Link zum Zurücksetzen Ihres Passworts.",
         "submit": "Link senden",
-        "confirmation": "Wenn Ihre E-Mail-Adresse in unserer Datenbank vorhanden ist, erhalten Sie in wenigen Minuten einen Link zum Zurücksetzen des Passworts an Ihre E-Mail-Adresse."
+        "confirmation": "Wenn Ihre E-Mail-Adresse in unserer Datenbank vorhanden ist, erhalten Sie in wenigen Minuten einen Link zum Zurücksetzen des Passworts an Ihre E-Mail-Adresse.",
+        "disabled": "Passwort-Zurücksetzung ist deaktiviert",
+        "disabledMessage": "Es ist nicht möglich, ein Passwort zurückzusetzen, da es deaktiviert wurde."
     },
     "settings": {
         "settingsTitle": "Administrator-Einstellungen",
         "baserowInstanceId": "Instanz-ID",
         "instanceIdDescription": "Die Instanz-ID ist die eindeutige Kennung Ihrer Baserow-Kopie.",
-        "groupSignupRestrictions": "Einschränkungen bei der Registrierung",
+        "accountRestrictions": "Konto-Einschränkungen",
+        "settingAllowResetPasswordName": "Erlaube das Zurücksetzen des Passworts",
+        "settingAllowResetPasswordDescription": "Standardmäßig ist das Zurücksetzen des Passworts aktiviert. Wenn Sie diese Einstellung deaktivieren, können Benutzer nicht mehr ihr Passwort via Link zurücksetzen.",
+        "settingAllowResetPasswordWarning": "Bitte beachten Sie, dass sie sich selbst aus dem System aussperren könnten und der Zugang nicht mehr hergestellt werden kann, falls sie ihr Passwort vergessen.",
         "settingAllowNewAccountsName": "Erstellen neuer Konten zulassen",
         "settingAllowNewAccountsDescription": "Standardmäßig kann sich jeder Benutzer, der Ihre Baserow-Domain besucht, für ein neues Konto anmelden.",
         "enabled": "aktiviert",
         "settingAllowSignupsViaGroupInvitationsName": "Erlaube Registrierungen durch Gruppeneinladungen",
         "settingAllowSignupsViaGroupInvitationDescription": "Auch wenn die Erstellung von neuen Konten deaktiviert ist können Nutzer:innen durch Setzen dieser Option Nutzer:innen ein Konto erstellen."
+    },
+    "undoRedoNotification": {
+        "redoingText": "Deine Aktion wird wieder hergestellt",
+        "redoneTitle": "Wieder ausgeführt",
+        "skippingUndoDueToError": "Rückgängig machen hat aufgrund eines unbekannten Fehlers nicht funktioniert, überspringen.",
+        "redoingTitle": "Wiederherstellen...",
+        "failed": "Fehlgeschlagen",
+        "undoingTitle": "Rückgängig machen...",
+        "undoingText": "Deine Aktion rückgängig machen",
+        "undoneTitle": "Rückgängig gemacht",
+        "undoneText": "Aktion ist rückgängig gemacht",
+        "noMoreUndo": "Keine Aktionen zum rückgängig machen übrig",
+        "noMoreRedo": "Keine Aktionen zum wieder-ausführen übrig",
+        "redoneText": "Aktion wurde wieder ausgeführt",
+        "skippingRedoDueToError": "Wieder ausführen hat aufgrund eines unbekannten Fehler nicht funktioniert, überspringen."
+    },
+    "AuthorizationErrorNotification": {
+        "title": "Autorisierungsfehler",
+        "content": "Anscheinend sind Sie nicht berechtigt, diese Ressource anzuzeigen.",
+        "action": "Seite neu laden"
+    },
+    "formSidebar": {
+        "actions": {
+            "addAll": "Alle hinzufügen",
+            "removeAll": "Alle entfernen",
+            "addField": "Feld hinzufügen"
+        },
+        "fieldsDescription": "Alle Felder sind im Formular",
+        "prefillInfoLink": "Werte dynamisch vorausfüllen",
+        "modal": {
+            "title": "Werte dynamisch vorausfüllen",
+            "descriptionPartOne": "Formular können vorausgefüllt werden, um dem Benutzer zu helfen das Formular schneller auszufüllen.",
+            "descriptionPartTwo": "Alle Felder die im Formular verfügbar sind, können vorausgefüllt werden.",
+            "howToPrefill": {
+                "title": "Wie man ein Formular vorausfüllt",
+                "description": "Wenn Sie ein Formular vorausfüllen wollen, können sie das mit einem Query Paremeter in der URL des Öffentlichen Formulares. Diese Query Parameter haben einen prefix von 'prefill' um potentielle Kollisionen mit anderen Query Parametern zu vermeiden."
+            },
+            "format": {
+                "title": "Format",
+                "description": "Das Format der Query Parameter is das Folgende:",
+                "codeSnippet": "?prefill_<feld_name>=<wert>"
+            },
+            "example": {
+                "title": "Beispiel",
+                "description": "In dem folgenden Beispiel wollen wir ein Feld mit dem Namen `Name` mit dem Wert `Mike` vorausfüllen",
+                "codeSnippet": "?prefill_Name=Mike"
+            },
+            "spaces": {
+                "title": "Leerzeichen",
+                "description": "Leerzeichen in Feldern werden mit einem '+' ersetzt, um Probleme mit den Query Parametern zu vermeiden.",
+                "codeSnippet": "?prefill_mein+Feld=Mike"
+            },
+            "multipleValues": {
+                "title": "Mehrere Werte",
+                "description": "Wenn Sie mehrere Werte benötigen, können Sie diese mit einem Komma getrennt angeben.",
+                "codeSnippet": "?prefill_multi+select=Mike,John"
+            },
+            "specialFieldTypes": {
+                "title": "Besondere Felder",
+                "description": "Allgemein ist der vorgefüllte Wert der selbe wie der Wert des Feldes, allerdings gibt es Ausnahmen wo der Wert erst noch konvertiert werden muss.",
+                "ratingField": {
+                    "title": "Bewertungsfeld",
+                    "description": "Ein Bewertungsfeld akzeptiert eine Nummer welche bestimmt wie viele Sterne ausgefüllt werden sollen.",
+                    "codeSnippet": "?prefill_Bewertung=3"
+                },
+                "linkRowField": {
+                    "title": "Zeilenlinkfeld",
+                    "description": "Ein Zeilenlinkfeld kann jeden Wert akzeptieren welcher im Dropdown zu sehen ist.",
+                    "codeSnippet": "?prefill_zeilenlinkfeld=Mike"
+                },
+                "selectField": {
+                    "title": "Einzel/Mehrfachauswahlfeld",
+                    "description": "Ein Einzelauswahlfeld akzeptiert jeden Wert der im Dropdown sichtbar ist. Das selbe gilt für das Mehrfachauswahlfeld, allerdings kann dieses auch mehrere Werte akzeptieren.",
+                    "codeSnippet": "?prefill_Einzelauswahlfeld=Mike"
+                },
+                "dateField": {
+                    "title": "Datumsfeld",
+                    "description": "Ein Datumsfeld kann ein Datum in den folgenden Formaten akzeptieren und wir das Datenformat des Feldes benutzen um den Wert richtig darzustellen.",
+                    "codeSnippet": "\n// Standards\nISO_8601\n\n// Generelle Formate\n'YYYY-MM-DD',\n'YYYY-MM-DD hh:mm A',\n'YYYY-MM-DD HH:mm',\n\n// EU\n'DD/MM/YYYY', \n'DD/MM/YYYY hh:mm A', \n'DD/MM/YYYY HH:mm'\n\n// US\n'MM/DD/YYYY', \n'MM/DD/YYYY hh:mm A', \n'MM/DD/YYYY HH:mm'"
+                }
+            }
+        }
     }
 }

@@ -67,36 +67,76 @@
 </template>
 
 <script>
-import { clone } from '@baserow/modules/core/utils/object'
+import { clone, isPromise } from '@baserow/modules/core/utils/object'
 import { notifyIf } from '@baserow/modules/core/utils/error'
 import Notifications from '@baserow/modules/core/components/notifications/Notifications'
 import FormService from '@baserow/modules/database/services/view/form'
 import FormPageField from '@baserow/modules/database/components/view/form/FormPageField'
 import FormViewPoweredBy from '@baserow/modules/database/components/view/form/FormViewPoweredBy'
+import { getPrefills } from '@baserow/modules/database/utils/form'
 
 export default {
-  components: { Notifications, FormPageField, FormViewPoweredBy },
-  async asyncData({ params, error, app }) {
+  components: {
+    Notifications,
+    FormPageField,
+    FormViewPoweredBy,
+  },
+  async asyncData({ params, error, app, route, redirect, store }) {
     const slug = params.slug
-    let data = null
+    const publicAuthToken = await store.dispatch(
+      'page/view/public/setAuthTokenFromCookies',
+      { slug }
+    )
 
+    let data = null
     try {
       const { data: responseData } = await FormService(
         app.$client
-      ).getMetaInformation(slug)
+      ).getMetaInformation(slug, publicAuthToken)
       data = responseData
     } catch (e) {
-      return error({ statusCode: 404, message: 'Form not found.' })
+      const statusCode = e.response?.status
+      // password protect forms require authentication
+      if (statusCode === 401) {
+        return redirect({
+          name: 'database-public-view-auth',
+          query: { original: route.path },
+        })
+      } else {
+        return error({ statusCode: 404, message: 'Form not found.' })
+      }
     }
 
     // After the form field meta data has been fetched, we need to make the values
     // object with the empty field value as initial form value.
     const values = {}
+    const prefills = getPrefills(route.query)
+    const promises = []
     data.fields.forEach((field) => {
       field._ = { touched: false }
       const fieldType = app.$registry.get('field', field.field.type)
-      values[`field_${field.field.id}`] = fieldType.getEmptyValue(field.field)
+      const setValue = (value) => {
+        values[`field_${field.field.id}`] = value
+      }
+
+      const prefill = prefills[field.name]
+      values[`field_${field.field.id}`] = fieldType.getEmptyValue(field.field) // Default value
+      if (prefill !== undefined && fieldType.canParseQueryParameter()) {
+        const result = fieldType.parseQueryParameter(field, prefill, {
+          slug,
+          client: app.$client,
+        })
+
+        if (isPromise(result)) {
+          result.then(setValue)
+          promises.push(result)
+        } else {
+          setValue(result)
+        }
+      }
     })
+
+    await Promise.all(promises)
 
     // Order the fields directly after fetching the results to make sure the form is
     // serverside rendered in the right order.
@@ -126,6 +166,7 @@ export default {
       submit_text: data.submit_text,
       fields: data.fields,
       values,
+      publicAuthToken,
     }
   },
   data() {
@@ -191,7 +232,11 @@ export default {
 
       try {
         const slug = this.$route.params.slug
-        const { data } = await FormService(this.$client).submit(slug, values)
+        const { data } = await FormService(this.$client).submit(
+          slug,
+          values,
+          this.publicAuthToken
+        )
 
         this.submitted = true
         this.submitAction = data.submit_action
@@ -208,7 +253,6 @@ export default {
       } catch (error) {
         notifyIf(error, 'view')
       }
-
       this.loading = false
     },
     /**

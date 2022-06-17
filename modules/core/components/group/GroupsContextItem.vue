@@ -25,7 +25,6 @@
     </a>
     <GroupContext
       ref="context"
-      type="group"
       :group="group"
       @rename="enableRename()"
     ></GroupContext>

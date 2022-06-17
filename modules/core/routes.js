@@ -47,16 +47,6 @@ export const routes = [
     component: path.resolve(__dirname, 'pages/admin/settings.vue'),
   },
   {
-    name: 'admin-groups',
-    path: '/admin/groups',
-    component: path.resolve(__dirname, 'pages/admin/groups.vue'),
-  },
-  {
-    name: 'admin-users',
-    path: '/admin/users',
-    component: path.resolve(__dirname, 'pages/admin/users.vue'),
-  },
-  {
     name: 'style-guide',
     path: '/style-guide',
     component: path.resolve(__dirname, 'pages/styleGuide.vue'),

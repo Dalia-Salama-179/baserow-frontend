@@ -21,6 +21,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    storePrefix: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -111,42 +115,48 @@ export default {
         // If the tab or arrow keys are pressed we want to select the next field. This
         // is however out of the scope of this component so we emit the selectNext
         // event that the GridView can handle.
-        const { keyCode, ctrlKey, metaKey } = event
+        const { key, shiftKey, ctrlKey, metaKey } = event
         const arrowKeysMapping = {
-          37: 'selectPrevious',
-          38: 'selectAbove',
-          39: 'selectNext',
-          40: 'selectBelow',
+          ArrowLeft: 'selectPrevious',
+          ArrowUp: 'selectAbove',
+          ArrowRight: 'selectNext',
+          ArrowDown: 'selectBelow',
         }
-        if (
-          Object.keys(arrowKeysMapping).includes(keyCode.toString()) &&
-          this.canSelectNext(event)
-        ) {
-          event.preventDefault()
-          this.$emit(arrowKeysMapping[keyCode])
-        }
-        if (keyCode === 9 && this.canSelectNext(event)) {
-          event.preventDefault()
-          this.$emit(event.shiftKey ? 'selectPrevious' : 'selectNext')
+        if (this.canSelectNext(event)) {
+          if (Object.keys(arrowKeysMapping).includes(key)) {
+            event.preventDefault()
+            this.$emit(arrowKeysMapping[key])
+          } else if (key === 'Tab') {
+            event.preventDefault()
+            this.$emit(shiftKey ? 'selectPrevious' : 'selectNext')
+          } else if (key === 'Enter' && shiftKey) {
+            event.preventDefault()
+            this.$emit('selectBelow')
+          }
         }
 
         // Copy the value to the clipboard if ctrl/cmd + c is pressed.
-        if ((ctrlKey || metaKey) && keyCode === 67 && this.canCopy(event)) {
+        if ((ctrlKey || metaKey) && key === 'c' && this.canCopy(event)) {
           const rawValue = this.value
           const value = this.$registry
             .get('field', this.field.type)
             .prepareValueForCopy(this.field, rawValue)
-          copyToClipboard(value)
+          const tsv = this.$papa.unparse([[value]], { delimiter: '\t' })
+          copyToClipboard(tsv)
         }
 
         // Removes the value if the backspace/delete key is pressed.
-        if ((keyCode === 46 || keyCode === 8) && this.canEmpty(event)) {
+        if ((key === 'Delete' || key === 'Backspace') && this.canEmpty(event)) {
           event.preventDefault()
           const value = this.$registry
             .get('field', this.field.type)
             .getEmptyValue(this.field)
           const oldValue = this.value
-          if (value !== oldValue && !this.readOnly) {
+          if (
+            value !== oldValue &&
+            !this.readOnly &&
+            !this.field._.type.isReadOnly
+          ) {
             this.$emit('update', value, oldValue)
           }
         }
@@ -154,23 +164,41 @@ export default {
       document.body.addEventListener('keydown', this.$el.keyDownEvent)
 
       // Updates the value of the field when a user pastes something in the field.
-      this.$el.pasteEvent = (event) => {
+      this.$el.pasteEvent = async (event) => {
         if (!this.canPaste(event)) {
           return
         }
 
-        const value = this.$registry
-          .get('field', this.field.type)
-          .prepareValueForPaste(this.field, event.clipboardData)
-        const oldValue = this.value
-        if (
-          value !== undefined &&
-          value !== oldValue &&
-          !this.readOnly &&
-          !this.field._.type.isReadOnly
-        ) {
-          this.$emit('update', value, oldValue)
-        }
+        try {
+          // Multiple values in TSV format can be provided, so we need to properly
+          // parse it using Papa.
+          const parsed = await this.$papa.parsePromise(
+            event.clipboardData.getData('text'),
+            { delimiter: '\t' }
+          )
+          const data = parsed.data
+          // A grid field cell can only handle one single value. We try to extract
+          // that from the clipboard and update the cell, otherwise we emit the
+          // paste event up.
+          if (data.length === 1 && data[0].length === 1) {
+            const value = this.$registry
+              .get('field', this.field.type)
+              .prepareValueForPaste(this.field, data[0][0])
+            const oldValue = this.value
+
+            if (
+              value !== undefined &&
+              value !== oldValue &&
+              !this.readOnly &&
+              !this.field._.type.isReadOnly
+            ) {
+              this.$emit('update', value, oldValue)
+            }
+          } else {
+            event.stopPropagation()
+            this.$emit('paste', data)
+          }
+        } catch (e) {}
       }
       document.addEventListener('paste', this.$el.pasteEvent)
 

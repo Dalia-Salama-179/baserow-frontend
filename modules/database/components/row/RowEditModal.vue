@@ -11,18 +11,42 @@
       <h2 v-if="primary !== undefined" class="box__title">
         {{ getHeading(primary, row) }}
       </h2>
-      <RowEditModalField
-        v-for="field in getFields(fields, primary)"
-        :key="'row-edit-field-' + field.id"
-        :ref="'field-' + field.id"
-        :field="field"
+      <RowEditModalFieldsList
+        :primary-is-sortable="primaryIsSortable"
+        :fields="visibleFields"
+        :sortable="!readOnly"
+        :hidden="false"
         :read-only="readOnly"
         :row="row"
         :table="table"
-        @update="update"
         @field-updated="$emit('field-updated', $event)"
         @field-deleted="$emit('field-deleted')"
-      ></RowEditModalField>
+        @order-fields="$emit('order-fields', $event)"
+        @toggle-field-visibility="$emit('toggle-field-visibility', $event)"
+        @update="update"
+      ></RowEditModalFieldsList>
+      <RowEditModalHiddenFieldsSection
+        v-if="hiddenFields.length"
+        :show-hidden-fields="showHiddenFields"
+        @toggle-hidden-fields-visibility="
+          $emit('toggle-hidden-fields-visibility')
+        "
+      >
+        <RowEditModalFieldsList
+          :primary-is-sortable="primaryIsSortable"
+          :fields="hiddenFields"
+          :sortable="false"
+          :hidden="true"
+          :read-only="readOnly"
+          :row="row"
+          :table="table"
+          @field-updated="$emit('field-updated', $event)"
+          @field-deleted="$emit('field-deleted')"
+          @toggle-field-visibility="$emit('toggle-field-visibility', $event)"
+          @update="update"
+        >
+        </RowEditModalFieldsList>
+      </RowEditModalHiddenFieldsSection>
       <div v-if="!readOnly" class="actions">
         <a
           ref="createFieldContextLink"
@@ -50,17 +74,18 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 import modal from '@baserow/modules/core/mixins/modal'
-import RowEditModalField from '@baserow/modules/database/components/row/RowEditModalField'
+
 import CreateFieldContext from '@baserow/modules/database/components/field/CreateFieldContext'
+import RowEditModalFieldsList from './RowEditModalFieldsList.vue'
+import RowEditModalHiddenFieldsSection from './RowEditModalHiddenFieldsSection.vue'
 
 export default {
   name: 'RowEditModal',
   components: {
-    RowEditModalField,
     CreateFieldContext,
+    RowEditModalFieldsList,
+    RowEditModalHiddenFieldsSection,
   },
   mixins: [modal],
   props: {
@@ -73,9 +98,24 @@ export default {
       required: false,
       default: undefined,
     },
-    fields: {
+    primaryIsSortable: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    visibleFields: {
       type: Array,
       required: true,
+    },
+    hiddenFields: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    showHiddenFields: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     rows: {
       type: Array,
@@ -94,17 +134,24 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      rowId: 'rowModal/id',
-      rowExists: 'rowModal/exists',
-      row: 'rowModal/row',
-    }),
+    modalRow() {
+      return this.$store.getters['rowModal/get'](this._uid)
+    },
+    rowId() {
+      return this.modalRow.id
+    },
+    rowExists() {
+      return this.modalRow.exists
+    },
+    row() {
+      return this.modalRow.row
+    },
   },
   watch: {
     /**
      * It could happen that the view doesn't always have all the rows buffered. When
      * the modal is opened, it will find the correct row by looking through all the
-     * rows of the view. If a filter changes, the existing row could be removed the
+     * rows of the view. If a filter changes, the existing row could be removed from the
      * buffer while the user still wants to edit the row because the modal is open. In
      * that case, we will keep a copy in the `rowModal` store, which will also listen
      * for real time update events to make sure the latest information is always
@@ -114,24 +161,38 @@ export default {
     rows(value) {
       const row = value.find((r) => r !== null && r.id === this.rowId)
       if (row === undefined && this.rowExists) {
-        this.$store.dispatch('rowModal/doesNotExist')
+        this.$store.dispatch('rowModal/doesNotExist', {
+          componentId: this._uid,
+        })
       } else if (row !== undefined && !this.rowExists) {
-        this.$store.dispatch('rowModal/doesExist', { row })
+        this.$store.dispatch('rowModal/doesExist', {
+          componentId: this._uid,
+          row,
+        })
+      } else if (row !== undefined) {
+        // If the row already exists and it has changed, we need to replace it,
+        // otherwise we might loose reactivity.
+        this.$store.dispatch('rowModal/replace', {
+          componentId: this._uid,
+          row,
+        })
       }
     },
   },
   methods: {
-    show(rowId, ...args) {
+    show(rowId, rowFallback = {}, ...args) {
       const row = this.rows.find((r) => r !== null && r.id === rowId)
       this.$store.dispatch('rowModal/open', {
+        tableId: this.table.id,
+        componentId: this._uid,
         id: rowId,
-        row: row || {},
+        row: row || rowFallback,
         exists: !!row,
       })
       this.getRootModal().show(...args)
     },
     hide(...args) {
-      this.$store.dispatch('rowModal/clear')
+      this.$store.dispatch('rowModal/clear', { componentId: this._uid })
       this.getRootModal().hide(...args)
     },
     /**
@@ -141,11 +202,6 @@ export default {
     update(context) {
       context.table = this.table
       this.$emit('update', context)
-    },
-    getFields(fields, primary) {
-      return (primary !== undefined ? [primary].concat(fields) : fields)
-        .slice()
-        .sort((a, b) => a.order - b.order)
     },
     getHeading(primary, row) {
       const name = `field_${primary.id}`

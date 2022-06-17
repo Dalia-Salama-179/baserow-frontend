@@ -3,6 +3,9 @@
 
   width: 300px;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .form-view__sidebar-fields {
@@ -115,6 +118,10 @@
   line-height: 36px;
   font-size: 13px;
   color: $color-primary-900;
+}
+
+.form-view__sidebar-prefill-link {
+  padding: 0 30px 30px 30px;
 }
 
 .form-view__preview {
@@ -521,4 +528,11 @@
   position: relative;
   height: 14px;
   margin-bottom: 20px;
+}
+
+.public-view-auth__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
 }

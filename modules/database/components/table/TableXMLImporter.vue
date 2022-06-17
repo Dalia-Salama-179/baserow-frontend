@@ -107,13 +107,13 @@ export default {
       }
 
       const file = event.target.files[0]
-      const maxSize = 1024 * 1024 * 150
+      const maxSize = 1024 * 1024 * 15
 
       if (file.size > maxSize) {
         this.filename = ''
         this.values.data = ''
         this.error = this.$t('tableXMLImporter.limitFileSize', {
-          limit: 150,
+          limit: 15,
         })
         this.preview = {}
       } else {

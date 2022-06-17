@@ -1,3 +1,3 @@
-import config from './config/nuxt.config.local.js'
+import config from './config/nuxt.config.dev.js'
 
 export default config

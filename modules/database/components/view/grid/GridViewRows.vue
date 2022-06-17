@@ -5,21 +5,22 @@
       transform: `translateY(${rowsTop}px) translateX(${leftOffset}px)`,
     }"
   >
-     <GridViewRow
-       v-for="row in rows"
-      :key="'row-' + '-' + row.id"
+    <GridViewRow
+      v-for="(row, index) in rows"
+      :key="`row-${row.id}`"
       :row="row"
-      :table="table"
-      :view="view"
       :fields="fields"
-      :all-field-ids="allFieldIds"
+      :all-fields="allFields"
       :field-widths="fieldWidths"
       :include-row-details="includeRowDetails"
+      :decorations-by-place="decorationsByPlace"
       :read-only="readOnly"
       :can-drag="view.sortings.length === 0"
       :store-prefix="storePrefix"
+      :row-identifier-type="view.row_identifier_type"
+      :count="index + rowsStartIndex + bufferStartIndex + 1"
       v-on="$listeners"
-    ></GridViewRow> 
+    />
   </div>
 </template>
 
@@ -38,22 +39,18 @@ export default {
       type: Array,
       required: true,
     },
-    allFieldIds: {
+    allFields: {
       type: Array,
       required: true,
     },
-    allFieldName: {
-      type: Array,
+    decorationsByPlace: {
+      type: Object,
       required: true,
     },
     leftOffset: {
       type: Number,
       required: false,
       default: 0,
-    },
-    table: {
-      type: Object,
-      required: true,
     },
     view: {
       type: Object,
@@ -72,7 +69,7 @@ export default {
   computed: {
     fieldWidths() {
       const fieldWidths = {}
-      this.fields.forEach((field) => {
+      this.allFields.forEach((field) => {
         fieldWidths[field.id] = this.getFieldWidth(field.id)
       })
       return fieldWidths
@@ -83,8 +80,11 @@ export default {
       ...(this.$options.computed || {}),
       ...mapGetters({
         rows: this.$options.propsData.storePrefix + 'view/grid/getRows',
-        getAllFieldOptions: this.$options.propsData.storePrefix + 'view/grid/getAllFieldOptions',
         rowsTop: this.$options.propsData.storePrefix + 'view/grid/getRowsTop',
+        rowsStartIndex:
+          this.$options.propsData.storePrefix + 'view/grid/getRowsStartIndex',
+        bufferStartIndex:
+          this.$options.propsData.storePrefix + 'view/grid/getBufferStartIndex',
       }),
     }
   },

@@ -19,6 +19,9 @@
         :include-field-width-handles="includeFieldWidthHandles"
         :include-row-details="includeRowDetails"
         :include-add-field="includeAddField"
+        :include-grid-view-identifier-dropdown="
+          includeGridViewIdentifierDropdown
+        "
         :read-only="readOnly"
         :store-prefix="storePrefix"
         @field-created="$emit('field-created', $event)"
@@ -49,12 +52,10 @@
           ></GridViewPlaceholder>
           <GridViewRows
             ref="rows"
-            :data-columnIndex="fieldsToRender.id"
-            :table="table"
             :view="view"
             :fields="fieldsToRender"
-            :all-field-ids="allFieldIds"
-            :all-field-name="allFieldName"
+            :all-fields="fields"
+            :decorations-by-place="decorationsByPlace"
             :left-offset="fieldsLeftOffset"
             :include-row-details="includeRowDetails"
             :read-only="readOnly"
@@ -129,6 +130,10 @@ export default {
       type: Array,
       required: true,
     },
+    decorationsByPlace: {
+      type: Object,
+      required: true,
+    },
     table: {
       type: Object,
       required: true,
@@ -148,6 +153,11 @@ export default {
       default: () => false,
     },
     includeAddField: {
+      type: Boolean,
+      required: false,
+      default: () => false,
+    },
+    includeGridViewIdentifierDropdown: {
       type: Boolean,
       required: false,
       default: () => false,
@@ -192,12 +202,6 @@ export default {
       }
 
       return width
-    },
-    allFieldIds() {
-      return this.fields.map((field) => field.id)
-    },
-    allFieldName() {
-      return this.fields.map((field) => field.name)
     },
   },
   watch: {

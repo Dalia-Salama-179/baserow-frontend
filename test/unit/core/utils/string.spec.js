@@ -61,7 +61,6 @@ describe('test string utils', () => {
       'http://baserow.io/hrscywv4p/image/upload/c_fill,g_faces:center,h_128,w_128/yflwk7vffgwyyenftkr7.png',
       'https://gitlab.com/bramw/baserow/-/issues?row=nice/route',
       'https://web.archive.org/web/20210313191012/https://baserow.io/',
-      'https://baserow.netlify.app',
       'mailto:bram@baserow.io?test=test',
     ]
 

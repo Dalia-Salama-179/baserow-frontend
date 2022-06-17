@@ -1,17 +1,21 @@
+import addPublicAuthTokenHeader from '@baserow/modules/database/utils/publicView'
+
 export default (client) => {
   return {
     fetchRows({
       gridId,
       limit = 100,
       offset = null,
-      cancelToken = null,
+      signal = null,
       includeFieldOptions = false,
       includeRowMetadata = true,
       search = false,
       publicUrl = false,
+      publicAuthToken = null,
       orderBy = '',
       filters = {},
       includeFields = [],
+      excludeFields = [],
     }) {
       const include = []
       const params = new URLSearchParams()
@@ -45,6 +49,10 @@ export default (client) => {
         params.append('include_fields', includeFields.join(','))
       }
 
+      if (excludeFields.length > 0) {
+        params.append('exclude_fields', excludeFields.join(','))
+      }
+
       Object.keys(filters).forEach((key) => {
         filters[key].forEach((value) => {
           params.append(key, value)
@@ -53,8 +61,12 @@ export default (client) => {
 
       const config = { params }
 
-      if (cancelToken !== null) {
-        config.cancelToken = cancelToken
+      if (signal !== null) {
+        config.signal = signal
+      }
+
+      if (publicAuthToken) {
+        addPublicAuthTokenHeader(config, publicAuthToken)
       }
 
       const url = publicUrl ? 'public/rows/' : ''
@@ -63,8 +75,9 @@ export default (client) => {
     fetchCount({
       gridId,
       search,
-      cancelToken = null,
+      signal = null,
       publicUrl = false,
+      publicAuthToken = null,
       filters = {},
     }) {
       const params = new URLSearchParams()
@@ -82,8 +95,12 @@ export default (client) => {
 
       const config = { params }
 
-      if (cancelToken !== null) {
-        config.cancelToken = cancelToken
+      if (signal !== null) {
+        config.signal = signal
+      }
+
+      if (publicAuthToken) {
+        addPublicAuthTokenHeader(config, publicAuthToken)
       }
 
       const url = publicUrl ? 'public/rows/' : ''
@@ -98,17 +115,27 @@ export default (client) => {
 
       return client.post(`/database/views/grid/${gridId}/`, data)
     },
-    fetchPublicViewInfo(viewSlug) {
-      return client.get(`/database/views/grid/${viewSlug}/public/info/`)
+    fetchPublicViewInfo(viewSlug, publicAuthToken = null) {
+      const config = {}
+      if (publicAuthToken) {
+        addPublicAuthTokenHeader(config, publicAuthToken)
+      }
+      return client.get(`/database/views/grid/${viewSlug}/public/info/`, config)
     },
-    fetchFieldAggregation(gridId, fieldId, rawType) {
+    fetchFieldAggregations({ gridId, search, signal = null }) {
       const params = new URLSearchParams()
-      params.append('type', rawType)
 
-      return client.get(
-        `/database/views/grid/${gridId}/aggregation/${fieldId}/`,
-        { params }
-      )
+      if (search) {
+        params.append('search', search)
+      }
+
+      const config = { params }
+
+      if (signal !== null) {
+        config.signal = signal
+      }
+
+      return client.get(`/database/views/grid/${gridId}/aggregations/`, config)
     },
   }
 }

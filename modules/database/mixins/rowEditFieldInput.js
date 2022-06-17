@@ -12,7 +12,7 @@ export default {
       /**
        * A temporary copy of the value when editing.
        */
-      copy: 'null',
+      copy: null,
     }
   },
   watch: {
@@ -82,7 +82,7 @@ export default {
      * Method that is called after saving the value. This can be overridden in the
      * component.
      */
-    afterSave() { },
+    afterSave() {},
     /**
      * Show the error for the copy value if the user is editing. If we don't do this,
      * then the error message is not showed in real time.

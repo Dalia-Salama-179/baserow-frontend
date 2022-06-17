@@ -11,21 +11,21 @@ import {
   UploadViaURLUserFileUploadType,
 } from '@baserow/modules/core/userFileUploadTypes'
 import { SettingsAdminType } from '@baserow/modules/core/adminTypes'
-import { UsersAdminType } from '@baserow/modules/core/adminTypes'
-import { GroupsAdminType } from '@baserow/modules/core/adminTypes'
 
 import settingsStore from '@baserow/modules/core/store/settings'
 import applicationStore from '@baserow/modules/core/store/application'
 import authStore from '@baserow/modules/core/store/auth'
 import groupStore from '@baserow/modules/core/store/group'
 import notificationStore from '@baserow/modules/core/store/notification'
-import usersStore from '@baserow/modules/core/store/users'
 import sidebarStore from '@baserow/modules/core/store/sidebar'
+import undoRedoStore from '@baserow/modules/core/store/undoRedo'
 
 import en from '@baserow/modules/core/locales/en.json'
 import fr from '@baserow/modules/core/locales/fr.json'
 import nl from '@baserow/modules/core/locales/nl.json'
 import de from '@baserow/modules/core/locales/de.json'
+import es from '@baserow/modules/core/locales/es.json'
+import it from '@baserow/modules/core/locales/it.json'
 
 export default (context, inject) => {
   const { store, isDev, app } = context
@@ -38,6 +38,8 @@ export default (context, inject) => {
     i18n.mergeLocaleMessage('fr', fr)
     i18n.mergeLocaleMessage('nl', nl)
     i18n.mergeLocaleMessage('de', de)
+    i18n.mergeLocaleMessage('es', es)
+    i18n.mergeLocaleMessage('it', it)
   }
 
   const registry = new Registry()
@@ -55,8 +57,6 @@ export default (context, inject) => {
     new UploadViaURLUserFileUploadType(context)
   )
   registry.register('admin', new SettingsAdminType(context))
-  registry.register('admin', new UsersAdminType(context))
-  registry.register('admin', new GroupsAdminType(context))
   inject('registry', registry)
 
   store.registerModule('settings', settingsStore)
@@ -64,6 +64,6 @@ export default (context, inject) => {
   store.registerModule('auth', authStore)
   store.registerModule('group', groupStore)
   store.registerModule('notification', notificationStore)
-  store.registerModule('users', usersStore)
   store.registerModule('sidebar', sidebarStore)
+  store.registerModule('undoRedo', undoRedoStore)
 }

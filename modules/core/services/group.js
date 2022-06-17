@@ -1,7 +1,7 @@
 export default (client) => {
   return {
     fetchAll() {
-      return client.get('/custom/group/')
+      return client.get('/groups/')
     },
     order(order) {
       return client.post('/groups/order/', {
@@ -9,16 +9,16 @@ export default (client) => {
       })
     },
     create(values) {
-      return client.post('/custom/group/', values)
+      return client.post('/groups/', values)
     },
     update(id, values) {
-      return client.patch(`/custom/group/${id}/`, values)
+      return client.patch(`/groups/${id}/`, values)
     },
     leave(id) {
       return client.post(`/groups/${id}/leave/`)
     },
     delete(id) {
-      return client.delete(`/custom/group/${id}/`)
+      return client.delete(`/groups/${id}/`)
     },
     sendInvitation(groupId, baseUrl, values) {
       values.base_url = baseUrl
