@@ -536,12 +536,12 @@ export const actions = {
     const bufferRequestSize = getters.getBufferRequestSize
     const bufferStartIndex = Math.max(
       Math.ceil((visibleStartIndex - bufferRequestSize) / bufferRequestSize) *
-        bufferRequestSize,
+      bufferRequestSize,
       0
     )
     const bufferEndIndex = Math.min(
       Math.ceil((visibleEndIndex + bufferRequestSize) / bufferRequestSize) *
-        bufferRequestSize,
+      bufferRequestSize,
       getters.getCount
     )
     const bufferLimit = bufferEndIndex - bufferStartIndex
@@ -1286,7 +1286,7 @@ export const actions = {
    */
   async createNewRow(
     { commit, getters, dispatch },
-    { view, table, fields, primary, values = {}, before = null }
+    { view, table, fields, primary, values = {}, before = null, notInset = true, isValues = false }
   ) {
     // Fill the not provided values with the empty value of the field type so we can
     // immediately commit the created row to the state.
@@ -1295,10 +1295,13 @@ export const actions = {
     allFields.forEach((field) => {
       const name = `field_${field.id}`
       const fieldType = this.$registry.get('field', field._.type.type)
-      if (!(name in values)) {
+      if (!(name in values) && !isValues) {
         const empty = fieldType.getNewRowValue(field)
         values[name] = empty
       }
+      // if (isValues) {
+      //   console.log('values', values);
+      // }
       // In case the fieldType is a read only field, we need to create a second
       // values dictionary, which gets sent to the API without the fieldType.
       if (!fieldType.isReadOnly) {
@@ -1330,10 +1333,10 @@ export const actions = {
     row.id = uuid()
     row.order = order
     row._.loading = true
-
-    commit('INSERT_NEW_ROW_IN_BUFFER_AT_INDEX', { row, index })
-    dispatch('visibleByScrollTop')
-
+    if (notInset) {
+      commit('INSERT_NEW_ROW_IN_BUFFER_AT_INDEX', { row, index })
+      dispatch('visibleByScrollTop')
+    }
     try {
       const { data } = await RowService(this.$client).create(
         table.id,
@@ -1997,12 +2000,12 @@ export const actions = {
     const matches = view.filters_disabled
       ? true
       : matchSearchFilters(
-          this.$registry,
-          view.filter_type,
-          view.filters,
-          primary === null ? fields : [primary, ...fields],
-          values
-        )
+        this.$registry,
+        view.filter_type,
+        view.filters,
+        primary === null ? fields : [primary, ...fields],
+        values
+      )
     commit('SET_ROW_MATCH_FILTERS', { row, value: matches })
   },
   /**

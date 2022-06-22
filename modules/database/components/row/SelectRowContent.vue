@@ -3,14 +3,16 @@
     <div v-if="!loaded" class="select-row-modal__initial-loading"></div>
     <div v-if="loaded" :class="{ 'select-row-modal__loading': loading }">
       <Scrollbars
+        v-show="!openForm"
         ref="scrollbars"
         horizontal="getHorizontalScrollbarElement"
         :style="{ left: '240px' }"
         @horizontal="horizontalScroll"
       ></Scrollbars>
       <div class="select-row-modal__search">
-        <i class="fas fa-search select-row-modal__search-icon"></i>
+        <i v-if="!openForm" class="fas fa-search select-row-modal__search-icon"></i>
         <input
+         v-if="!openForm"
           ref="search"
           v-model="visibleSearch"
           type="text"
@@ -19,8 +21,9 @@
           @keypress.enter="doSearch(visibleSearch)"
         />
       </div>
-      <div v-scroll="scroll" class="select-row-modal__rows">
-        <div class="select-row-modal__left">
+      <div  class="select-row-modal__rows" 
+      :style="openForm ? 'height: auto;padding: 10px 20px;background-color: #ffffff;':''">
+        <div v-if="!openForm" class="select-row-modal__left">
           <div class="select-row-modal__head">
             <div
               class="select-row-modal__field select-row-modal__field--first"
@@ -62,8 +65,10 @@
             ></Paginator>
           </div>
         </div>
-        <div ref="right" class="select-row-modal__right">
-          <div class="select-row-modal__head">
+        <div ref="right"
+         :style="openForm ? 'position: revert;padding: 10px 20px;':''"
+         class="select-row-modal__right">
+          <div v-show="!openForm" class="select-row-modal__head">
             <div
               v-for="field in fields"
               :key="field.id"
@@ -76,7 +81,7 @@
               {{ field.name }}
             </div>
           </div>
-          <div class="select-row-modal__body">
+          <div v-show="!openForm" class="select-row-modal__body">
             <div
               v-for="row in rows"
               :key="'right-select-row-' + tableId + '-' + row.id"
@@ -99,20 +104,45 @@
             </div>
           </div>
           <div
+            v-show="!openForm"
             class="select-row-modal__foot"
             :style="{
               width: 3 * 200 + 'px',
             }"
-          ></div>
+          >
+          <button v-show="!openForm" type="button" @click="openForm = !openForm" class="addNewRow">
+              Add New Row
+          </button>
+          </div>
+          <button v-show="!openForm && openForm" type="button" @click="openForm = !openForm" class="addNewRow">
+              Add New Row
+          </button>
+           <RowEditModalFieldsListCreate
+            v-if="openForm"
+            :hidden="false"
+            :sortable="false"
+            :read-only="false"
+            :row="row"
+            :isLength="rows.length"
+            :table="table"
+            :fields="newFields"
+            @update="update"
+          >
+          </RowEditModalFieldsListCreate> 
+          <button v-show="openForm" type="button" @click="addNewRow" class="buttonSave button button--large">
+              Save
+          </button>
         </div>
       </div>
-    </div>
+    </div> 
   </div>
 </template>
 
 <script>
+import RowEditModalFieldsListCreate from './RowEditModalFieldsListCreate.vue'
 import { notifyIf } from '@baserow/modules/core/utils/error'
 import FieldService from '@baserow/modules/database/services/field'
+import tableService from '@baserow/modules/database/services/table'
 import { populateField } from '@baserow/modules/database/store/field'
 import RowService from '@baserow/modules/database/services/row'
 import { populateRow } from '@baserow/modules/database/store/view/grid'
@@ -122,7 +152,7 @@ import SelectRowField from './SelectRowField'
 
 export default {
   name: 'SelectRowContent',
-  components: { Paginator, SelectRowField },
+  components: { Paginator, SelectRowField ,RowEditModalFieldsListCreate},
   props: {
     tableId: {
       type: Number,
@@ -137,25 +167,34 @@ export default {
   data() {
     return {
       loading: false,
+      openForm: false,
       loaded: false,
       primary: null,
-      fields: null,
+      field: null,
+      fields: [],
+      newFields: [],
       rows: [],
+      row: {},
+      table: {},
       search: '',
       visibleSearch: '',
       page: 1,
       totalPages: null,
+      values: null,
       lastHoveredRow: null,
     }
   },
   async mounted() {
     // The first time we have to fetch the fields because they are unknown for this
     // table.
+    // console.log(this.fields);
+    
+    // 
     await this.fetchFields(this.tableId)
 
     // We want to start with some initial data when the modal opens for the first time.
     await this.fetch(1)
-
+    // this.field = this.fields[0];
     // Becuase most of the template depends on having some initial data we mark the
     // state as loaded after that. Only a loading animation is shown if there isn't any
     // data.
@@ -165,8 +204,34 @@ export default {
     this.$nextTick(() => {
       this.focusSearch()
     })
+    // this.row = this.rows[1];
   },
   methods: {
+    update(event){
+      this.values = event
+    },
+   async addNewRow(before = null, values = {}){
+    this.openForm = false;
+     values = this.values;
+      let view = JSON.parse(localStorage.getItem('view'));
+       try {
+        await this.$store.dispatch('page/view/grid/createNewRow',
+          {
+            view: view,
+            table: this.table,
+            // We need a list of all fields including the primary one here.
+            fields: this.fields,
+            notInset: false,
+            primary: this.primary,
+            values,
+            before,
+          }
+        )
+        await this.fetch(1)
+      } catch (error) {
+        notifyIf(error, 'row')
+      }
+    },
     /**
      * Returns the scrollable element for the scrollbar.
      */
@@ -215,14 +280,20 @@ export default {
      */
     async fetchFields(tableId) {
       try {
-        const { data } = await FieldService(this.$client).fetchAll(tableId)
+        const table = await tableService(this.$client).get(tableId);
+        // console.log(total);
+        this.table = table.data
+        const { data } = await FieldService(this.$client).fetchAll(tableId);
         data.forEach((part, index, d) => {
           populateField(data[index], this.$registry)
         })
         const primaryIndex = data.findIndex((item) => item.primary === true)
-        this.primary =
-          primaryIndex !== -1 ? data.splice(primaryIndex, 1)[0] : null
-        this.fields = data
+        // console.log('primaryIndex',primaryIndex);
+        // console.log('data',data);
+        this.primary = primaryIndex !== -1 ? data.splice(primaryIndex, 1)[0] : null
+        this.fields = data;
+        this.newFields = [...data];
+        this.newFields.unshift(this.primary);
       } catch (error) {
         this.loading = false
         notifyIf(error, 'row')
@@ -256,6 +327,7 @@ export default {
         this.page = page
         this.totalPages = Math.ceil(data.count / 10)
         this.rows = data.results
+        this.row = data.results[0]
       } catch (error) {
         notifyIf(error, 'row')
       }
@@ -281,3 +353,24 @@ export default {
   },
 }
 </script>
+<style scoped>
+.addNewRow {
+    background: none;
+    border: none;
+    font-size: 14px;
+    display: inline-block;
+    position: sticky;
+    left: 0;
+    font-weight: bold;
+    color: #198dd6;
+    /* margin-top: -5px; */
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0px 12px;
+    text-align: right;
+}
+.buttonSave {
+    max-width: 40%;
+    margin-left: auto;
+}
+</style>

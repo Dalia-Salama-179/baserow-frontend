@@ -1,5 +1,5 @@
 <template>
-  <div class="control">
+  <div v-if="field.type != 'link_row'" class="control">
     <label class="control__label">
       <a
         :class="{ 'row-modal__field-item-handle': sortable }"
@@ -36,12 +36,11 @@
         </a>
       </li>
     </FieldContext>
-    <!-- {{row['field_' + field.id]}} ================= -->
     <component
       :is="getFieldComponent(field.type)"
       ref="field"
       :field="field"
-      :value="row['field_' + field.id]"
+      :value="value && value[0] && value[`field_${field.id}`] != 'undefined' ? value[0][`field_${field.id}`] : field.type != 'boolean'?[]:''"
       :read-only="readOnly"
       @update="update"
     />
@@ -54,6 +53,10 @@ import FieldContext from '@baserow/modules/database/components/field/FieldContex
 export default {
   name: 'RowEditModalField',
   components: { FieldContext },
+  data() {
+    return {
+    }
+  },
   props: {
     table: {
       type: Object,
@@ -81,16 +84,49 @@ export default {
       type: Object,
       required: true,
     },
+    value: {
+      type: Array,
+      required: true,
+    },
     readOnly: {
       type: Boolean,
       required: true,
     },
   },
+  mounted() {
+    
+    // this.$watch("$props.userName", (value) => {
+    //   this.name = value;
+    // });
+  },
+  watch: {
+    value: {
+        handler: function(newValue) {
+          // console.log('dddddddddddddd',newValue);
+          return newValue[0] 
+          // if(newValue){
+          //   this.value = newValue[0]
+          //   console.log("this.newValue:" , this.value)
+          // }
+        },
+        deep: true
+    }
+    // (value,newValue) {
+    //   console.log('dddddddddddddd',value);
+    //   console.log('dddddddddddddd',newValue);
+    //   this.set(value)
+    // },
+  },
   methods: {
     getFieldComponent(type) {
+      // console.log(type);
       return this.$registry.get('field', type).getRowEditFieldComponent()
     },
     update(value, oldValue) {
+      // this
+      // console.log(value);
+      // console.log(this.field);
+      // console.log(oldValue);
       this.$emit('update', {
         row: this.row,
         field: this.field,

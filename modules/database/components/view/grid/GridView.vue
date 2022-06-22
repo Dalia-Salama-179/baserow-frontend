@@ -407,6 +407,9 @@ export default {
      * to update the scrollbars.
      */
     fieldsUpdated() {
+      if(process.client) {
+        localStorage.setItem('view',JSON.stringify(this.$props.view));
+      }
       const scrollbars = this.$refs.scrollbars
       // Vue can sometimes trigger this via watch before the child component
       // scrollbars has been created, check it exists and has the expected method
@@ -512,6 +515,7 @@ export default {
       $right.scrollLeft = left
     },
     async addRow(before = null, values = {}) {
+      console.log(this.view);
       try {
         await this.$store.dispatch(
           this.storePrefix + 'view/grid/createNewRow',

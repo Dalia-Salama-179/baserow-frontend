@@ -365,6 +365,7 @@ export default {
       }
     },
     async createRow({ row, callback }) {
+      // console.log(this.view);
       try {
         await this.$store.dispatch(
           this.storePrefix + 'view/gallery/createNewRow',
