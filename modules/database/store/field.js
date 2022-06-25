@@ -114,7 +114,7 @@ export const actions = {
     if (Object.prototype.hasOwnProperty.call(values, 'type')) {
       throw new Error(
         'The key "type" is a reserved, but is already set on the ' +
-          'values when creating a new field.'
+        'values when creating a new field.'
       )
     }
 
@@ -203,7 +203,7 @@ export const actions = {
     if (Object.prototype.hasOwnProperty.call(values, 'type')) {
       throw new Error(
         'The key "type" is a reserved, but is already set on the values when ' +
-          'creating a new field.'
+        'creating a new field.'
       )
     }
 

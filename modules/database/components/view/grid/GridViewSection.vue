@@ -113,7 +113,7 @@ import GridViewRowAdd from '@baserow/modules/database/components/view/grid/GridV
 import GridViewFieldDragging from '@baserow/modules/database/components/view/grid/GridViewFieldDragging'
 import gridViewHelpers from '@baserow/modules/database/mixins/gridViewHelpers'
 import GridViewFieldFooter from '@baserow/modules/database/components/view/grid/GridViewFieldFooter'
-
+import FieldService from '@baserow/modules/database/services/field'
 export default {
   name: 'GridViewSection',
   components: {
@@ -228,7 +228,50 @@ export default {
       }),
     }
   },
-  mounted() {
+ async mounted() {
+    if(this.$props.fields){
+        // const { data } = await FieldService(this.$client).fetchAll(this.$props.table.id);
+        // console.log('data',data);
+          // array_formula_type: "text"
+          // date_format: null
+          // date_include_time: null
+          // date_time_format: null
+          // error: null
+          // formula_type: "array"
+          // id: 506
+          // name: "FFF"
+          // number_decimal_places: null
+          // order: 4
+          // primary: false
+          // table_id: 52
+          // target_field_id: 397
+          // target_field_name: "Name"
+          // through_field_id: 415
+          // through_field_name: "Fouders"
+          // type: "lookup"
+        // console.log('==================================');
+        // console.log(this.$props.fields[0].id);
+        const { data } = await FieldService(this.$client).get(this.$props.fields[0].id);
+        // console.log('data',data);
+        let obj = {...data};
+        obj.array_formula_type = "text"
+        obj.formula_type = "array"
+        obj.table_id = this.$props.table.id
+        obj.target_field_id = 397
+        obj.target_field_name = "Name"
+        obj.through_field_id = 415
+        obj.type = "lookup"
+        // console.log('obj',obj);
+        // let update = await FieldService(this.$client).update(this.$props.fields[0].id);
+        // console.log('update',update);
+        // if(field){
+        //     field.data.type = ''
+        //     console.log(field);
+        // }
+    }
+    
+    // const table = await FieldService(this.$client).get(FieldService);
+    // const table = await FieldService(this.$client).update(FieldService);
     // When the component first loads, we need to check
     this.updateVisibleFieldsInRow()
 

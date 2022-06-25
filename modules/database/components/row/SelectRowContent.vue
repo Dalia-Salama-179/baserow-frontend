@@ -117,6 +117,7 @@
           <button v-show="!openForm && openForm" type="button" @click="openForm = !openForm" class="addNewRow">
               Add New Row
           </button>
+          <h4 class="titlePopup" v-if="openForm && table && table.name">{{table.name}}</h4>
            <RowEditModalFieldsListCreate
             v-if="openForm"
             :hidden="false"
@@ -372,5 +373,14 @@ export default {
 .buttonSave {
     max-width: 40%;
     margin-left: auto;
+}
+.titlePopup{
+    padding: 0 0 8px 0;
+    margin: 0 0 20px 0;
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 2px solid #333;
+    max-width: 24%;
+    color: #188dd6;
 }
 </style>

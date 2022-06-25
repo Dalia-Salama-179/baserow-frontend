@@ -18,6 +18,7 @@ export default {
      */
     addValue(value, { row, primary }) {
       // Check if the relation already exists.
+      // console.log('ddddddddddddddddddddddddddddddddddddd');
       for (let i = 0; i < value.length; i++) {
         if (value[i].id === row.id) {
           return
@@ -29,7 +30,9 @@ export default {
       const newValue = JSON.parse(JSON.stringify(value))
       const rowValue = this.$registry
         .get('field', primary.type)
-        .toHumanReadableString(primary, row[`field_${primary.id}`])
+        .toHumanReadableString(primary, row[`field_${primary.id}`]);
+      // console.log(newValue);
+      // console.log(rowValue);
       newValue.push({
         id: row.id,
         value: rowValue,

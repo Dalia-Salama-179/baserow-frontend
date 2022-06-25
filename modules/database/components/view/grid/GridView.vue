@@ -422,6 +422,15 @@ export default {
      * row edit modal or when editing a cell directly in the grid.
      */
     async updateValue({ field, row, value, oldValue }) {
+      // console.log('updateupdateupdateupdateupdateupdate');
+      // console.log('this.fields',this.fields);
+      // console.log('this.table',this.table);
+      // console.log('this.view',this.view);
+      // console.log('this.primary',this.primary);
+      // console.log('field',field);
+      // console.log('row',row);
+      // console.log('value',value);
+      // console.log('oldValue',oldValue);
       try {
         await this.$store.dispatch(
           this.storePrefix + 'view/grid/updateRowValue',
@@ -515,7 +524,7 @@ export default {
       $right.scrollLeft = left
     },
     async addRow(before = null, values = {}) {
-      console.log(this.view);
+      // console.log(this.view);
       try {
         await this.$store.dispatch(
           this.storePrefix + 'view/grid/createNewRow',

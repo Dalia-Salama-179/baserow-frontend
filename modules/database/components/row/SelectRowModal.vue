@@ -39,7 +39,9 @@ export default {
      * Hide the modal when a row has been selected.
      */
     selected(...args) {
-      this.hide()
+      this.hide();
+      // console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+      // console.log(...args);
       this.$emit('selected', ...args)
     },
   },

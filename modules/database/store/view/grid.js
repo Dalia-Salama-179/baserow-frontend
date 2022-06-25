@@ -1297,7 +1297,11 @@ export const actions = {
       const fieldType = this.$registry.get('field', field._.type.type)
       if (!(name in values) && !isValues) {
         const empty = fieldType.getNewRowValue(field)
-        values[name] = empty
+        if (field.name == 'aingel_id' && table.name == 'organizations') {
+          values[name] = uuid()
+        } else {
+          values[name] = empty
+        }
       }
       // if (isValues) {
       //   console.log('values', values);
