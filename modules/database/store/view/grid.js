@@ -1,3 +1,4 @@
+//  edited By Ahmed Elsayed 
 import Vue from 'vue'
 import axios from 'axios'
 import _ from 'lodash'
@@ -1537,7 +1538,7 @@ export const actions = {
     })
 
     fieldsToCallOnRowChange.forEach((fieldToCall) => {
-      const fieldType = this.$registry.get('field', fieldToCall._.type.type)
+      const fieldType = this.$registry.get('field', fieldToCall._.type.type);
       const fieldID = `field_${fieldToCall.id}`
       const currentFieldValue = row[fieldID]
       const optimisticFieldValue = fieldType.onRowChange(
@@ -1561,7 +1562,30 @@ export const actions = {
     const newValue = fieldType.prepareValueForUpdate(field, value)
     const values = {}
     values[`field_${field.id}`] = newValue
-
+    if (field.name == 'organization' && value && value[0] && table.name == 'org_founder_map') {
+      values[`field_${primary.id}`] = value[0].value
+    }
+    console.log('table', table);
+    // console.log('field', field);
+    // console.log('row', row);
+    // console.log('values', values['field_422']);
+    // console.log('value[0]', value[0]);
+    if (field.name == 'person_fk' && value && value[0] && table.name == 'Founders') {
+      values[`field_${primary.id}`] = `${row['field_314']}_${value[0].value}`
+    }
+    if (field.name == 'org_funder_map_fk' && value && value[0] && table.name == 'organizations') {
+      values[`field_${primary.id}`] = value[0].value
+    }
+    if (field.name == 'first_name' && value && value[0] && table.name == 'person') {
+      values[`field_${primary.id}`] = `${values['field_418']}_${row['field_419']}*${row['field_422']}`
+    }
+    if (field.name == 'twitter_handle' && value && value[0] && table.name == 'person') {
+      values[`field_${primary.id}`] = `${row['field_418']}_${row['field_419']}*${values['field_422']}`
+    }
+    if (field.name == 'last_name' && value && value[0] && table.name == 'person') {
+      values[`field_${primary.id}`] = `${row['field_418']}_${values['field_419']}*${row['field_422']}`
+    }
+    // console.log(values);
     try {
       const updatedRow = await RowService(this.$client).update(
         table.id,

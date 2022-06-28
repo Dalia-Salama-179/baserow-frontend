@@ -1,11 +1,13 @@
+<!-- edited By Ahmed Elsayed -->
 <template>
   <RowEditModal
     ref="modal"
-    :read-only="true"
+    :read-only="false"
     :table="table"
     :rows="[]"
     :visible-fields="fields"
     :primary="primary"
+    @update="udate"
     @hidden="$emit('hidden', $event)"
   ></RowEditModal>
 </template>
@@ -40,6 +42,21 @@ export default {
     }
   },
   methods: {
+   async udate(event){
+      // console.log('cccccccccccccccccccccc');
+      // console.log(event);
+      let objs ={}
+      objs[`field_${event.field.id}`] = event.value
+      // console.log(objs);
+      // console.log(event.table.id);
+      // console.log(event.row.id);
+      const { data } = await RowService(this.$client).update(
+          event.table.id,
+          event.row.id,
+          objs
+      )
+      // console.log(data);
+    },
     async fetchTableAndFields() {
       // Find the table in the applications to prevent a request to the backend and to
       // maintain reactivity with the real time updates.

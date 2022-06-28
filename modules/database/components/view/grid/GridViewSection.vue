@@ -1,3 +1,4 @@
+<!-- edited By Ahmed Elsayed -->
 <template>
   <div
     v-auto-scroll="{
@@ -52,6 +53,7 @@
           ></GridViewPlaceholder>
           <GridViewRows
             ref="rows"
+            :table="table"
             :view="view"
             :fields="fieldsToRender"
             :all-fields="fields"

@@ -6,6 +6,7 @@
     }"
   >
     <GridViewRow
+      :table="table"
       v-for="(row, index) in rows"
       :key="`row-${row.id}`"
       :row="row"
@@ -35,6 +36,10 @@ export default {
   components: { GridViewRow },
   mixins: [gridViewHelpers],
   props: {
+    table: {
+      type: Object,
+      required: true,
+    },
     fields: {
       type: Array,
       required: true,

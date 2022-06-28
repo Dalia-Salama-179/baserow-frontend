@@ -1,3 +1,4 @@
+<!-- edited By Ahmed Elsayed -->
 <template>
   <Modal class="select-row-modal" @hidden="$emit('hidden')">
     <!--

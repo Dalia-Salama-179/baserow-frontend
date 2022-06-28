@@ -1,9 +1,9 @@
+<!-- edited By Ahmed Elsayed -->
 <template functional>
   <!--
     The :key property must be set here because it makes sure that the child components
     are not re-rendered when functional component changes position in the DOM.
   -->
-  
   <div
     :key="
       'row-field-cell-' +
@@ -30,6 +30,7 @@
     @mouseover="$options.methods.cellMouseover($event, listeners)"
     @mouseup.left="$options.methods.cellMouseUpLeft($event, listeners)"
   >
+    <!-- {{props.table}} -->
     <component
       :is="$options.methods.getFunctionalComponent(parent, props)"
       v-if="
@@ -41,20 +42,28 @@
         !parent.alive.includes(props.field.id)
       "
       ref="unselectedField"
+      :table="props.table"
       :field="props.field"
       :value="props.row['field_' + props.field.id]"
       :state="props.state"
-      :read-only="props.readOnly"
+      :read-only="props.field.primary && props.table.name == 'org_founder_map' ? true : props.readOnly ||
+      props.field.primary && props.table.name == 'Founders' ? true : props.readOnly ||
+      props.field.primary && props.table.name == 'organizations' ? true : props.readOnly ||
+      props.field.primary && props.table.name == 'person' ? true : props.readOnly "
     />
     <component
       :is="$options.methods.getComponent(parent, props)"
       v-else
+      :table="props.table"
       ref="selectedField"
       :field="props.field"
       :value="props.row['field_' + props.field.id]"
       :selected="parent.isCellSelected(props.field.id)"
       :store-prefix="props.storePrefix"
-      :read-only="props.readOnly"
+      :read-only="props.field.primary && props.table.name == 'org_founder_map' ? true : props.readOnly ||
+      props.field.primary && props.table.name == 'Founders' ? true : props.readOnly ||
+      props.field.primary && props.table.name == 'organizations' ? true : props.readOnly ||
+      props.field.primary && props.table.name == 'person' ? true : props.readOnly "
       @update="(...args) => $options.methods.update(listeners, props, ...args)"
       @paste="(...args) => $options.methods.paste(listeners, props, ...args)"
       @edit="(...args) => $options.methods.edit(listeners, props, ...args)"

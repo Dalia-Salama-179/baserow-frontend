@@ -1,6 +1,12 @@
+<!-- edited By Ahmed Elsayed -->
 <template>
   <div class="grid-view__cell grid-field-many-to-many__cell active">
     <div class="grid-field-many-to-many__list">
+      <!-- {{$props}} -->
+      <!-- {{}}
+      {{publicGrid}}
+      {{readOnly}}
+      {{field.link_row_table}} -->
       <component
         :is="publicGrid || readOnly ? 'span' : 'a'"
         v-for="item in value"
@@ -32,7 +38,9 @@
         </a>
       </component>
       <a
-        v-if="!readOnly"
+        v-if="!readOnly && value.length < 1 && ( tableName == 'org_founder_map' || tableName == 'Founders' || tableName == 'organizations' )
+              || !readOnly && tableName != 'Founders' &&
+              tableName != 'org_founder_map' && tableName != 'organizations'  "
         class="
           grid-field-many-to-many__item grid-field-many-to-many__item--link
         "
@@ -40,6 +48,15 @@
       >
         <i class="fas fa-plus"></i>
       </a>
+      <!-- <a
+        v-else-if=""
+        class="
+          grid-field-many-to-many__item grid-field-many-to-many__item--link
+        "
+        @click.prevent="showModal()"
+      >
+        <i class="fas fa-plus"></i>
+      </a> -->
     </div>
     <SelectRowModal
       ref="selectModal"
@@ -58,7 +75,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
+import tableService from '@baserow/modules/database/services/table'
 import { isElement } from '@baserow/modules/core/utils/dom'
 import gridField from '@baserow/modules/database/mixins/gridField'
 import linkRowField from '@baserow/modules/database/mixins/linkRowField'
@@ -73,6 +90,7 @@ export default {
   data() {
     return {
       modalOpen: false,
+      tableName: '',
       itemLoadingId: -1,
     }
   },
@@ -83,6 +101,11 @@ export default {
         publicGrid: this.$options.propsData.storePrefix + 'view/grid/isPublic',
       }),
     }
+  },
+  async mounted(){
+    const { data } = await tableService(this.$client).get(this.$props.field.table_id);
+    // console.log(data);
+    this.tableName = data.name
   },
   methods: {
     select() {
