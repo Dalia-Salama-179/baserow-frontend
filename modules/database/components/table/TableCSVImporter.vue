@@ -148,13 +148,13 @@ export default {
       }
 
       const file = event.target.files[0]
-      const maxSize = 1024 * 1024 * 15
+      const maxSize = 1024 * 1024 * 150
 
       if (file.size > maxSize) {
         this.filename = ''
         this.values.data = ''
         this.error = this.$t('tableCSVImporter.limitFileSize', {
-          limit: 15,
+          limit: 150,
         })
         this.preview = {}
         this.$emit('input', this.value)
