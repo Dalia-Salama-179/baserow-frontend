@@ -220,6 +220,9 @@ import {
 } from '@baserow/modules/database/utils/view'
 import viewHelpers from '@baserow/modules/database/mixins/viewHelpers'
 import { isElement } from '@baserow/modules/core/utils/dom'
+import TableService from '@baserow/modules/database/services/table'
+import FieldService from '@baserow/modules/database/services/field'
+import RowService from '@baserow/modules/database/services/row'
 import viewDecoration from '@baserow/modules/database/mixins/viewDecoration'
 
 export default {
@@ -260,6 +263,12 @@ export default {
   data() {
     return {
       lastHoveredRow: null,
+      isField: null,
+      endSelect: null,
+      startSelect: null,
+      indexCol: 0,
+      isRow: null,
+      isNewValue: null,
       selectedRow: null,
       deletingRow: false,
       showHiddenFieldsInRowModal: false,
@@ -429,6 +438,8 @@ export default {
       // console.log('this.view',this.view);
       // console.log('this.primary',this.primary);
       // console.log('field',field);
+      // console.log('this.isField',this.isField);
+      // console.log('this.isNewValue',this.isNewValue);
       // console.log('row',row);
       // console.log('value',value);
       // console.log('oldValue',oldValue);
@@ -650,6 +661,12 @@ export default {
      * we might need to scroll a little bit.
      */
     selectedCell({ component, row, field }) {
+      // console.log('==============+++++++++++++++++++++++++++++++');
+      // console.log('component',component);
+      // console.log('row',row);
+      // console.log('field',field);
+      this.isField = field
+      this.isRow = {...row}
       const element = component.$el
       const verticalContainer = this.$refs.right.$refs.body
       const horizontalContainer = this.$refs.right.$el
@@ -826,6 +843,11 @@ export default {
      * selected cell.
      */
     multiSelectStart({ event, row, field }) {
+      this.startSelect = field
+      // this.indexCol = 1 + this.indexCol;
+      // console.log('========11111',this.indexCol);
+      // console.log('========',row);
+      // console.log('========',field);
       this.$store.dispatch(this.storePrefix + 'view/grid/multiSelectStart', {
         rowId: row.id,
         fieldIndex: this.visibleFields.findIndex((f) => f.id === field.id) + 1,
@@ -837,6 +859,7 @@ export default {
      * with the last cell hovered over.
      */
     multiSelectHold({ event, row, field }) {
+      // console.log('========> Hold',field);
       this.$store.dispatch(this.storePrefix + 'view/grid/multiSelectHold', {
         rowId: row.id,
         fieldIndex: this.visibleFields.findIndex((f) => f.id === field.id) + 1,
@@ -847,6 +870,8 @@ export default {
      * Stop multi-select.
      */
     multiSelectStop({ event, row, field }) {
+      // console.log('========> STOP',field);
+      this.endSelect = field
       this.$store.dispatch(
         this.storePrefix + 'view/grid/setMultiSelectHolding',
         false
@@ -873,6 +898,7 @@ export default {
       }
     },
     keyDownEvent(event) {
+      
       // Check if arrow key was pressed.
       if (
         this.$store.getters[
@@ -891,6 +917,7 @@ export default {
      * formatted as TSV
      */
     async exportMultiSelect(event) {
+      // console.log('========> exportMultiSelect',event);
       try {
         this.$store.dispatch('notification/setCopying', true)
         const output = await this.$store.dispatch(
@@ -915,6 +942,9 @@ export default {
      * needs to emit it up. This typically happens when multiple cell values are pasted.
      */
     async multiplePasteFromCell({ data, field, row }) {
+      // console.log(data,'data');
+      // console.log(field,'field');
+      // console.log(row,'row');
       const rowIndex = this.$store.getters[
         this.storePrefix + 'view/grid/getRowIndexById'
       ](row.id)
@@ -928,10 +958,85 @@ export default {
      * cells we can paste the data.
      */
     async pasteFromMultipleCellSelection(event) {
+      // console.log('event',event.clipboardData.getData('text'));
+      this.isNewValue = event.clipboardData.getData('text')
+      console.log(this.isField);
+      if(this.isField &&this.isField.type == "link_row"){
+        try {
+          const { data } = await RowService(this.$client).fetchAll({
+            tableId: this.isField.link_row_table,
+            search: this.isNewValue,
+          })
+          // console.log(data);
+          if(data.results.length){
+            // console.log(data.results[0]);
+            let obj = this.isRow[`field_${this.isField.id}`]
+            obj.unshift({
+              id:data.results[0].id,
+              value: data.results[0][Object.keys(data.results[0])[2]]
+            })
+            // console.log(obj);
+            let objUpdate = {
+              row:this.isRow,
+              field:this.isField,
+              value:obj,
+              oldValue: this.isRow[`field_${this.isField.id}`],
+            }
+            this.updateValue(objUpdate)
+            // console.log('44444444444444444444444444');
+          } else {
+            // console.log(this.isNewValue);
+            // console.log(this.isField);
+            try {
+                let before = null;
+                let values = {};
+                let isValueName = this.isNewValue
+                const table = await TableService(this.$client).get(this.isField.link_row_table);
+                const { data } = await FieldService(this.$client).fetchAll(
+                    this.isField.link_row_table
+                  )
+                  // console.log('=========================');
+                  // console.log(data);
+                let resultCreate = await this.$store.dispatch(this.storePrefix + 'view/grid/createNewRow',
+                    {
+                  view: this.view,
+                  table: table.data,
+                  // We need a list of all fields including the primary one here.
+                  fields: data,
+                  notInset: false,
+                  primary: data[0],
+                  isValueName,
+                  values,
+                  before,
+                }
+              )
+              // console.log(resultCreate);
+              let obj = this.isRow[`field_${this.isField.id}`]
+            obj.unshift({
+              id: resultCreate.id,
+              value: resultCreate[Object.keys(resultCreate)[2]]
+            })
+            let objUpdate = {
+              row:this.isRow,
+              field:this.isField,
+              value:obj,
+              oldValue: this.isRow[`field_${this.isField.id}`],
+            }
+            this.updateValue(objUpdate)
+            } catch (error) {
+              notifyIf(error, 'row')
+            }
+            
+            // console.log('6666666666666666666666666');
+          }
+        } catch (error) {
+          notifyIf(error, 'row')
+        }
+      }
       if (!this.isMultiSelectActive) {
         return
       }
-
+      // console.log('=========================================');
       const parsed = await this.$papa.parsePromise(
         event.clipboardData.getData('text'),
         { delimiter: '\t' }
@@ -946,15 +1051,19 @@ export default {
      * update is in progress.
      */
     async pasteData(data, rowIndex, fieldIndex) {
+       console.log(data,'data');
+      //  console.log(rowIndex,'rowIndex');
+      //  console.log(fieldIndex,'fieldIndex');
       // If the data is an empty array, we don't have to do anything because there is
       // nothing to update. If the view is in read only mode, we can't paste so not
       // doing anything.
       if (data.length === 0 || data[0].length === 0 || this.readOnly) {
         return
       }
-
+      console.log('ccccccccccccccccccccccccccccccccccccccccccccccc');
       this.$store.dispatch('notification/setPasting', true)
-
+      // console.log(this.leftFields);
+      console.log(this.leftFields.concat(this.visibleFields));
       try {
         await this.$store.dispatch(
           this.storePrefix + 'view/grid/updateDataIntoCells',

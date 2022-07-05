@@ -1287,7 +1287,7 @@ export const actions = {
    */
   async createNewRow(
     { commit, getters, dispatch },
-    { view, table, fields, primary, values = {}, before = null, notInset = true, isValues = false }
+    { view, table, fields, primary, values = {}, before = null, isValueName = null, notInset = true, isValues = false }
   ) {
     // Fill the not provided values with the empty value of the field type so we can
     // immediately commit the created row to the state.
@@ -1295,11 +1295,18 @@ export const actions = {
     const allFields = [primary].concat(fields)
     allFields.forEach((field) => {
       const name = `field_${field.id}`
-      const fieldType = this.$registry.get('field', field._.type.type)
+      // console.log('field', field);
+      const fieldType = this.$registry.get('field', field._ && field._.type && field._.type.type ? field._.type.type : field.type)
       if (!(name in values) && !isValues) {
         const empty = fieldType.getNewRowValue(field)
         if (field.name == 'aingel_id' && table.name == 'organizations') {
           values[name] = uuid()
+        } else if (isValueName !== null) {
+          if (field.primary) {
+            values[name] = isValueName
+          } else {
+            values[name] = empty
+          }
         } else {
           values[name] = empty
         }
@@ -1358,6 +1365,7 @@ export const actions = {
       dispatch('fetchAllFieldAggregationData', {
         view,
       })
+      return data
     } catch (error) {
       commit('DELETE_ROW_IN_BUFFER', row)
       throw error
@@ -1557,7 +1565,6 @@ export const actions = {
       values: { ...optimisticFieldValues },
     })
     dispatch('onRowChange', { view, row, fields, primary })
-
     const fieldType = this.$registry.get('field', field._.type.type)
     const newValue = fieldType.prepareValueForUpdate(field, value)
     const values = {}
@@ -1565,13 +1572,16 @@ export const actions = {
     if (field.name == 'organization' && value && value[0] && table.name == 'org_founder_map') {
       values[`field_${primary.id}`] = value[0].value
     }
-    console.log('table', table);
+    // console.log('table', table);
     // console.log('field', field);
     // console.log('row', row);
-    // console.log('values', values['field_422']);
+    // console.log('values', values);
     // console.log('value[0]', value[0]);
-    if (field.name == 'person_fk' && value && value[0] && table.name == 'Founders') {
-      values[`field_${primary.id}`] = `${row['field_314']}_${value[0].value}`
+    if (field.name == 'person' && value && value[0] && table.name == 'Founders') {
+      values[`field_${primary.id}`] = `${row['field_598'][0] ? row['field_598'][0].value : ''}_${value[0].value}`
+    }
+    if (field.name == 'organization_of_interest' && value && value[0] && table.name == 'Founders') {
+      values[`field_${primary.id}`] = `${value[0].value}_${row['field_441'][0] ? row['field_441'][0].value : ''}`
     }
     if (field.name == 'org_funder_map_fk' && value && value[0] && table.name == 'organizations') {
       values[`field_${primary.id}`] = value[0].value
