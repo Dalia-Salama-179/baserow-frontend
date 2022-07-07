@@ -266,6 +266,7 @@ export default {
       isField: null,
       endSelect: null,
       startSelect: null,
+      isRowStart: [],
       indexCol: 0,
       isRow: null,
       isNewValue: null,
@@ -339,6 +340,9 @@ export default {
     this.$bus.$on('field-deleted', this.fieldDeleted)
   },
   mounted() {
+    // console.log(this.$props.fields);
+    // console.log(this.$client).update(this.$props.fields[11].id);
+    // let update = await FieldService(this.$client).update(457);
     this.$el.resizeEvent = () => {
       const height = this.$refs.left.$refs.body.clientHeight
       this.$store.dispatch(
@@ -665,8 +669,8 @@ export default {
       // console.log('component',component);
       // console.log('row',row);
       // console.log('field',field);
-      this.isField = field
-      this.isRow = {...row}
+      this.isField = {...field}
+      if(row) this.isRow = {...row}
       const element = component.$el
       const verticalContainer = this.$refs.right.$refs.body
       const horizontalContainer = this.$refs.right.$el
@@ -727,6 +731,7 @@ export default {
      * When a cell is unselected need to change the selected state of the row.
      */
     unselectedCell({ row, field }) {
+      this.isRowStart = []
       // We want to change selected state of the row on the next tick because if another
       // cell within a row is selected, we want to wait for that selected state tot
       // change. This will make sure that the row is stays selected.
@@ -843,10 +848,12 @@ export default {
      * selected cell.
      */
     multiSelectStart({ event, row, field }) {
-      this.startSelect = field
+      this.isField = null
+      this.startSelect = {...field}
+      if(row)this.isRowStart.push({...row})
       // this.indexCol = 1 + this.indexCol;
-      // console.log('========11111',this.indexCol);
-      // console.log('========',row);
+      // console.log('========> Start',field);
+      // console.log('========> 00000',row);
       // console.log('========',field);
       this.$store.dispatch(this.storePrefix + 'view/grid/multiSelectStart', {
         rowId: row.id,
@@ -871,7 +878,9 @@ export default {
      */
     multiSelectStop({ event, row, field }) {
       // console.log('========> STOP',field);
-      this.endSelect = field
+      // console.log('========> STOP',row);
+      if(row) this.stopRow = row
+      if(field) this.endSelect = {...field}
       this.$store.dispatch(
         this.storePrefix + 'view/grid/setMultiSelectHolding',
         false
@@ -960,22 +969,20 @@ export default {
     async pasteFromMultipleCellSelection(event) {
       // console.log('event',event.clipboardData.getData('text'));
       this.isNewValue = event.clipboardData.getData('text')
-      console.log(this.isField);
-      if(this.isField &&this.isField.type == "link_row"){
+      // console.log(this.stopRow);
+      // console.log(this.isRow);
+      if(this.isField && this.isField.type == "link_row" && this.isRow && this.stopRow && this.isRow.id == this.stopRow.id){
         try {
           const { data } = await RowService(this.$client).fetchAll({
             tableId: this.isField.link_row_table,
             search: this.isNewValue,
           })
-          // console.log(data);
           if(data.results.length){
-            // console.log(data.results[0]);
             let obj = this.isRow[`field_${this.isField.id}`]
             obj.unshift({
               id:data.results[0].id,
               value: data.results[0][Object.keys(data.results[0])[2]]
             })
-            // console.log(obj);
             let objUpdate = {
               row:this.isRow,
               field:this.isField,
@@ -983,10 +990,7 @@ export default {
               oldValue: this.isRow[`field_${this.isField.id}`],
             }
             this.updateValue(objUpdate)
-            // console.log('44444444444444444444444444');
           } else {
-            // console.log(this.isNewValue);
-            // console.log(this.isField);
             try {
                 let before = null;
                 let values = {};
@@ -995,13 +999,10 @@ export default {
                 const { data } = await FieldService(this.$client).fetchAll(
                     this.isField.link_row_table
                   )
-                  // console.log('=========================');
-                  // console.log(data);
                 let resultCreate = await this.$store.dispatch(this.storePrefix + 'view/grid/createNewRow',
                     {
                   view: this.view,
                   table: table.data,
-                  // We need a list of all fields including the primary one here.
                   fields: data,
                   notInset: false,
                   primary: data[0],
@@ -1010,24 +1011,21 @@ export default {
                   before,
                 }
               )
-              // console.log(resultCreate);
               let obj = this.isRow[`field_${this.isField.id}`]
-            obj.unshift({
-              id: resultCreate.id,
-              value: resultCreate[Object.keys(resultCreate)[2]]
-            })
-            let objUpdate = {
-              row:this.isRow,
-              field:this.isField,
-              value:obj,
-              oldValue: this.isRow[`field_${this.isField.id}`],
-            }
-            this.updateValue(objUpdate)
-            } catch (error) {
-              notifyIf(error, 'row')
-            }
-            
-            // console.log('6666666666666666666666666');
+              obj.unshift({
+                id: resultCreate.id,
+                value: resultCreate[Object.keys(resultCreate)[2]]
+              })
+              let objUpdate = {
+                row:this.isRow,
+                field:this.isField,
+                value:obj,
+                oldValue: this.isRow[`field_${this.isField.id}`],
+              }
+              this.updateValue(objUpdate)
+              } catch (error) {
+                notifyIf(error, 'row')
+              }
           }
         } catch (error) {
           notifyIf(error, 'row')
@@ -1051,7 +1049,8 @@ export default {
      * update is in progress.
      */
     async pasteData(data, rowIndex, fieldIndex) {
-       console.log(data,'data');
+      //  console.log(data,'data');
+       let dataNew = [...data]
       //  console.log(rowIndex,'rowIndex');
       //  console.log(fieldIndex,'fieldIndex');
       // If the data is an empty array, we don't have to do anything because there is
@@ -1060,10 +1059,85 @@ export default {
       if (data.length === 0 || data[0].length === 0 || this.readOnly) {
         return
       }
-      console.log('ccccccccccccccccccccccccccccccccccccccccccccccc');
+      // console.log('this.startSelect',this.startSelect);
+      // console.log('this.endSelect',this.endSelect);
+      // console.log('this.isRowStart',this.isRowStart);
+      // console.log('this.this.$store.state',this.$store.state['page/view/grid']);
+      // console.log('this.this.$store.state',this.$store.state['page/view/grid'].multiSelectHeadRowIndex);
+      if(this.endSelect && this.startSelect && this.endSelect.type == this.startSelect.type && this.startSelect.type == 'link_row' ) {
+        const rows = this.$store.getters[this.storePrefix + 'view/grid/getAllRows']
+        // console.log('rows',rows);
+        let index = this.$store.state['page/view/grid'].multiSelectHeadRowIndex;
+        try {
+          for(let item in dataNew){
+            if(item != 0) index = index + 1
+          //  console.log('index',index);
+          //  console.log('dataNew',dataNew[item][0]);
+            const { data } = await RowService(this.$client).fetchAll({
+              tableId: this.startSelect.link_row_table,
+              search: dataNew[item][0],
+            })
+          if(data.results.length){
+            // console.log(data.results);
+            let obj = [...rows[index][`field_${this.startSelect.id}`]]
+            // console.log('obj>>>',obj);
+            obj.unshift({
+              id:data.results[0].id,
+              value: data.results[0][Object.keys(data.results[0])[2]]
+            })
+            // console.log('unshift >>>',obj);
+            let objUpdate = {
+              row:rows[index],
+              field:this.startSelect,
+              value:obj,
+              oldValue: rows[index][`field_${this.startSelect.id}`],
+            }
+            // console.log('objUpdate',objUpdate);
+            this.updateValue(objUpdate)
+          } else {
+            try {
+                let before = null;
+                let values = {};
+                let isValueName = dataNew[item][0]
+                const table = await TableService(this.$client).get(this.startSelect.link_row_table);
+                const { data } = await FieldService(this.$client).fetchAll(
+                    this.startSelect.link_row_table
+                  )
+                let resultCreate = await this.$store.dispatch(this.storePrefix + 'view/grid/createNewRow',
+                    {
+                  view: this.view,
+                  table: table.data,
+                  fields: data,
+                  notInset: false,
+                  primary: data[0],
+                  isValueName,
+                  values,
+                  before,
+                }
+              )
+              let obj = [...rows[index][`field_${this.startSelect.id}`]]
+              obj.unshift({
+                id: resultCreate.id,
+                value: resultCreate[Object.keys(resultCreate)[2]]
+              })
+              let objUpdate = {
+                row:rows[index],
+                field:this.startSelect,
+                value:obj,
+                oldValue: rows[index][`field_${this.startSelect.id}`],
+              }
+              this.updateValue(objUpdate)
+              } catch (error) {
+                notifyIf(error, 'row')
+              }
+          }
+          }
+        } catch (error) {
+          notifyIf(error, 'row')
+        }
+        return
+      }
       this.$store.dispatch('notification/setPasting', true)
-      // console.log(this.leftFields);
-      console.log(this.leftFields.concat(this.visibleFields));
       try {
         await this.$store.dispatch(
           this.storePrefix + 'view/grid/updateDataIntoCells',

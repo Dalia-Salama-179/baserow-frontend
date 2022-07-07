@@ -1630,14 +1630,16 @@ export const actions = {
     // head indexes of the multiple select.
     const rowHeadIndex = rowIndex || getters.getMultiSelectHeadRowIndex
     const fieldHeadIndex = fieldIndex || getters.getMultiSelectHeadFieldIndex
-
+    // console.log(getters.getMultiSelectHeadRowIndex);
+    // console.log(getters.getMultiSelectHeadFieldIndex);
     // Based on the data, we can figure out in which cells we must paste. Here we find
     // the maximum tail indexes.
     const rowTailIndex =
       Math.min(getters.getCount, rowHeadIndex + data.length) - 1
     const fieldTailIndex =
       Math.min(fields.length, fieldHeadIndex + data[0].length) - 1
-
+    // console.log(rowTailIndex);
+    // console.log(fieldTailIndex);
     // Expand the selection of the multiple select to the cells that we're going to
     // paste in, so the user can see which values have been updated. This is because
     // it could be that there are more or less values in the clipboard compared to
