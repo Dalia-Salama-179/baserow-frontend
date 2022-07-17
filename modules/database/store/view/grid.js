@@ -91,6 +91,7 @@ export const state = () => ({
    *   - The field and row index for the last cell selected, known as the tail.
    * All the cells between the head and tail cells are later also calculated as selected.
    */
+  rowIdFrist: '',
   multiSelectHeadRowIndex: -1,
   multiSelectHeadFieldIndex: -1,
   multiSelectTailRowIndex: -1,
@@ -335,6 +336,9 @@ export const mutations = {
   },
   SET_MULTISELECT_ACTIVE(state, value) {
     state.multiSelectActive = value
+  },
+  SET_MULTISELECT_ROWIDFRIST(state, value) {
+    state.rowIdFrist = value
   },
   CLEAR_MULTISELECT(state) {
     state.multiSelectHolding = false
@@ -1149,9 +1153,9 @@ export const actions = {
     commit('CLEAR_MULTISELECT')
     commit('SET_MULTISELECT_ACTIVE', false)
   },
-  multiSelectStart({ getters, commit }, { rowId, fieldIndex }) {
+  multiSelectStart({ getters, state, commit }, { rowId, fieldIndex }) {
     commit('CLEAR_MULTISELECT')
-
+    // console.log('rowId ===========> rowId', rowId);
     const rowIndex = getters.getRowIndexById(rowId)
     // Set the head and tail index to highlight the first cell
     commit('UPDATE_MULTISELECT', { position: 'head', rowIndex, fieldIndex })
@@ -1161,6 +1165,9 @@ export const actions = {
     commit('SET_MULTISELECT_HOLDING', true)
     // Do not enable multi-select if only a single cell is selected
     commit('SET_MULTISELECT_ACTIVE', false)
+    const bufferIndex = state.rows.findIndex((r) => r.id === rowId);
+    // // console.log('bufferIndex',bufferIndex);
+    commit('SET_MULTISELECT_ROWIDFRIST', bufferIndex)
   },
   multiSelectHold({ getters, commit }, { rowId, fieldIndex }) {
     if (getters.isMultiSelectHolding) {
@@ -2292,7 +2299,8 @@ export const getters = {
   // Get the index of a row given it's row id.
   // This will calculate the row index from the current buffer position and offset.
   getRowIndexById: (state, getters) => (rowId) => {
-    const bufferIndex = state.rows.findIndex((r) => r.id === rowId)
+    const bufferIndex = state.rows.findIndex((r) => r.id === rowId);
+    // console.log('bufferIndex', bufferIndex);
     if (bufferIndex !== -1) {
       return getters.getBufferStartIndex + bufferIndex
     }

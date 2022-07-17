@@ -1067,7 +1067,7 @@ export default {
       if(this.endSelect && this.startSelect && this.endSelect.type == this.startSelect.type && this.startSelect.type == 'link_row' ) {
         const rows = this.$store.getters[this.storePrefix + 'view/grid/getAllRows']
         // console.log('rows',rows);
-        let index = this.$store.state['page/view/grid'].multiSelectHeadRowIndex;
+        let index = this.$store.state['page/view/grid'].rowIdFrist;
         try {
           for(let item in dataNew){
             if(item != 0) index = index + 1
