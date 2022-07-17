@@ -1034,7 +1034,7 @@ export default {
       if (!this.isMultiSelectActive) {
         return
       }
-      console.log('=========================================');
+      // console.log('=========================================');
       const parsed = await this.$papa.parsePromise(
         event.clipboardData.getData('text'),
         { delimiter: '\t' }

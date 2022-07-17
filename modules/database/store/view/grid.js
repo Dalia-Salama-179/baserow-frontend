@@ -1771,17 +1771,19 @@ export const actions = {
     })
     dispatch('fetchAllFieldAggregationData', { view })
     if (limit == 0) {
-      let newArray = data.slice(rowsInOrder.length, data.length - 1);
-      // console.log('newArraynewArray', newArray);
+      let newArray = data.slice(rowsInOrder.length, data.length);
+      console.log('newArraynewArray', newArray);
       // console.log('fieldsInOrder', fieldsInOrder);
       newArray.forEach(async element => {
         // console.log(element[0]);
         // console.log(fieldsInOrder[0]);
-        let byField = fieldsInOrder[0]
-        let byValue = element[0]
-        let result = await dispatch('createNewRow', {
-          view, table, fields, primary, byField, byValue
-        });
+        if (element[0] != '') {
+          let byField = fieldsInOrder[0]
+          let byValue = element[0]
+          let result = await dispatch('createNewRow', {
+            view, table, fields, primary, byField, byValue
+          });
+        }
         // console.log('result', result);
       });
     }
