@@ -1294,7 +1294,7 @@ export const actions = {
    */
   async createNewRow(
     { commit, getters, dispatch },
-    { view, table, fields, primary, values = {}, before = null, isValueName = null, notInset = true, isValues = false }
+    { view, table, fields, primary, values = {}, byField = null, byValue = null, before = null, isValueName = null, notInset = true, isValues = false }
   ) {
     // Fill the not provided values with the empty value of the field type so we can
     // immediately commit the created row to the state.
@@ -1314,6 +1314,9 @@ export const actions = {
           } else {
             values[name] = empty
           }
+        } else if (byField && byValue && field.name == byField.name) {
+          // console.log('ccccccccccccccccccccccccccccccc');
+          values[`field_${byField.id}`] = byValue
         } else {
           values[name] = empty
         }
@@ -1688,6 +1691,12 @@ export const actions = {
     // prepended or appended to the `rowsInOrder`
     const startIndex = rowHeadIndex + rowsInOrder.length
     const limit = rowTailIndex - rowHeadIndex - rowsInOrder.length + 1
+    // console.log('startIndex', startIndex);
+    // console.log('rowTailIndex', rowTailIndex);
+    // console.log('rowHeadIndex', rowHeadIndex);
+    // console.log('rowsInOrder.length', rowsInOrder.length);
+    // console.log('startIndex', startIndex);
+    // console.log('limit', limit);
     if (limit > 0) {
       const rowsNotInBuffer = await dispatch('fetchRowsByIndex', {
         startIndex,
@@ -1699,6 +1708,7 @@ export const actions = {
           ? [...rowsNotInBuffer, ...rowsInOrder]
           : [...rowsInOrder, ...rowsNotInBuffer]
     }
+
 
     // Create a copy of the existing (old) rows, which are needed to create the
     // comparison when checking if the rows still matches the filters and position.
@@ -1724,7 +1734,7 @@ export const actions = {
         valuesForUpdate[rowIndex][fieldId] = newValue
       })
     })
-
+    // console.log('rowsInOrder', rowsInOrder);
     // We don't have to update the rows in the buffer before the request is being made
     // because we're showing a loading animation to the user indicating that the
     // rows are being updated.
@@ -1733,6 +1743,7 @@ export const actions = {
       valuesForUpdate
     )
     const updatedRows = responseData.items
+    // console.log('updatedRows', updatedRows);
 
     // Loop over the old rows, find the matching updated row and update them in the
     // buffer accordingly.
@@ -1759,6 +1770,21 @@ export const actions = {
       primary,
     })
     dispatch('fetchAllFieldAggregationData', { view })
+    if (limit == 0) {
+      let newArray = data.slice(rowsInOrder.length, data.length - 1);
+      // console.log('newArraynewArray', newArray);
+      // console.log('fieldsInOrder', fieldsInOrder);
+      newArray.forEach(async element => {
+        // console.log(element[0]);
+        // console.log(fieldsInOrder[0]);
+        let byField = fieldsInOrder[0]
+        let byValue = element[0]
+        let result = await dispatch('createNewRow', {
+          view, table, fields, primary, byField, byValue
+        });
+        // console.log('result', result);
+      });
+    }
   },
   /**
    * Called after an existing row has been updated, which could be by the user or

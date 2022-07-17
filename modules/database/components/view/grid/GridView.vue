@@ -1034,7 +1034,7 @@ export default {
       if (!this.isMultiSelectActive) {
         return
       }
-      // console.log('=========================================');
+      console.log('=========================================');
       const parsed = await this.$papa.parsePromise(
         event.clipboardData.getData('text'),
         { delimiter: '\t' }
@@ -1049,7 +1049,7 @@ export default {
      * update is in progress.
      */
     async pasteData(data, rowIndex, fieldIndex) {
-      //  console.log(data,'data');
+      //  console.log(data,'datxxxxxxxxxxxxxa');
        let dataNew = [...data]
       //  console.log(rowIndex,'rowIndex');
       //  console.log(fieldIndex,'fieldIndex');
@@ -1137,7 +1137,7 @@ export default {
         }
         return
       }
-      this.$store.dispatch('notification/setPasting', true)
+      this.$store.dispatch('notification/setPasting', true);
       try {
         await this.$store.dispatch(
           this.storePrefix + 'view/grid/updateDataIntoCells',
@@ -1152,6 +1152,7 @@ export default {
             fieldIndex,
           }
         )
+        // console.log(data,'datxxxxxxxxxxxxxa');
       } catch (error) {
         notifyIf(error)
       }
