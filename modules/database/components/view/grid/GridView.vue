@@ -423,6 +423,12 @@ export default {
     fieldsUpdated() {
       if(process.client) {
         localStorage.setItem('view',JSON.stringify(this.$props.view));
+        let obj = {
+          view: this.$props.view,
+          fields: this.$props.fields,
+          primary: this.$props.primary,
+        }
+        localStorage.setItem('refresh',JSON.stringify(obj));
       }
       const scrollbars = this.$refs.scrollbars
       // Vue can sometimes trigger this via watch before the child component

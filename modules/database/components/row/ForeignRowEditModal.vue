@@ -45,6 +45,10 @@ export default {
    async udate(event){
       // console.log('cccccccccccccccccccccc');
       // console.log(event);
+      // console.log(this.table);
+      // console.log(this.fields);
+      // console.log(this.primary);
+      // console.log(this.fetchedTableAndFields);
       let objs ={}
       objs[`field_${event.field.id}`] = event.value
       // console.log(objs);

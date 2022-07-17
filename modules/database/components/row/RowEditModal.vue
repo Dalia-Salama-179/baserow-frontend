@@ -200,6 +200,11 @@ export default {
      * notify the parent component to actually update the value.
      */
     update(context) {
+      // console.log('cccccccccccccccccccccccccccccc');
+      // console.log('cccccccccccccccccccccccccccccc',this.row);
+      // console.log('cccccccccccccccccccccccccccccc',this.rowExists);
+      // console.log('cccccccccccccccccccccccccccccc',this.rowId);
+      // console.log('cccccccccccccccccccccccccccccc',this.modalRow);
       context.table = this.table
       this.$emit('update', context)
     },
