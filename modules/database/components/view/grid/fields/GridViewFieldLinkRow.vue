@@ -2,6 +2,7 @@
 <template>
   <div class="grid-view__cell grid-field-many-to-many__cell active">
     <div class="grid-field-many-to-many__list">
+      <!-- {{props}}  -->
       <!-- {{props.table}} -->
       <!-- {{}}
       {{publicGrid}}

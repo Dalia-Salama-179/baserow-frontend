@@ -479,7 +479,8 @@
     "gridViewRow": {
         "rowNotMatchingFilters": "Row does not match filters",
         "rowNotMatchingSearch": "Row does not match search",
-        "rowHasMoved": "Row has moved"
+        "rowHasMoved": "Row has moved",
+        "rowHasDuplicated": "Row has duplicated"
     },
     "gridView": {
         "insertRowAbove": "Insert row above",

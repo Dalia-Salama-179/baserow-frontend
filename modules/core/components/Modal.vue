@@ -116,8 +116,14 @@ export default {
   },
   methods:{
     render(){
-      let refresh = JSON.parse(localStorage.getItem('refresh'));
-      this.$store.dispatch('page/view/grid/refresh', refresh)
+      // console.log('ccccccccccccc');
+      // console.log(this.open);
+      setTimeout(() => {
+        if(!this.open){
+          let refresh = JSON.parse(localStorage.getItem('refresh'));
+          this.$store.dispatch('page/view/grid/refresh', refresh)
+        }
+      }, 1000);
     }
   }
 }

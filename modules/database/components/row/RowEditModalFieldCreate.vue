@@ -40,7 +40,7 @@
       :is="getFieldComponent(field.type)"
       ref="field"
       :field="field"
-      :value="value && value[0] && value[`field_${field.id}`] != 'undefined' ? value[0][`field_${field.id}`] : field.type != 'boolean'?[]:''"
+      :value="value && value[0] && value[`field_${field.id}`] != 'undefined' ? value[0][`field_${field.id}`] : field.type != 'boolean'? field.name == 'aingel_id' ? uuid : [] : '' "
       :read-only="readOnly"
       @update="update"
     />
@@ -49,12 +49,13 @@
 
 <script>
 import FieldContext from '@baserow/modules/database/components/field/FieldContext'
-
+import { uuid } from '@baserow/modules/core/utils/string'
 export default {
   name: 'RowEditModalField',
   components: { FieldContext },
   data() {
     return {
+      uuid: uuid()
     }
   },
   props: {

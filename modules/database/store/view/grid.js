@@ -410,14 +410,22 @@ export const mutations = {
       state.rows.splice(index, 0, state.rows.splice(oldIndex, 1)[0])
     }
   },
-  UPDATE_ROW_IN_BUFFER(state, { row, values, metadata = false }) {
-    const index = state.rows.findIndex((item) => item.id === row.id)
+  UPDATE_ROW_IN_BUFFER(state, { row, values, isD, metadata = false }) {
+    const index = state.rows.findIndex((item) => item.id === row.id);
+    // console.log('==========================');
+    // console.log(row);
+    // console.log(isD);
     if (index !== -1) {
-      const existingRowState = state.rows[index]
+      let existingRowState = state.rows[index]
       Object.assign(existingRowState, values)
       if (metadata) {
         existingRowState._.metadata = metadata
       }
+      if (row.duplicated) {
+        existingRowState._.duplicated = true
+        Object.assign(existingRowState, existingRowState)
+      }
+      // console.log(state.rows[index]);
     }
   },
   UPDATE_ROW_FIELD_VALUE(state, { row, field, value }) {
@@ -1536,6 +1544,27 @@ export const actions = {
     { commit, dispatch },
     { table, view, row, field, fields, primary, value, oldValue }
   ) {
+    if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
+      const { data } = await RowService(this.$client).fetchAll({
+        tableId: table.id,
+        search: value[0].value,
+      });
+      if (data.results.length) {
+        let newArray = [...data.results]
+        let bigCities = newArray.filter(function (e) {
+          return e['field_357'] === value[0].value;
+        });
+        // console.log(bigCities);
+        // for (let i = 0; i < newArray.length; i++) {
+        //   if (cities[i].population > 3000000) {
+        //       bigCities.push(cities[i]);
+        //   }
+        if (bigCities.length) {
+          // console.log("data > search", data);
+          row.duplicated = true
+        }
+      }
+    }
     // Immediately updated the store with the updated row field
     // value.
     commit('UPDATE_ROW_FIELD_VALUE', { row, field, value })
@@ -1593,7 +1622,15 @@ export const actions = {
     if (field.name == 'organization_of_interest' && value && value[0] && table.name == 'Founders') {
       values[`field_${primary.id}`] = `${value[0].value}_${row['field_441'][0] ? row['field_441'][0].value : ''}`
     }
-    if (field.name == 'org_funder_map_fk' && value && value[0] && table.name == 'organizations') {
+    if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
+      // const { data } = await RowService(this.$client).fetchAll({
+      //   tableId: table.id,
+      //   search: value[0].value,
+      // });
+      // if (data.results.length) {
+      //   console.log("data > search", data);
+      //   row.duplicated = true
+      // }
       values[`field_${primary.id}`] = value[0].value
     }
     if (field.name == 'first_name' && value && value[0] && table.name == 'person') {
@@ -1605,13 +1642,13 @@ export const actions = {
     if (field.name == 'last_name' && value && value[0] && table.name == 'person') {
       values[`field_${primary.id}`] = `${row['field_418']}_${values['field_419']}*${row['field_422']}`
     }
-    // console.log(values);
     try {
       const updatedRow = await RowService(this.$client).update(
         table.id,
         row.id,
         values
       )
+      // console.log(row);
       commit('UPDATE_ROW_IN_BUFFER', { row, values: updatedRow.data })
       dispatch('onRowChange', { view, row, fields, primary })
       dispatch('fetchAllFieldAggregationData', {
@@ -1626,6 +1663,7 @@ export const actions = {
       dispatch('onRowChange', { view, row, fields, primary })
       throw error
     }
+    // commit('UPDATE_ROW_IN_BUFFER', { row, isD: true })
   },
   /**
    * This action is used by the grid view to change multiple cells when pasting

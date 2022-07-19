@@ -8,6 +8,7 @@
       }))
     "
   >
+  
   <!-- 'grid-view__row--warning':
           !row._.matchFilters || !row._.matchSortings || !row._.matchSearch, -->
     <div
@@ -17,7 +18,7 @@
         'grid-view__row--loading': row._.loading,
         'grid-view__row--hover': row._.hover,
         'grid-view__row--warning':
-          !row._.matchFilters || !row._.matchSearch,
+          !row._.matchFilters || !row._.matchSearch || row._.duplicated,
       }"
       @mouseover="$emit('row-hover', { row, value: true })"
       @mouseleave="$emit('row-hover', { row, value: false })"
@@ -27,7 +28,7 @@
       <template v-if="includeRowDetails">
         <div
           v-if="
-            !row._.matchFilters || !row._.matchSearch
+            !row._.matchFilters || !row._.matchSearch || row._.duplicated
           "
           class="grid-view__row-warning"
         >
@@ -37,10 +38,14 @@
           <template v-else-if="!row._.matchSearch">
             {{ $t('gridViewRow.rowNotMatchingSearch') }}
           </template>
+           <template v-else-if="row._.duplicated">{{
+            $t('gridViewRow.rowHasDuplicated')
+          }}</template>
           <!-- <template v-else-if="!row._.matchSortings">{{
             $t('gridViewRow.rowHasMoved')
           }}</template> -->
         </div>
+        <!-- {{row}}dd -->
         <div
           class="grid-view__column"
           :style="{ width: gridViewRowDetailsWidth + 'px' }"

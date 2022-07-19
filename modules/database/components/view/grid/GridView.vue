@@ -984,18 +984,25 @@ export default {
             search: this.isNewValue,
           })
           if(data.results.length){
-            let obj = this.isRow[`field_${this.isField.id}`]
-            obj.unshift({
-              id:data.results[0].id,
-              value: data.results[0][Object.keys(data.results[0])[2]]
-            })
-            let objUpdate = {
-              row:this.isRow,
-              field:this.isField,
-              value:obj,
-              oldValue: this.isRow[`field_${this.isField.id}`],
+            let newArray = [...data.results]
+            let bigCities = newArray.filter(function (e) {
+              return e['field_412'] === this.isNewValue;
+            });
+            // console.log(bigCities);
+            if(bigCities.length){
+              let obj = this.isRow[`field_${this.isField.id}`]
+              obj.unshift({
+                id:bigCities[bigCities.length-1].id,
+                value: bigCities[bigCities.length-1][Object.keys(bigCities[bigCities.length-1])[2]]
+              })
+              let objUpdate = {
+                row:this.isRow,
+                field:this.isField,
+                value:obj,
+                oldValue: this.isRow[`field_${this.isField.id}`],
+              }
+              this.updateValue(objUpdate)
             }
-            this.updateValue(objUpdate)
           } else {
             try {
                 let before = null;
@@ -1068,6 +1075,7 @@ export default {
       // console.log('this.startSelect',this.startSelect);
       // console.log('this.endSelect',this.endSelect);
       // console.log('this.isRowStart',this.isRowStart);
+      
       // console.log('this.this.$store.state',this.$store.state['page/view/grid']);
       // console.log('this.this.$store.state',this.$store.state['page/view/grid'].multiSelectHeadRowIndex);
       if(this.endSelect && this.startSelect && this.endSelect.type == this.startSelect.type && this.startSelect.type == 'link_row' ) {
@@ -1079,17 +1087,24 @@ export default {
             if(item != 0) index = index + 1
           //  console.log('index',index);
           //  console.log('dataNew',dataNew[item][0]);
-            const { data } = await RowService(this.$client).fetchAll({
-              tableId: this.startSelect.link_row_table,
-              search: dataNew[item][0],
-            })
+          const { data } = await RowService(this.$client).fetchAll({
+            tableId: this.startSelect.link_row_table,
+            search: dataNew[item][0],
+          })
           if(data.results.length){
+            // console.log('rows[index]',Object.keys(data.results[0])[2]);
+            let newArray = [...data.results]
+            let bigCities = newArray.filter(function (e) {
+              return e[`${Object.keys(data.results[0])[2]}`] === dataNew[item][0];
+            });
+            //  console.log(bigCities);
+            if(bigCities.length){
             // console.log(data.results);
             let obj = [...rows[index][`field_${this.startSelect.id}`]]
             // console.log('obj>>>',obj);
             obj.unshift({
-              id:data.results[0].id,
-              value: data.results[0][Object.keys(data.results[0])[2]]
+              id:bigCities[bigCities.length-1].id,
+              value: bigCities[bigCities.length-1][Object.keys(bigCities[bigCities.length-1])[2]]
             })
             // console.log('unshift >>>',obj);
             let objUpdate = {
@@ -1100,6 +1115,7 @@ export default {
             }
             // console.log('objUpdate',objUpdate);
             this.updateValue(objUpdate)
+          }
           } else {
             try {
                 let before = null;
