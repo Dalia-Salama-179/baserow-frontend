@@ -3,7 +3,7 @@
     v-if="open"
     ref="modalWrapper"
     class="modal__wrapper"
-    @click="outside($event),render()"
+    @click="outside($event),render($event)"
   >
     <div
       class="modal__box"
@@ -28,7 +28,7 @@
           :class="{ 'modal__box-content--scrollable': contentScrollable }"
         >
           <slot name="content"></slot>
-          <a v-if="closeButton" class="modal__close" @click="hide(),render()">
+          <a v-if="closeButton" class="modal__close" @click="hide(),render($event,'close')">
             <i class="fas fa-times"></i>
           </a>
         </div>
@@ -115,15 +115,16 @@ export default {
     },
   },
   methods:{
-    render(){
+    render(event,close){
       // console.log('ccccccccccccc');
       // console.log(this.open);
-      setTimeout(() => {
-        if(!this.open){
+      if (event.target === this.$refs.modalWrapper || close) {
+      // setTimeout(() => {
+      //   if(!this.open){
           let refresh = JSON.parse(localStorage.getItem('refresh'));
           this.$store.dispatch('page/view/grid/refresh', refresh)
         }
-      }, 1000);
+      // }, 1000);
     }
   }
 }

@@ -423,7 +423,7 @@ export const mutations = {
       }
       if (row.duplicated) {
         existingRowState._.duplicated = true
-        Object.assign(existingRowState, existingRowState)
+        // state.rows[index] = existingRowState
       }
       // console.log(state.rows[index]);
     }
@@ -1359,7 +1359,7 @@ export const actions = {
     // Populate the row and set the loading state to indicate that the row has not
     // yet been added.
     const row = Object.assign({}, values)
-    populateRow(row)
+    await populateRow(row)
     row.id = uuid()
     row.order = order
     row._.loading = true
@@ -1379,8 +1379,8 @@ export const actions = {
         order: data.order,
         values: data,
       })
-      dispatch('onRowChange', { view, row, fields, primary })
-      dispatch('fetchAllFieldAggregationData', {
+      await dispatch('onRowChange', { view, row, fields, primary })
+      await dispatch('fetchAllFieldAggregationData', {
         view,
       })
       return data
@@ -1810,7 +1810,7 @@ export const actions = {
     dispatch('fetchAllFieldAggregationData', { view })
     if (limit == 0) {
       let newArray = data.slice(rowsInOrder.length, data.length);
-      console.log('newArraynewArray', newArray);
+      // console.log('newArraynewArray', newArray);
       // console.log('fieldsInOrder', fieldsInOrder);
       newArray.forEach(async element => {
         // console.log(element[0]);
