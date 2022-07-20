@@ -414,7 +414,7 @@ export const mutations = {
     const index = state.rows.findIndex((item) => item.id === row.id);
     // console.log('==========================');
     // console.log(row);
-    // console.log(isD);
+    // console.log(values);
     if (index !== -1) {
       let existingRowState = state.rows[index]
       Object.assign(existingRowState, values)
@@ -1544,7 +1544,11 @@ export const actions = {
     { commit, dispatch },
     { table, view, row, field, fields, primary, value, oldValue }
   ) {
+    // console.log('row = row = row', row);
+    // console.log('field = field = field', field);
     if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
+      // console.log('row = row = row', row);
+      // console.log('value = value = value', value);
       const { data } = await RowService(this.$client).fetchAll({
         tableId: table.id,
         search: value[0].value,
@@ -1554,13 +1558,41 @@ export const actions = {
         let bigCities = newArray.filter(function (e) {
           return e['field_357'] === value[0].value;
         });
-        // console.log(bigCities);
-        // for (let i = 0; i < newArray.length; i++) {
-        //   if (cities[i].population > 3000000) {
-        //       bigCities.push(cities[i]);
-        //   }
         if (bigCities.length) {
-          // console.log("data > search", data);
+          row.duplicated = true
+        }
+      }
+    }
+    if (table.name == 'organizations' && field.name == 'Name' || table.name == 'organizations' && field.name == 'Name' && value && value[0]) {
+      // console.log('row = row = row', row);
+      // console.log('value = value = value', value);
+      const { data } = await RowService(this.$client).fetchAll({
+        tableId: table.id,
+        search: value[0] && value[0].value ? value[0].value : value,
+      });
+      if (data.results.length) {
+        let newArray = [...data.results]
+        let bigCities = newArray.filter(function (e) {
+          return e['field_357'] === value[0] && value[0].value ? value[0].value : value && e['field_604'] === row['field_604'];
+        });
+        if (bigCities.length) {
+          row.duplicated = true
+        }
+      }
+    }
+    if (table.name == 'organizations' && field.name == 'org_crunchbase_url' || table.name == 'organizations' && field.name == 'org_crunchbase_url' && value && value[0]) {
+      // console.log('row = row = row', row);
+      // console.log('value = value = value', value);
+      const { data } = await RowService(this.$client).fetchAll({
+        tableId: table.id,
+        search: value[0] && value[0].value ? value[0].value : value,
+      });
+      if (data.results.length) {
+        let newArray = [...data.results]
+        let bigCities = newArray.filter(function (e) {
+          return e['field_604'] === value[0] && value[0].value ? value[0].value : value && e['field_357'] === row['field_357'];
+        });
+        if (bigCities.length) {
           row.duplicated = true
         }
       }
@@ -1729,8 +1761,8 @@ export const actions = {
     // prepended or appended to the `rowsInOrder`
     const startIndex = rowHeadIndex + rowsInOrder.length
     const limit = rowTailIndex - rowHeadIndex - rowsInOrder.length + 1
-    // console.log('startIndex', startIndex);
-    // console.log('rowTailIndex', rowTailIndex);
+    console.log('startIndex', startIndex);
+    console.log('rowTailIndex', rowTailIndex);
     // console.log('rowHeadIndex', rowHeadIndex);
     // console.log('rowsInOrder.length', rowsInOrder.length);
     // console.log('startIndex', startIndex);
@@ -1758,7 +1790,7 @@ export const actions = {
     rowsInOrder.forEach((row, rowIndex) => {
       valuesForUpdate[rowIndex] = { id: row.id }
 
-      fieldsInOrder.forEach((field, fieldIndex) => {
+      fieldsInOrder.forEach(async (field, fieldIndex) => {
         // We can't pre-filter because we need the correct filter index.
         if (field._.type.isReadOnly) {
           return
@@ -1770,6 +1802,7 @@ export const actions = {
         const preparedValue = fieldType.prepareValueForPaste(field, value)
         const newValue = fieldType.prepareValueForUpdate(field, preparedValue)
         valuesForUpdate[rowIndex][fieldId] = newValue
+
       })
     })
     // console.log('rowsInOrder', rowsInOrder);
@@ -1788,9 +1821,11 @@ export const actions = {
     for (const row of oldRowsInOrder) {
       // The values are the updated row returned by the response.
       const values = updatedRows.find((updatedRow) => updatedRow.id === row.id)
+      if (duplicated) row.duplicated = true
       // Calling the updatedExistingRow will automatically remove the row from the
       // view if it doesn't matter the filters anymore and it will also be moved to
       // the right position if changed.
+      // console.log('rowrowrowrow', row);
       await dispatch('updatedExistingRow', {
         view,
         fields,
