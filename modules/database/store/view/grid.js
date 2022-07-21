@@ -1706,6 +1706,8 @@ export const actions = {
     { getters, commit, dispatch },
     { table, view, primary, fields, getScrollTop, data, rowIndex, fieldIndex }
   ) {
+    let duplicated = {};
+    let objValues = {};
     // If the origin origin row and field index are not provided, we need to use the
     // head indexes of the multiple select.
     const rowHeadIndex = rowIndex || getters.getMultiSelectHeadRowIndex
@@ -1761,8 +1763,8 @@ export const actions = {
     // prepended or appended to the `rowsInOrder`
     const startIndex = rowHeadIndex + rowsInOrder.length
     const limit = rowTailIndex - rowHeadIndex - rowsInOrder.length + 1
-    console.log('startIndex', startIndex);
-    console.log('rowTailIndex', rowTailIndex);
+    // console.log('startIndex', startIndex);
+    // console.log('rowTailIndex', rowTailIndex);
     // console.log('rowHeadIndex', rowHeadIndex);
     // console.log('rowsInOrder.length', rowsInOrder.length);
     // console.log('startIndex', startIndex);
@@ -1787,22 +1789,45 @@ export const actions = {
     const valuesForUpdate = []
 
     // Prepare the values for update and update the row objects.
-    rowsInOrder.forEach((row, rowIndex) => {
+    await rowsInOrder.forEach((row, rowIndex) => {
       valuesForUpdate[rowIndex] = { id: row.id }
-
       fieldsInOrder.forEach(async (field, fieldIndex) => {
         // We can't pre-filter because we need the correct filter index.
         if (field._.type.isReadOnly) {
           return
         }
-
         const fieldId = `field_${field.id}`
         const value = data[rowIndex][fieldIndex]
         const fieldType = this.$registry.get('field', field._.type.type)
         const preparedValue = fieldType.prepareValueForPaste(field, value)
         const newValue = fieldType.prepareValueForUpdate(field, preparedValue)
         valuesForUpdate[rowIndex][fieldId] = newValue
-
+        // console.log('======================================');
+        // console.log('field', field);
+        // console.log('table', table);
+        // console.log('row', row);
+        // console.log('newValue', newValue);
+        if (table.name == 'organizations' && field.name == 'org_crunchbase_url') {
+          const { data } = await RowService(this.$client).fetchAll({
+            tableId: table.id,
+            search: newValue,
+          });
+          if (data.results.length) {
+            let newArray = [...data.results];
+            // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+            // console.log(newArray);
+            let bigCities = newArray.filter(function (e) {
+              return e['field_604'] === newValue && e['field_357'] === row['field_357'];
+            });
+            // console.log(bigCities);
+            if (bigCities.length || objValues === newValue) {
+              // console.log('duplicated');
+              duplicated[row.id] = true;
+            }
+            objValues = newValue
+            return
+          }
+        }
       })
     })
     // console.log('rowsInOrder', rowsInOrder);
@@ -1821,7 +1846,10 @@ export const actions = {
     for (const row of oldRowsInOrder) {
       // The values are the updated row returned by the response.
       const values = updatedRows.find((updatedRow) => updatedRow.id === row.id)
-      if (duplicated) row.duplicated = true
+      // console.log('duplicatedrowrowrow', row.id);
+      // console.log('duplicatedvaluesvalues', duplicated[row.id]);
+      // console.log('duplicatedvaluesvalues', Object.keys(duplicated)[row.id]);
+      if (duplicated[row.id]) row.duplicated = true
       // Calling the updatedExistingRow will automatically remove the row from the
       // view if it doesn't matter the filters anymore and it will also be moved to
       // the right position if changed.
