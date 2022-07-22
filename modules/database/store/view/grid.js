@@ -1556,7 +1556,7 @@ export const actions = {
       if (data.results.length) {
         let newArray = [...data.results]
         let bigCities = newArray.filter(function (e) {
-          return e['field_357'] === value[0].value;
+          return e['field_357'] === value[0].value && e['field_604'] === row['field_604'];
         });
         if (bigCities.length) {
           row.duplicated = true
@@ -1707,7 +1707,7 @@ export const actions = {
     { table, view, primary, fields, getScrollTop, data, rowIndex, fieldIndex }
   ) {
     let duplicated = {};
-    let objValues = {};
+    let rowsNew = [];
     // If the origin origin row and field index are not provided, we need to use the
     // head indexes of the multiple select.
     const rowHeadIndex = rowIndex || getters.getMultiSelectHeadRowIndex
@@ -1802,11 +1802,19 @@ export const actions = {
         const preparedValue = fieldType.prepareValueForPaste(field, value)
         const newValue = fieldType.prepareValueForUpdate(field, preparedValue)
         valuesForUpdate[rowIndex][fieldId] = newValue
-        // console.log('======================================');
-        // console.log('field', field);
-        // console.log('table', table);
-        // console.log('row', row);
-        // console.log('newValue', newValue);
+        var resultIndex = rowsNew.findIndex(obj => {
+          return obj.id === row.id
+        })
+        let newEle;
+        if (resultIndex == -1) {
+          newEle = { ...row }
+          newEle[fieldId] = newValue
+          rowsNew.push(newEle);
+        } else {
+          newEle = rowsNew[resultIndex]
+          newEle[fieldId] = newValue
+          rowsNew[resultIndex] = newEle
+        }
         if (table.name == 'organizations' && field.name == 'org_crunchbase_url') {
           const { data } = await RowService(this.$client).fetchAll({
             tableId: table.id,
@@ -1814,17 +1822,41 @@ export const actions = {
           });
           if (data.results.length) {
             let newArray = [...data.results];
-            // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-            // console.log(newArray);
             let bigCities = newArray.filter(function (e) {
-              return e['field_604'] === newValue && e['field_357'] === row['field_357'];
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '';
+              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '';
+            });
+            // console.log(rowsNew);
+            let resultNew = rowsNew.filter(function (e) {
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '';
+              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '';
             });
             // console.log(bigCities);
-            if (bigCities.length || objValues === newValue) {
-              // console.log('duplicated');
+            // console.log(resultNew);
+            if (bigCities.length || resultNew.length) {
               duplicated[row.id] = true;
             }
-            objValues = newValue
+            return
+          }
+        }
+        if (table.name == 'organizations' && field.name == 'Name') {
+          const { data } = await RowService(this.$client).fetchAll({
+            tableId: table.id,
+            search: newValue,
+          });
+          if (data.results.length) {
+            let newArray = [...data.results];
+            let bigCities = newArray.filter(function (e) {
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '';
+              else return e['field_357'] === newValue && e['field_604'] === row['field_604'];
+            });
+            let resultNew = rowsNew.filter(function (e) {
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '';
+              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '';
+            });
+            if (bigCities.length || resultNew.length) {
+              duplicated[row.id] = true;
+            }
             return
           }
         }
