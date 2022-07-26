@@ -423,7 +423,11 @@ export const mutations = {
       }
       if (row.duplicated) {
         existingRowState._.duplicated = true
+        existingRowState['field_363'] = true
         // state.rows[index] = existingRowState
+      } else {
+        existingRowState._.duplicated = false
+        existingRowState['field_363'] = false
       }
       // console.log(state.rows[index]);
     }
@@ -1383,7 +1387,9 @@ export const actions = {
       await dispatch('fetchAllFieldAggregationData', {
         view,
       })
-      return data
+      let newData = { ...data }
+      newData['_'] = row._
+      return newData
     } catch (error) {
       commit('DELETE_ROW_IN_BUFFER', row)
       throw error
@@ -1556,7 +1562,7 @@ export const actions = {
       if (data.results.length) {
         let newArray = [...data.results]
         let bigCities = newArray.filter(function (e) {
-          return e['field_357'] === value[0].value && e['field_604'] === row['field_604'];
+          return e['field_357'] === value[0].value && e['field_604'] === row['field_604'] && e['field_357'] != '' && row['field_357'] != '' && e['field_604'] != '';
         });
         if (bigCities.length) {
           row.duplicated = true
@@ -1638,7 +1644,7 @@ export const actions = {
     dispatch('onRowChange', { view, row, fields, primary })
     const fieldType = this.$registry.get('field', field._.type.type)
     const newValue = fieldType.prepareValueForUpdate(field, value)
-    const values = {}
+    const values = {};
     values[`field_${field.id}`] = newValue
     if (field.name == 'organization' && value && value[0] && table.name == 'org_founder_map') {
       values[`field_${primary.id}`] = value[0].value
@@ -1663,6 +1669,7 @@ export const actions = {
       //   console.log("data > search", data);
       //   row.duplicated = true
       // }
+      // console.log(`field_${primary.id}`);
       values[`field_${primary.id}`] = value[0].value
     }
     if (field.name == 'first_name' && value && value[0] && table.name == 'person') {
@@ -1675,6 +1682,8 @@ export const actions = {
       values[`field_${primary.id}`] = `${row['field_418']}_${values['field_419']}*${row['field_422']}`
     }
     try {
+      if (row.duplicated) values['field_363'] = true
+      else values['field_363'] = false
       const updatedRow = await RowService(this.$client).update(
         table.id,
         row.id,
@@ -1835,6 +1844,23 @@ export const actions = {
             // console.log(resultNew);
             if (bigCities.length || resultNew.length) {
               duplicated[row.id] = true;
+              let values = {};
+              values['field_363'] = true
+              const updatedRow = await RowService(this.$client).update(
+                table.id,
+                row.id,
+                values
+              )
+              // console.log(updatedRow);
+            } else {
+              duplicated[row.id] = false;
+              let values = {};
+              values['field_363'] = false
+              const updatedRow = await RowService(this.$client).update(
+                table.id,
+                row.id,
+                values
+              )
             }
             return
           }
@@ -1848,7 +1874,7 @@ export const actions = {
             let newArray = [...data.results];
             let bigCities = newArray.filter(function (e) {
               if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '';
-              else return e['field_357'] === newValue && e['field_604'] === row['field_604'];
+              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '';
             });
             let resultNew = rowsNew.filter(function (e) {
               if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '';
@@ -1856,13 +1882,30 @@ export const actions = {
             });
             if (bigCities.length || resultNew.length) {
               duplicated[row.id] = true;
+              let values = {};
+              values['field_363'] = true;
+              const updatedRow = await RowService(this.$client).update(
+                table.id,
+                row.id,
+                values
+              )
+              // console.log(updatedRow);
+            } else {
+              duplicated[row.id] = false;
+              let values = {};
+              values['field_363'] = false
+              const updatedRow = await RowService(this.$client).update(
+                table.id,
+                row.id,
+                values
+              )
             }
             return
           }
         }
       })
     })
-    // console.log('rowsInOrder', rowsInOrder);
+    // console.log('valuesForUpdate', valuesForUpdate);
     // We don't have to update the rows in the buffer before the request is being made
     // because we're showing a loading animation to the user indicating that the
     // rows are being updated.
@@ -1878,10 +1921,14 @@ export const actions = {
     for (const row of oldRowsInOrder) {
       // The values are the updated row returned by the response.
       const values = updatedRows.find((updatedRow) => updatedRow.id === row.id)
-      // console.log('duplicatedrowrowrow', row.id);
+      // console.log('duplicatedrowrowrow', row);
       // console.log('duplicatedvaluesvalues', duplicated[row.id]);
       // console.log('duplicatedvaluesvalues', Object.keys(duplicated)[row.id]);
       if (duplicated[row.id]) row.duplicated = true
+      else row.duplicated = false
+      if (duplicated[row.id]) row['field_363'] = true
+      else row['field_363'] = false
+      // console.log('duplicated row row row', row);
       // Calling the updatedExistingRow will automatically remove the row from the
       // view if it doesn't matter the filters anymore and it will also be moved to
       // the right position if changed.

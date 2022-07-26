@@ -18,7 +18,8 @@
         'grid-view__row--loading': row._.loading,
         'grid-view__row--hover': row._.hover,
         'grid-view__row--warning':
-          !row._.matchFilters || !row._.matchSearch || row._.duplicated,
+          !row._.matchFilters || !row._.matchSearch || 
+          row._.duplicated || row['field_363'],
       }"
       @mouseover="$emit('row-hover', { row, value: true })"
       @mouseleave="$emit('row-hover', { row, value: false })"
@@ -28,7 +29,8 @@
       <template v-if="includeRowDetails">
         <div
           v-if="
-            !row._.matchFilters || !row._.matchSearch || row._.duplicated
+            !row._.matchFilters || !row._.matchSearch || 
+            row._.duplicated || row['field_363']
           "
           class="grid-view__row-warning"
         >
@@ -38,7 +40,7 @@
           <template v-else-if="!row._.matchSearch">
             {{ $t('gridViewRow.rowNotMatchingSearch') }}
           </template>
-           <template v-else-if="row._.duplicated">{{
+           <template v-else-if="row._.duplicated || row['field_363']">{{
             $t('gridViewRow.rowHasDuplicated')
           }}</template>
           <!-- <template v-else-if="!row._.matchSortings">{{
@@ -89,6 +91,7 @@
       everything up because the rows don't need to be updated everytime a new one is
       rendered, which happens a lot when scrolling.
       -->
+      <!-- {{fieldsToRender}} -->
       <GridViewCell
         v-for="field in fieldsToRender"
         :table="table"
