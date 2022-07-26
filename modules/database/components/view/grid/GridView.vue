@@ -672,6 +672,11 @@ export default {
                     }
                 )
             })
+            this.$store.dispatch(this.storePrefix +'view/grid/refresh', {
+              view: this.view,
+              fields: this.fields,
+              primary: this.primary,
+            });
         },
         /**
          * This method is called when the next cell must be selected. This can for example
@@ -838,6 +843,12 @@ export default {
                 this.$store.dispatch(
                     this.storePrefix + 'view/grid/clearAndDisableMultiSelect'
                 )
+                // console.log('xxxxxxxxxxx');
+                this.$store.dispatch(this.storePrefix +'view/grid/refresh', {
+                    view: this.view,
+                    fields: this.fields,
+                    primary: this.primary,
+                });
             }
         },
         keyDownEvent(event) {
@@ -937,7 +948,7 @@ export default {
                                 value: obj,
                                 oldValue: this.isRow[`field_${this.isField.id}`],
                             }
-                            this.updateValue(objUpdate)
+                           await this.updateValue(objUpdate)
                         }
                     } else {
                         let before = null;
@@ -973,7 +984,7 @@ export default {
                             value: obj,
                             oldValue: this.isRow[`field_${this.isField.id}`],
                         }
-                        this.updateValue(objUpdate)
+                       await this.updateValue(objUpdate)
                     }
                 } catch (error) {
                     notifyIf(error, 'row')
@@ -987,7 +998,13 @@ export default {
             if (!this.isMultiSelectActive) {
                 return
             }
-            // console.log('=========================================');
+            // console.log('==============================dfcf ===========');
+            // console.log('dddddddddddddddddddddddddddddddddddddddddddddddddd');
+            this.$store.dispatch(this.storePrefix +'view/grid/refresh', {
+              view: this.view,
+              fields: this.fields,
+              primary: this.primary,
+            });
             const parsed = await this.$papa.parsePromise(
                 event.clipboardData.getData('text'), {
                     delimiter: '\t'
@@ -1081,7 +1098,7 @@ export default {
                                     oldValue: newRow[`field_${this.startSelect.id}`],
                                 }
                                 // console.log('objUpdate', objUpdate);
-                                this.updateValue(objUpdate)
+                               await this.updateValue(objUpdate)
                             } else {
                             let before = null;
                             let values = {};
@@ -1118,7 +1135,7 @@ export default {
                                 oldValue: newRow[`field_${this.startSelect.id}`],
                             }
                             // console.log('objUpdate', objUpdate);
-                            this.updateValue(objUpdate)
+                            await this.updateValue(objUpdate)
                             }
                         } else {
                             let before = null;
@@ -1156,7 +1173,7 @@ export default {
                                 oldValue: newRow[`field_${this.startSelect.id}`],
                             }
                             // console.log('objUpdate', objUpdate);
-                            this.updateValue(objUpdate)
+                            await this.updateValue(objUpdate)
                         }
                     }
                 } catch (error) {
@@ -1183,6 +1200,7 @@ export default {
                 notifyIf(error)
             }
             this.$store.dispatch('notification/setPasting', false);
+            // console.log('dddddddddddddddddddddddddddddddddddddddddddddddddd');
             this.$store.dispatch(this.storePrefix +'view/grid/refresh', {
               view: this.view,
               fields: this.fields,
