@@ -897,6 +897,7 @@ export const actions = {
             commit('REPLACE_ALL_FIELD_OPTIONS', data.field_options)
           }
         }
+        // console.log('VIEW ==== VIEW', view);
         dispatch('fetchAllFieldAggregationData', {
           view,
         })
@@ -904,10 +905,10 @@ export const actions = {
       })
       .catch((error) => {
         if (axios.isCancel(error)) {
-          throw new RefreshCancelledError()
+          // throw new RefreshCancelledError()
         } else {
-          lastRefreshRequest = null
-          throw error
+          // lastRefreshRequest = null
+          // throw error
         }
       })
     return lastRefreshRequest
@@ -1840,8 +1841,8 @@ export const actions = {
               if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '';
               else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '';
             });
-            // console.log(bigCities);
-            // console.log(resultNew);
+            console.log(bigCities);
+            console.log(resultNew);
             if (bigCities.length || resultNew.length) {
               duplicated[row.id] = true;
               let values = {};

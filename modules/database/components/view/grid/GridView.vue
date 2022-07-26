@@ -673,9 +673,9 @@ export default {
                 )
             })
             this.$store.dispatch(this.storePrefix +'view/grid/refresh', {
-              view: this.view,
-              fields: this.fields,
-              primary: this.primary,
+              view: this.$props.view,
+              fields: this.$props.fields,
+              primary: this.$props.primary,
             });
         },
         /**
@@ -845,9 +845,9 @@ export default {
                 )
                 // console.log('xxxxxxxxxxx');
                 this.$store.dispatch(this.storePrefix +'view/grid/refresh', {
-                    view: this.view,
-                    fields: this.fields,
-                    primary: this.primary,
+                    view: this.$props.view,
+                    fields: this.$props.fields,
+                    primary: this.$props.primary,
                 });
             }
         },
@@ -990,9 +990,9 @@ export default {
                     notifyIf(error, 'row')
                 }
                 this.$store.dispatch(this.storePrefix +'view/grid/refresh', {
-                  view: this.view,
-                  fields: this.fields,
-                  primary: this.primary,
+                  view: this.$props.view,
+                  fields: this.$props.fields,
+                  primary: this.$props.primary,
                 });
             }
             if (!this.isMultiSelectActive) {
@@ -1001,9 +1001,9 @@ export default {
             // console.log('==============================dfcf ===========');
             // console.log('dddddddddddddddddddddddddddddddddddddddddddddddddd');
             this.$store.dispatch(this.storePrefix +'view/grid/refresh', {
-              view: this.view,
-              fields: this.fields,
-              primary: this.primary,
+              view: this.$props.view,
+              fields: this.$props.fields,
+              primary: this.$props.primary,
             });
             const parsed = await this.$papa.parsePromise(
                 event.clipboardData.getData('text'), {
@@ -1045,6 +1045,7 @@ export default {
                     let newRow;
                     for (let item in dataNew) {
                         // console.log('index',index);
+                        if(dataNew[item][0] == '') return
                         if (item != 0) index = index + 1;
                         if(typeof rows[index] != 'undefined') {
                           newRow = rows[index];
