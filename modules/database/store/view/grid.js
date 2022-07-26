@@ -1563,7 +1563,7 @@ export const actions = {
       if (data.results.length) {
         let newArray = [...data.results]
         let bigCities = newArray.filter(function (e) {
-          return e['field_357'] === value[0].value && e['field_604'] === row['field_604'] && e['field_357'] != '' && row['field_357'] != '' && e['field_604'] != '';
+          return e['field_357'] === value[0].value && e['field_604'] === row['field_604'] && e['field_357'] != '' && row['field_357'] != '' && e['field_604'] != '' && row.id != e.id;
         });
         if (bigCities.length) {
           row.duplicated = true
@@ -1580,7 +1580,7 @@ export const actions = {
       if (data.results.length) {
         let newArray = [...data.results]
         let bigCities = newArray.filter(function (e) {
-          return e['field_357'] === value[0] && value[0].value ? value[0].value : value && e['field_604'] === row['field_604'];
+          return e['field_357'] === value[0] && value[0].value ? value[0].value : value && e['field_604'] === row['field_604'] && row.id != e.id;
         });
         if (bigCities.length) {
           row.duplicated = true
@@ -1597,7 +1597,7 @@ export const actions = {
       if (data.results.length) {
         let newArray = [...data.results]
         let bigCities = newArray.filter(function (e) {
-          return e['field_604'] === value[0] && value[0].value ? value[0].value : value && e['field_357'] === row['field_357'];
+          return e['field_604'] === value[0] && value[0].value ? value[0].value : value && e['field_357'] === row['field_357'] && row.id != e.id;
         });
         if (bigCities.length) {
           row.duplicated = true
@@ -1833,16 +1833,16 @@ export const actions = {
           if (data.results.length) {
             let newArray = [...data.results];
             let bigCities = newArray.filter(function (e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '';
-              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '';
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '' && rowsNew[resultIndex].id != e.id;
+              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '' && row.id != e.id;
             });
             // console.log(rowsNew);
             let resultNew = rowsNew.filter(function (e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '';
-              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '';
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '' && rowsNew[resultIndex].id != e.id;
+              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '' && row.id != e.id;
             });
-            console.log(bigCities);
-            console.log(resultNew);
+            // console.log(bigCities);
+            // console.log(resultNew);
             if (bigCities.length || resultNew.length) {
               duplicated[row.id] = true;
               let values = {};
@@ -1874,13 +1874,15 @@ export const actions = {
           if (data.results.length) {
             let newArray = [...data.results];
             let bigCities = newArray.filter(function (e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '';
-              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '';
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '' && rowsNew[resultIndex].id != e.id;
+              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '' && row.id != e.id;
             });
             let resultNew = rowsNew.filter(function (e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '';
-              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '';
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '' && rowsNew[resultIndex].id != e.id;
+              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '' && row.id != e.id;
             });
+            // console.log(bigCities);
+            // console.log(resultNew);
             if (bigCities.length || resultNew.length) {
               duplicated[row.id] = true;
               let values = {};
