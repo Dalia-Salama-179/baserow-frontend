@@ -77,6 +77,10 @@
               :row="row"
               @edit-modal="$emit('edit-modal', row)"
             ></component>
+            <!-- v-show="row._.hover" -->
+            <button @click="getCrunchBase(row)" title="Get crunch base" class="button button--primary buttonNew" v-show="row._.hover">
+              CB
+            </button>
             <component
               :is="dec.component"
               v-for="dec in firstCellDecorations"
@@ -127,6 +131,7 @@ import GridViewCell from '@baserow/modules/database/components/view/grid/GridVie
 import gridViewHelpers from '@baserow/modules/database/mixins/gridViewHelpers'
 import GridViewRowExpandButton from '@baserow/modules/database/components/view/grid/GridViewRowExpandButton'
 import RecursiveWrapper from '@baserow/modules/database/components/RecursiveWrapper'
+import RowService from '@baserow/modules/database/services/row'
 
 export default {
   name: 'GridViewRow',
@@ -251,6 +256,56 @@ export default {
     },
   },
   methods: {
+    getCrunchBase(row){
+        console.log('ROW',row);
+        console.log('row[field_357]',row['field_357']);
+        console.log('row[field_604]',row['field_604']);
+        const { data } = RowService(this.$client).fetchAll({
+          tableId: this.table.id,
+          search: row['field_357'],
+        }).then( (response) => {
+          console.log('response response',response);
+          if (response.data.results.length) {
+          let newArray = [...response.data.results]
+          let bigCities = newArray.filter(function (e) {
+            console.log('row[field_604]',e['field_604'] == row['field_604']);
+            console.log('row[field_357]',e['field_357'] == row['field_357']);
+            console.log('e.id && row.id',e.id != row.id);
+            return e['field_604'] == row['field_604'] && e['field_357'] == row['field_357'] && e.id != row.id;
+          });
+          console.log(bigCities);
+          if (bigCities.length) {
+            console.log(bigCities);
+            let values = {};
+            values['field_363'] = true
+            // row['field_363'] = true
+            RowService(this.$client).update(
+                this.table.id,
+                row.id,
+                values
+              ).then( (response) => {
+                  console.log('response',response);
+                  let refresh = JSON.parse(localStorage.getItem('refresh'));
+                  this.$store.dispatch(this.storePrefix + 'view/grid/refresh', refresh);
+              }) 
+            }
+          }
+        }).catch(( error ) => {
+          console.log('error error',error);
+        })
+        this.$client.post(
+          `t2/crunch_base_organization/${this.table.id}/${row.id}/`,
+          { }
+        ).then( (response) => {
+          console.log('response',response);
+          let refresh = JSON.parse(localStorage.getItem('refresh'));
+          this.$store.dispatch(this.storePrefix + 'view/grid/refresh', refresh);
+        }).catch(( error ) => {
+            console.log('error',error);
+            let refresh = JSON.parse(localStorage.getItem('refresh'));
+            this.$store.dispatch(this.storePrefix + 'view/grid/refresh', refresh)
+       })
+    },
     isCellSelected(fieldId) {
       return this.row._.selected && this.row._.selectedFieldId === fieldId
     },
@@ -388,3 +443,11 @@ export default {
   },
 }
 </script>
+<style scoped>
+.buttonNew{
+    padding: 0 6px;
+    height: 22px;
+    line-height: 12px;
+    font-size: 12px;
+}
+</style>
