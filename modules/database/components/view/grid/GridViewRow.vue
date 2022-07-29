@@ -257,25 +257,25 @@ export default {
   },
   methods: {
     getCrunchBase(row){
-        console.log('ROW',row);
-        console.log('row[field_357]',row['field_357']);
-        console.log('row[field_604]',row['field_604']);
+        // console.log('ROW',row);
+        // console.log('row[field_357]',row['field_357']);
+        // console.log('row[field_604]',row['field_604']);
         const { data } = RowService(this.$client).fetchAll({
           tableId: this.table.id,
           search: row['field_357'],
         }).then( (response) => {
-          console.log('response response',response);
+          // console.log('response response',response);
           if (response.data.results.length) {
           let newArray = [...response.data.results]
           let bigCities = newArray.filter(function (e) {
-            console.log('row[field_604]',e['field_604'] == row['field_604']);
-            console.log('row[field_357]',e['field_357'] == row['field_357']);
-            console.log('e.id && row.id',e.id != row.id);
+            // console.log('row[field_604]',e['field_604'] == row['field_604']);
+            // console.log('row[field_357]',e['field_357'] == row['field_357']);
+            // console.log('e.id && row.id',e.id != row.id);
             return e['field_604'] == row['field_604'] && e['field_357'] == row['field_357'] && e.id != row.id;
           });
-          console.log(bigCities);
+          // console.log(bigCities);
           if (bigCities.length) {
-            console.log(bigCities);
+            // console.log(bigCities);
             let values = {};
             values['field_363'] = true
             // row['field_363'] = true
@@ -284,7 +284,7 @@ export default {
                 row.id,
                 values
               ).then( (response) => {
-                  console.log('response',response);
+                  // console.log('response',response);
                   let refresh = JSON.parse(localStorage.getItem('refresh'));
                   this.$store.dispatch(this.storePrefix + 'view/grid/refresh', refresh);
               }) 
@@ -295,13 +295,19 @@ export default {
         })
         this.$client.post(
           `t2/crunch_base_organization/${this.table.id}/${row.id}/`,
-          { }
+          { 
+            cb_url_field_name:'field_604',
+            cb_uuid_field_name:'field_367',
+            company_prev_raised_count_field_name:'field_654',
+            company_total_raised_value_field_name:'field_655',
+            cb_updated_at:'field_656',
+          }
         ).then( (response) => {
-          console.log('response',response);
+          // console.log('response',response);
           let refresh = JSON.parse(localStorage.getItem('refresh'));
           this.$store.dispatch(this.storePrefix + 'view/grid/refresh', refresh);
         }).catch(( error ) => {
-            console.log('error',error);
+            // console.log('error',error);
             let refresh = JSON.parse(localStorage.getItem('refresh'));
             this.$store.dispatch(this.storePrefix + 'view/grid/refresh', refresh)
        })
