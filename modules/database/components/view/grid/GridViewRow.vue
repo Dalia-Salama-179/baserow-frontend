@@ -78,7 +78,10 @@
               @edit-modal="$emit('edit-modal', row)"
             ></component>
             <!-- v-show="row._.hover" -->
-            <button @click="getCrunchBase(row)" title="Get crunch base" class="button button--primary buttonNew" v-show="row._.hover">
+            <button v-if="table.name == 'organizations'" @click="getCrunchBase(row)" title="Get crunch base" class="button button--primary buttonNew" v-show="row._.hover">
+              CB
+            </button>
+            <button v-if="table.name == 'Founders'" @click="getCrunchFounders(row)" title="Get crunch base" class="button button--primary buttonNew" v-show="row._.hover">
               CB
             </button>
             <component
@@ -295,6 +298,26 @@ export default {
         })
         this.$client.post(
           `t2/crunch_base_organization/${this.table.id}/${row.id}/`,
+          { 
+            cb_url_field_name:'field_604',
+            cb_uuid_field_name:'field_367',
+            company_prev_raised_count_field_name:'field_654',
+            company_total_raised_value_field_name:'field_655',
+            cb_updated_at:'field_656',
+          }
+        ).then( (response) => {
+          // console.log('response',response);
+          let refresh = JSON.parse(localStorage.getItem('refresh'));
+          this.$store.dispatch(this.storePrefix + 'view/grid/refresh', refresh);
+        }).catch(( error ) => {
+            // console.log('error',error);
+            let refresh = JSON.parse(localStorage.getItem('refresh'));
+            this.$store.dispatch(this.storePrefix + 'view/grid/refresh', refresh)
+       })
+    },
+    getCrunchFounders(row){
+        this.$client.post(
+          `t2/crunch_base_founder/${this.table.id}/${row.id}/`,
           { 
             cb_url_field_name:'field_320',
             cb_uuid_field_name:'field_363',
