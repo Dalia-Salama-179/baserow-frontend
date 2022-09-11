@@ -41,6 +41,7 @@ export default {
     //   'undoRedo/updateCurrentScopeSet',
     //   CORE_ACTION_SCOPES.root()
     // )
+    console.log('Test')
   },
   beforeDestroy() {
     this.$realtime.disconnect()
