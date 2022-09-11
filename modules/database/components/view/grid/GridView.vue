@@ -672,11 +672,11 @@ export default {
                     }
                 )
             })
-            this.$store.dispatch(this.storePrefix +'view/grid/refresh', {
+            /*this.$store.dispatch(this.storePrefix +'view/grid/refresh', {
               view: this.$props.view,
               fields: this.$props.fields,
               primary: this.$props.primary,
-            });
+            });*/
         },
         /**
          * This method is called when the next cell must be selected. This can for example

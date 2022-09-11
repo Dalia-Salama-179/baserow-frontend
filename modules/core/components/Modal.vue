@@ -3,7 +3,7 @@
     v-if="open"
     ref="modalWrapper"
     class="modal__wrapper"
-    @click="outside($event),render($event)"
+    @click="outside($event)"
   >
     <div
       class="modal__box"
@@ -28,7 +28,7 @@
           :class="{ 'modal__box-content--scrollable': contentScrollable }"
         >
           <slot name="content"></slot>
-          <a v-if="closeButton" class="modal__close" @click="hide(),render($event,'close')">
+          <a v-if="closeButton" class="modal__close" @click="hide()">
             <i class="fas fa-times"></i>
           </a>
         </div>
