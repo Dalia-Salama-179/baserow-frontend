@@ -20,7 +20,7 @@
       </i18n>
     </div>
     <Error :error="error"></Error>
-   <!-- <form @submit.prevent="login">
+    <form @submit.prevent="login">
       <FormElement :error="fieldHasErrors('email')" class="control">
         <label class="control__label">{{ $t('field.emailAddress') }}</label>
         <div class="control__elements">
@@ -28,7 +28,7 @@
             v-if="invitation !== null"
             ref="email"
             type="email"
-            class="input input&#45;&#45;large"
+            class="input input--large"
             disabled
             :value="values.email"
           />
@@ -36,9 +36,9 @@
             v-else
             ref="email"
             v-model="values.email"
-            :class="{ 'input&#45;&#45;error': fieldHasErrors('email') }"
+            :class="{ 'input--error': fieldHasErrors('email') }"
             type="email"
-            class="input input&#45;&#45;large"
+            class="input input--large"
             @blur="$v.values.email.$touch()"
           />
           <div v-if="fieldHasErrors('email')" class="error">
@@ -52,9 +52,9 @@
           <input
             ref="password"
             v-model="values.password"
-            :class="{ 'input&#45;&#45;error': fieldHasErrors('password') }"
+            :class="{ 'input--error': fieldHasErrors('password') }"
             type="password"
-            class="input input&#45;&#45;large"
+            class="input input--large"
             @blur="$v.values.password.$touch()"
           />
           <div v-if="fieldHasErrors('password')" class="error">
@@ -65,15 +65,15 @@
       <div class="actions">
         <slot></slot>
         <button
-          :class="{ 'button&#45;&#45;loading': loading }"
-          class="button button&#45;&#45;large"
+          :class="{ 'button--loading': loading }"
+          class="button button--large"
           :disabled="loading"
         >
           {{ $t('action.signIn') }}
           <i class="fas fa-lock-open"></i>
         </button>
       </div>
-    </form>-->
+    </form>
   </div>
 </template>
 
