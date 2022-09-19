@@ -139,6 +139,7 @@
       }
     },
     methods: {
+
       async submit() {
         this.$v.$touch()
         if (this.$v.$invalid) {
