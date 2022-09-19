@@ -1,0 +1,15 @@
+.vgt-table {
+  font-size: inherit !important;
+
+  td,
+  th {
+    color: inherit !important;
+    font-weight: initial !important;
+  }
+
+  &.bordered {
+    th {
+      background-color: #f5f5f5;
+    }
+  }
+}

@@ -26,4 +26,7 @@ export default Object.assign(base(), {
       }),
     ],
   },
+  plugins: [
+    { src: '~/plugins/vue-good-table', ssr: false }
+  ]
 })

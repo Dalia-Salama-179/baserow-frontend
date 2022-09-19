@@ -56,14 +56,19 @@
         "disabledAccountMessage": "This user account has been disabled.",
         "incorrectCredentialTitle": "Incorrect credentials",
         "incorrectCredentialMessage": "The provided e-mail address or password is incorrect.",
-        "inputRequired": "Input is required."
+        "inputRequired": "Input is required.",
+        "usernameRequired": "A username is required."
     },
     "field": {
         "language": "Language",
         "emailAddress": "E-mail address",
         "name": "Your name",
         "password": "Password",
-        "passwordRepeat": "Repeat password"
+        "passwordRepeat": "Repeat password",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "username": "Username",
+        "create": "Create"
     },
     "invitationTitle": "Invitation",
     "invitationMessage": "{invitedBy} has invited you to join {group}.",

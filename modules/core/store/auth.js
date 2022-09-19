@@ -204,6 +204,9 @@ export const getters = {
   isStaff(state) {
     return state.user ? state.user.is_staff : false
   },
+  isSuperuser(state) {
+    return state.user ? state.user.is_superuser : false
+  },
   getUntrustedClientSessionId(state) {
     return state.untrustedClientSessionId
   },

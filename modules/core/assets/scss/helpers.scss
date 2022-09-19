@@ -134,6 +134,30 @@
   overflow: hidden !important;
 }
 
+.d-flex {
+  display: flex;
+}
+
+.justify-end {
+  justify-content: end;
+}
+
+.modal-padding {
+  padding: 32px 40px;
+}
+
+.table__initial-loading {
+  position: absolute;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  background: #f0f8ff9c;
+}
+
+.p-relative {
+  position: relative;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0);

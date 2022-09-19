@@ -55,4 +55,9 @@ export const routes = [
     path: '/public/auth/:slug',
     component: path.resolve(__dirname, 'pages/publicViewLogin.vue'),
   },
+  {
+    name: 'stuff-control',
+    path: '/stuff-control',
+    component: path.resolve(__dirname, 'pages/stuff-control.vue'),
+  },
 ]
