@@ -1,5 +1,7 @@
 <template>
-    <Modal class="select-row-modal">
+    <Modal class="select-row-modal"
+           @hidden="$emit('hidden')"
+    >
         <template #content>
             <div class="modal-padding">
                 <form @submit.prevent="submit">
@@ -63,7 +65,6 @@
                         </div>
                     </FormElement>
 
-
                     <FormElement :error="fieldHasErrors('email')" class="control">
                         <label class="control__label">{{ $t('field.emailAddress') }}</label>
                         <div class="control__elements">
@@ -108,7 +109,12 @@
                                 class="button button--large"
                                 :disabled="loading"
                         >
-                            {{ $t('field.create') }}
+                            <template v-if="toUpdate.hasOwnProperty('id')">
+                                {{ $t('field.update') }}
+                            </template>
+                            <template v-else>
+                                {{ $t('field.create') }}
+                            </template>
                         </button>
                     </div>
                 </form>
@@ -127,6 +133,11 @@
   export default {
     name: 'CreateUser',
     mixins: [form, error, modal],
+    props: {
+      toUpdate: {
+        type: Object
+      }
+    },
     data() {
       return {
         loading: false,
@@ -138,8 +149,14 @@
         errors: {}
       }
     },
+    watch: {
+      toUpdate() {
+        if (this.toUpdate.hasOwnProperty('id')) {
+          this.values = { ...this.toUpdate }
+        }
+      }
+    },
     methods: {
-
       async submit() {
         this.$v.$touch()
         if (this.$v.$invalid) {
@@ -150,9 +167,15 @@
         this.loading = true
         this.hideError()
         try {
-          const response = await stuffControlService(this.$client).create(this.values)
-          this.loading = false
-          this.$emit('userCreated')
+          if (this.toUpdate.hasOwnProperty('id')) {
+            const response = await stuffControlService(this.$client).updateWithValidation(this.values, this.toUpdate.id)
+            this.loading = false
+            this.$emit('userCreated')
+          } else {
+            const response = await stuffControlService(this.$client).create(this.values)
+            this.loading = false
+            this.$emit('userCreated')
+          }
         } catch (error) {
           this.loading = false
           this.errors = error.response.data

@@ -68,7 +68,8 @@
         "firstName": "First Name",
         "lastName": "Last Name",
         "username": "Username",
-        "create": "Create"
+        "create": "Create",
+        "update": "Update"
     },
     "invitationTitle": "Invitation",
     "invitationMessage": "{invitedBy} has invited you to join {group}.",

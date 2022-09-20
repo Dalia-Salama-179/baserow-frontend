@@ -11,12 +11,27 @@
 
             <vue-good-table
                     :columns="columns"
-                    :rows="data">
-
+                    :rows="data"
+                    @on-row-mouseenter="onRowMouseover"
+                    @on-row-mouseleave="onRowMouseleave"
+            >
                 <template slot="table-row" slot-scope="props">
-                    <span v-if="props.column.field == 'is_active'">
+                    <span v-if="props.column.field === 'first_name'">
+                        <a class="grid-view__row-more margin-right-2"
+                           :class="{'visible': activeRow === props.row.id}"
+                           @click="update(props.row)"
+                        >
+                            <i class="fas fa-expand"></i>
+                          </a>
+                        {{props.row.first_name}}
+                    </span>
+
+                    <span v-else-if="props.column.field === 'is_active'">
                         <Checkbox @input="(e) => changeStatus(e, props.row.id)"
                                   v-model="props.row.is_active"/>
+                    </span>
+                    <span v-else>
+                      {{props.formattedRow[props.column.field]}}
                     </span>
                 </template>
 
@@ -30,7 +45,9 @@
         </div>
 
         <create-user-modal
+                :toUpdate="toUpdate"
                 @userCreated="hideModal"
+                @hidden="hidden"
                 ref="selectModal"
         />
     </div>
@@ -77,13 +94,25 @@
         page: 1,
         limit: 10,
         offset: 0,
-        loading: true
+        loading: true,
+        activeRow: null,
+        toUpdate: {}
       }
     },
     mounted() {
       this.fetchFields(this.limit, this.offset)
     },
     methods: {
+      onRowMouseover(params) {
+        this.activeRow = params.row.id
+      },
+      onRowMouseleave() {
+        this.activeRow = null
+      },
+      update(values) {
+        this.showModal()
+        this.toUpdate = {...values}
+      },
       async fetchFields(limit, offset) {
         this.loading = true
         try {
@@ -107,6 +136,10 @@
       hideModal() {
         this.$refs.selectModal.hide()
         this.fetchFields(this.limit, this.offset)
+        this.toUpdate = {}
+      },
+      hidden() {
+        this.toUpdate = {}
       },
       async changeStatus(e, id) {
         this.loading = true
@@ -124,4 +157,4 @@
   }
 </script>
 
-<style lang="scss" src="../../core/assets/scss/good-table.scss" />
+<style lang="scss" src="../../core/assets/scss/good-table.scss"/>
