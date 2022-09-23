@@ -140,9 +140,17 @@ export const state = () => ({
   // The token needed to authorize the access to password protected public URL
   publicAuthToken: null,
   fieldAggregationData: {},
+  selectedRow: null,
+  selectedField: null
 })
 
 export const mutations = {
+  SET_SELECTED_ROW(state, rowId) {
+    state.selectedRow = rowId
+  },
+  SET_SELECTED_FIELD(state, fieldId) {
+    state.selectedField = fieldId
+  },
   CLEAR_ROWS(state) {
     state.fieldOptions = {}
     state.count = 0
@@ -824,7 +832,7 @@ export const actions = {
    * are provided in the refreshEvent.
    */
   refresh(
-    { dispatch, commit, getters, rootGetters },
+    { dispatch, commit, getters, rootGetters, state },
     { view, fields, primary, includeFieldOptions = false }
   ) {
     const gridId = getters.getLastGridId
@@ -886,6 +894,8 @@ export const actions = {
           bufferStartIndex: offset,
           bufferLimit: data.results.length,
         })
+        // commit('SET_SELECTED_CELL', { rowId, fieldId })
+
         dispatch('updateSearch', { fields, primary })
         if (includeFieldOptions) {
           if (getters.isPublic) {
@@ -902,6 +912,10 @@ export const actions = {
           view,
         })
         lastRefreshRequest = null
+        dispatch('setSelectedCell', {
+          rowId: state.selectedRow,
+          fieldId: state.selectedField
+        })
       })
       .catch((error) => {
         if (axios.isCancel(error)) {
@@ -1153,7 +1167,11 @@ export const actions = {
   setAddRowHover({ commit }, value) {
     commit('SET_ADD_ROW_HOVER', value)
   },
-  setSelectedCell({ commit }, { rowId, fieldId }) {
+  setSelectedCell({ commit, state, dispatch }, { rowId, fieldId }) {
+    if (fieldId) {
+      commit('SET_SELECTED_FIELD', fieldId)
+      commit('SET_SELECTED_ROW', rowId)
+    }
     commit('SET_SELECTED_CELL', { rowId, fieldId })
   },
   setMultiSelectHolding({ commit }, value) {
