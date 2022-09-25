@@ -1674,7 +1674,8 @@ export const actions = {
     // console.log('values', values);
     // console.log('value[0]', value[0]);
     if (field.name == 'person' && value && value[0] && table.name == 'Founders') {
-      values[`field_${primary.id}`] = `${row['field_598'][0] ? row['field_598'][0].value : ''}_${value[0].value}`
+      // Change 598 to 487 -- T2DS-29
+      values[`field_${primary.id}`] = `${row['field_487'][0] ? row['field_487'][0].value : ''}_${value[0].value}`
     }
     if (field.name == 'organization_of_interest' && value && value[0] && table.name == 'Founders') {
       values[`field_${primary.id}`] = `${value[0].value}_${row['field_441'][0] ? row['field_441'][0].value : ''}`
