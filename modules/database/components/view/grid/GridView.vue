@@ -932,11 +932,7 @@
        * This happens when the individual cell doesn't understand the pasted data and
        * needs to emit it up. This typically happens when multiple cell values are pasted.
        */
-      async multiplePasteFromCell({
-                                    data,
-                                    field,
-                                    row
-                                  }) {
+      async multiplePasteFromCell({ data, field, row }) {
         // console.log(data,'data');
         // console.log(field,'field');
         // console.log(row,'row');
@@ -1056,27 +1052,17 @@
        * update is in progress.
        */
       async pasteData(data, rowIndex, fieldIndex) {
-        //  console.log('datxxxxxxxxxxxxxa');
         let dataNew = [...data]
-        //  console.log(rowIndex,'rowIndex');
-        //  console.log(fieldIndex,'fieldIndex');
         // If the data is an empty array, we don't have to do anything because there is
         // nothing to update. If the view is in read only mode, we can't paste so not
         // doing anything.
         if (data.length === 0 || data[0].length === 0 || this.readOnly) {
           return
         }
-        // console.log('this.startSelect',this.startSelect);
-        // console.log('this.endSelect',this.endSelect);
-        // console.log('this.isRowStart',this.isRowStart);
 
-        // console.log('this.this.$store.state',this.$store.state['page/view/grid']);
-        // console.log('this.this.$store.state',this.$store.state['page/view/grid'].multiSelectHeadRowIndex);
         if (this.endSelect && this.startSelect && this.endSelect.type == this.startSelect.type && this.startSelect.type == 'link_row') {
           const rows = this.$store.getters[this.storePrefix + 'view/grid/getAllRows']
-          // console.log('/////////////////////////////');
           let index = this.$store.state['page/view/grid'].rowIdFrist
-          // console.log('indexindexindex',index);
           try {
             let newRow
             for (let item in dataNew) {
@@ -1219,6 +1205,9 @@
           return
         }
         this.$store.dispatch('notification/setPasting', true)
+        if (data[data.length-1].length === 1 && data[data.length-1][0] === '') {
+          data.pop()
+        }
         try {
           await this.$store.dispatch(
             this.storePrefix + 'view/grid/updateDataIntoCells', {
@@ -1232,12 +1221,12 @@
               fieldIndex
             }
           )
-          // console.log(data,'datxxxxxxxxxxxxxa');
         } catch (error) {
           notifyIf(error)
         }
+
+        // toaster to show paste is done
         this.$store.dispatch('notification/setPasting', false)
-        // console.log('dddddddddddddddddddddddddddddddddddddddddddddddddd');
         this.$store.dispatch(this.storePrefix + 'view/grid/refresh', {
           view: this.view,
           fields: this.fields,
