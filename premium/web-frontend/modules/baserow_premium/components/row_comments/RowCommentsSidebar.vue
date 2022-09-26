@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="!validPremiumLicense">
+    <!--<template v-if="!validPremiumLicense">
       <div class="row-comments">
         <div class="row-comments__empty">
           <i class="row-comments__empty-icon fas fa-comments"></i>
@@ -9,8 +9,9 @@
           </div>
         </div>
       </div>
-    </template>
-    <template v-else>
+    </template>-->
+    <!--v-else-->
+    <template>
       <div v-if="!loaded && loading" class="loading-absolute-center" />
       <div v-else>
         <div class="row-comments">
@@ -109,9 +110,9 @@ export default {
     }),
   },
   async created() {
-    if (!this.validPremiumLicense) {
+    /*if (!this.validPremiumLicense) {
       return
-    }
+    }*/
 
     try {
       const tableId = this.table.id
