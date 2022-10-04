@@ -16,7 +16,11 @@
         </div>
       </div>
     </div>
-    <div class="row-comments__comment-text">{{ comment.comment }}</div>
+    <div class="row-comments__comment-text"
+         v-if="comment.type === 'update_row'">
+      {{ comment.params.new_row_values }}
+    </div>
+    <div class="row-comments__comment-text" v-else>{{ comment.comment }}</div>
   </div>
 </template>
 

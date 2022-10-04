@@ -6,18 +6,20 @@ import RowCommentService from '@baserow_premium/services/row_comments/row_commen
 
 export const state = () => ({
   comments: [],
+  commentsAndActivity: [],
+  activityLog: [],
   loading: false,
   loaded: false,
   currentCount: 0,
   totalCount: 0,
   loadedRowId: false,
   loadedTableId: false,
-  nextTemporaryCommentId: -1,
+  nextTemporaryCommentId: -1
 })
 
 function populateComment(comment, loading) {
   comment._ = {
-    loading,
+    loading
   }
   return comment
 }
@@ -32,7 +34,7 @@ export const mutations = {
    * We want to handle duplicates here as comments received as realtime events could
    * potentially be also loaded in via a normal backend api fetch call.
    */
-  ADD_ROW_COMMENTS(state, { comments, loading }) {
+  ADD_ROW_COMMENTS(state, { comments, log, loading }) {
     comments.forEach((newComment) => {
       newComment = populateComment(newComment, loading)
       const existingIndex = state.comments.findIndex(
@@ -45,6 +47,12 @@ export const mutations = {
         state.comments.push(newComment)
       }
     })
+
+    // state.activityLog.push(...log)
+
+    // state.commentsAndActivity = state.comments.concat(state.activityLog)
+
+    // state.currentCount = state.comments.length + state.activityLog.length
     state.currentCount = state.comments.length
   },
   REMOVE_ROW_COMMENT(state, id) {
@@ -71,7 +79,7 @@ export const mutations = {
   },
   SET_TOTAL_COUNT(state, totalCount) {
     state.totalCount = totalCount
-  },
+  }
 }
 
 export const actions = {
@@ -91,8 +99,17 @@ export const actions = {
         rowId,
         {}
       )
+      /*const response = await RowCommentService(this.$client)
+        .fetchActivityLog(
+          tableId,
+          rowId,
+          {}
+        )*/
+
       commit('RESET_ROW_COMMENTS')
+      // commit('ADD_ROW_COMMENTS', { comments: data.results, log: response.data.results, loading: false })
       commit('ADD_ROW_COMMENTS', { comments: data.results, loading: false })
+      // commit('SET_TOTAL_COUNT', data.count + response.data.count)
       commit('SET_TOTAL_COUNT', data.count)
       commit('SET_LOADED_TABLE_AND_ROW', { tableId, rowId })
       commit('SET_LOADED', true)
@@ -116,7 +133,16 @@ export const actions = {
         rowId,
         { offset: state.currentCount }
       )
+      // const response = await RowCommentService(this.$client)
+      //   .fetchActivityLog(
+      //     tableId,
+      //     rowId,
+      //     { offset: state.currentCount }
+      //   )
+
+      // commit('ADD_ROW_COMMENTS', { comments: data.results, log: response.data.results, loading: false })
       commit('ADD_ROW_COMMENTS', { comments: data.results, loading: false })
+      // commit('SET_TOTAL_COUNT', data.count + response.data.count)
       commit('SET_TOTAL_COUNT', data.count)
     } finally {
       commit('SET_LOADING', false)
@@ -143,11 +169,11 @@ export const actions = {
         table_id: tableId,
         user_id: rootGetters['auth/getUserId'],
         first_name: rootGetters['auth/getName'],
-        id: temporaryId,
+        id: temporaryId
       }
       commit('ADD_ROW_COMMENTS', {
         comments: [temporaryComment],
-        loading: true,
+        loading: true
       })
       const { data } = await RowCommentService(this.$client).create(
         tableId,
@@ -183,12 +209,15 @@ export const actions = {
         'page/'
       )
     }
-  },
+  }
 }
 
 export const getters = {
   getSortedRowComments(state) {
     return _.sortBy(state.comments, (c) => -moment.utc(c.created_on))
+  },
+  getSortedRowCommentsActivityLog(state) {
+    return _.sortBy(state.commentsAndActivity, (c) => -moment.utc(c.created_on))
   },
   getCurrentCount(state) {
     return state.currentCount
@@ -201,7 +230,7 @@ export const getters = {
   },
   getLoaded(state) {
     return state.loaded
-  },
+  }
 }
 
 export default {
@@ -209,5 +238,5 @@ export default {
   state,
   getters,
   actions,
-  mutations,
+  mutations
 }

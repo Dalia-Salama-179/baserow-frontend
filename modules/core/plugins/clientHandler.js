@@ -111,6 +111,12 @@ export class ErrorHandler {
    * Changes the error code and details.
    */
   setError(code, detail) {
+    if (code) {
+      this.notifyIf(null, {
+        title: code,
+        message: detail
+      })
+    }
     this.code = code
     this.detail = detail
   }
@@ -314,7 +320,6 @@ export default function ({ store, app }, inject) {
         clientErrorMap,
         error.response
       )
-
       // Add the error message in the response to the error object.
       const rspCode = error.response?.status
       const rspData = error.response?.data
