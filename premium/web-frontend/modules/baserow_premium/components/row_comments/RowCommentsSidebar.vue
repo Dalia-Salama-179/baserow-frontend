@@ -36,11 +36,17 @@
               @load-next-page="nextPage"
             >
               <template #default>
-                <RowComment
-                  v-for="c in comments"
-                  :key="'row-comment-' + c.id"
-                  :comment="c"
-                />
+                <div v-for="c in comments">
+                  <RowLog v-if="c.type === 'update_row'"
+                          :key="'row-log-' + c.id"
+                          :comment="c"
+                          :fields="fields"
+                  />
+                  <RowComment v-else
+                          :key="'row-comment-' + c.id"
+                          :comment="c"
+                  />
+                </div>
               </template>
               <template #end>
                 <div class="row-comments__end-line"></div>
@@ -67,6 +73,7 @@ import { mapGetters } from 'vuex'
 import { notifyIf } from '@baserow/modules/core/utils/error'
 import { PremiumPlugin } from '@baserow_premium/plugins'
 import RowComment from '@baserow_premium/components/row_comments/RowComment'
+import RowLog from '@baserow_premium/components/row_comments/RowLog'
 import InfiniteScroll from '@baserow/modules/core/components/helpers/InfiniteScroll'
 import AutoExpandableTextareaInput from '@baserow/modules/core/components/helpers/AutoExpandableTextareaInput'
 
@@ -76,6 +83,7 @@ export default {
     AutoExpandableTextareaInput,
     InfiniteScroll,
     RowComment,
+    RowLog
   },
   props: {
     table: {
@@ -90,6 +98,10 @@ export default {
       required: true,
       type: Boolean,
     },
+    fields: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
@@ -101,7 +113,8 @@ export default {
       return PremiumPlugin.hasValidPremiumLicense(this.additionalUserData)
     },
     ...mapGetters({
-      comments: 'row_comments/getSortedRowComments',
+      // comments: 'row_comments/getSortedRowComments',
+      comments: 'row_comments/getSortedRowCommentsActivityLog',
       loading: 'row_comments/getLoading',
       loaded: 'row_comments/getLoaded',
       currentCount: 'row_comments/getCurrentCount',

@@ -48,12 +48,12 @@ export const mutations = {
       }
     })
 
-    // state.activityLog.push(...log)
+    state.activityLog.push(...log)
 
-    // state.commentsAndActivity = state.comments.concat(state.activityLog)
+    state.commentsAndActivity = state.comments.concat(state.activityLog)
 
-    // state.currentCount = state.comments.length + state.activityLog.length
-    state.currentCount = state.comments.length
+    state.currentCount = state.comments.length + state.activityLog.length
+    // state.currentCount = state.comments.length
   },
   REMOVE_ROW_COMMENT(state, id) {
     const existingIndex = state.comments.findIndex((c) => c.id === id)
@@ -99,18 +99,18 @@ export const actions = {
         rowId,
         {}
       )
-      /*const response = await RowCommentService(this.$client)
+      const response = await RowCommentService(this.$client)
         .fetchActivityLog(
           tableId,
           rowId,
           {}
-        )*/
+        )
 
       commit('RESET_ROW_COMMENTS')
-      // commit('ADD_ROW_COMMENTS', { comments: data.results, log: response.data.results, loading: false })
-      commit('ADD_ROW_COMMENTS', { comments: data.results, loading: false })
-      // commit('SET_TOTAL_COUNT', data.count + response.data.count)
-      commit('SET_TOTAL_COUNT', data.count)
+      commit('ADD_ROW_COMMENTS', { comments: data.results, log: response.data.results, loading: false })
+      // commit('ADD_ROW_COMMENTS', { comments: data.results, loading: false })
+      commit('SET_TOTAL_COUNT', data.count + response.data.count)
+      // commit('SET_TOTAL_COUNT', data.count)
       commit('SET_LOADED_TABLE_AND_ROW', { tableId, rowId })
       commit('SET_LOADED', true)
     } finally {
@@ -133,17 +133,17 @@ export const actions = {
         rowId,
         { offset: state.currentCount }
       )
-      // const response = await RowCommentService(this.$client)
-      //   .fetchActivityLog(
-      //     tableId,
-      //     rowId,
-      //     { offset: state.currentCount }
-      //   )
+      const response = await RowCommentService(this.$client)
+        .fetchActivityLog(
+          tableId,
+          rowId,
+          { offset: state.currentCount }
+        )
 
-      // commit('ADD_ROW_COMMENTS', { comments: data.results, log: response.data.results, loading: false })
-      commit('ADD_ROW_COMMENTS', { comments: data.results, loading: false })
-      // commit('SET_TOTAL_COUNT', data.count + response.data.count)
-      commit('SET_TOTAL_COUNT', data.count)
+      commit('ADD_ROW_COMMENTS', { comments: data.results, log: response.data.results, loading: false })
+      // commit('ADD_ROW_COMMENTS', { comments: data.results, loading: false })
+      commit('SET_TOTAL_COUNT', data.count + response.data.count)
+      // commit('SET_TOTAL_COUNT', data.count)
     } finally {
       commit('SET_LOADING', false)
     }

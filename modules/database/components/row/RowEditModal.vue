@@ -68,6 +68,7 @@
         :row="row"
         :read-only="readOnly"
         :table="table"
+        :fields="visibleFields"
       ></component>
     </template>
   </Modal>

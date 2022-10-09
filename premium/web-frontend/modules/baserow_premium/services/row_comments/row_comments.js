@@ -10,8 +10,8 @@ export default (client) => {
     },
     fetchActivityLog(tableId, rowId, { offset = 0, limit = 50 }) {
       return client.get(
-        // `/t2/field-logs/?row=row_${rowId}&table=table_${tableId}&offset=${offset}&limit=${limit}`
-        `/t2/field-logs/?offset=${offset}&limit=${limit}`
+        `/t2/field-logs/?row=${rowId}&table=${tableId}&offset=${offset}&limit=${limit}`
+        // `/t2/field-logs/?offset=${offset}&limit=${limit}`
       )
     },
   }
