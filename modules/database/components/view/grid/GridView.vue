@@ -578,9 +578,7 @@
        * When the modal hides and the related row does not match the filters anymore it
        * must be deleted.
        */
-      rowEditModalHidden({
-                           row
-                         }) {
+      rowEditModalHidden({ row }) {
         // It could be that the row is not in the buffer anymore and in that case we also
         // don't need to refresh the row.
         if (

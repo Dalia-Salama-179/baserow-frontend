@@ -48,7 +48,7 @@ export const mutations = {
       }
     })
 
-    state.activityLog.push(...log)
+    if (log) state.activityLog.push(...log)
 
     state.commentsAndActivity = state.comments.concat(state.activityLog)
 
@@ -79,6 +79,11 @@ export const mutations = {
   },
   SET_TOTAL_COUNT(state, totalCount) {
     state.totalCount = totalCount
+  },
+  CLEAR_COMMENTS_ACTIVITY_LOG(state) {
+    state.comments = []
+    state.activityLog = []
+    state.commentsAndActivity = []
   }
 }
 
@@ -209,6 +214,9 @@ export const actions = {
         'page/'
       )
     }
+  },
+  clearCommentsAndLog({ commit }) {
+    commit('CLEAR_COMMENTS_ACTIVITY_LOG')
   }
 }
 

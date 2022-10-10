@@ -5,7 +5,7 @@
     :right-sidebar="!!optionalRightSideBar"
     :content-scrollable="!!optionalRightSideBar"
     :right-sidebar-scrollable="false"
-    @hidden="$emit('hidden', { row })"
+    @hidden="hiddenHandler"
   >
     <template #content>
       <h2 v-if="primary !== undefined" class="box__title">
@@ -219,6 +219,10 @@ export default {
         return null
       }
     },
+    hiddenHandler() {
+      this.$emit('hidden', { row: this.row })
+      this.$store.dispatch('row_comments/clearCommentsAndLog')
+    }
   },
 }
 </script>
