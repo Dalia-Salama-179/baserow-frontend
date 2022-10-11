@@ -21,8 +21,16 @@
   text-align: right;
 }
 
+.align-left {
+  text-align: left;
+}
+
 .background-white {
   background-color: $white;
+}
+
+.color-black {
+  color: #000;
 }
 
 .color-primary {
@@ -164,6 +172,19 @@
 
 .p-relative {
   position: relative;
+}
+
+.dotted-line-separator {
+  border-bottom: 1px dotted #2a1e1e;
+}
+
+.margin-y0 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.font-bold {
+  font-weight: bold;
 }
 
 @keyframes spin {
