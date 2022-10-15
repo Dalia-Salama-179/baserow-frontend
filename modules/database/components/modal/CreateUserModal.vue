@@ -182,23 +182,25 @@
         }
       }
     },
-    validations: {
-      values: {
-        email: { email },
-        password: { required },
-        first_name: {
-          minLength: minLength(2),
-          maxLength: maxLength(150)
-        },
-        last_name: {
-          minLength: minLength(2),
-          maxLength: maxLength(150)
-        },
-        username: {
-          required,
-          helpers: helpers.regex('alpha', /^\S*$/),
-          minLength: minLength(2),
-          maxLength: maxLength(150)
+    validations() {
+      return {
+        values: {
+          email: { email },
+          password: { required },
+          first_name: {
+            minLength: minLength(2),
+            maxLength: maxLength(150)
+          },
+          last_name: {
+            minLength: minLength(2),
+            maxLength: maxLength(150)
+          },
+          username: {
+            required,
+            helpers: helpers.regex('alpha', /^\S*$/),
+            minLength: minLength(2),
+            maxLength: maxLength(150)
+          }
         }
       }
     }
