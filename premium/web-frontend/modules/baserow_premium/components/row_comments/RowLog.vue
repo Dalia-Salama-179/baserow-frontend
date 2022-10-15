@@ -32,23 +32,23 @@
                                     <del class="old-val align-left forced-block"
                                          v-if="objKey !== 'id'"> {{ el[objKey] }}
                                     </del>
-                                    <p class="color-primary-dark margin-y0 align-right"
+                                    <!--<p class="color-primary-dark margin-y0 align-right"
                                        v-if="objKey !== 'id' && comment.params.new_row_values[key][index]">
                                         {{comment.params.new_row_values[key][index][objKey]}}
-                                    </p>
+                                    </p>-->
                                 </div>
                             </template>
                         </template>
 
-                        <template v-else-if="comment.params.new_row_values[key] &&
+                        <template v-if="comment.params.new_row_values[key] &&
                                         comment.params.new_row_values[key].length > 0">
                             <template v-for="(el, index) in comment.params.new_row_values[key]">
                                 <div class="color-primary-dark"
                                    v-for="objKey in Object.keys(el)">
-                                    <del class="old-val align-left forced-block"
+                                    <!--<del class="old-val align-left forced-block"
                                          v-if="objKey !== 'id' && comment.params.original_row_values[key][index]">
                                         {{comment.params.original_row_values[key][index][objKey]}}
-                                    </del>
+                                    </del>-->
                                     <p class="color-primary-dark align-right" v-if="objKey !== 'id'">
                                         {{ el[objKey] }}
                                     </p>
@@ -56,6 +56,8 @@
                             </template>
                         </template>
                     </template>
+
+
                     <div v-else class="color-primary-dark">
                         <del class="old-val align-left forced-block">
                             {{comment.params.original_row_values[key]}}

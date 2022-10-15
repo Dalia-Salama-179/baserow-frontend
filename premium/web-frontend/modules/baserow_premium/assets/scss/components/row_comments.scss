@@ -115,6 +115,10 @@
   white-space: pre-line;
   word-wrap: break-word;
 
+  .row-comments__comment--right-comment & {
+    background-color: $color-success-300 !important;
+  }
+
   .row-comments__comment--right & {
     background-color: $color-primary-200;
     text-align: right;

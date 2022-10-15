@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="{ 'row-comments__comment--right': ownComment }"
+    :class="{ 'row-comments__comment--right row-comments__comment--right-comment': ownComment }"
     class="row-comments__comment"
   >
     <div class="row-comments__comment-head">
