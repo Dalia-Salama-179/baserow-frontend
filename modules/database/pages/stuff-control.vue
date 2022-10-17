@@ -45,6 +45,7 @@
         </div>
 
         <create-user-modal
+                :key="toUpdate.id? toUpdate.id: 'new'"
                 :toUpdate="toUpdate"
                 @userCreated="hideModal"
                 @hidden="hidden"
@@ -125,13 +126,14 @@
         }
       },
       fetch(page) {
-        if (page > this.page) this.offset = this.offset + this.limit + 1
-        else this.offset = this.offset - this.limit - 1
+        if (page > this.page) this.offset = this.offset + this.limit
+        else this.offset = this.offset - this.limit
         this.fetchFields(this.limit, this.offset)
         this.page = page
       },
       showModal() {
         this.$refs.selectModal.show()
+        this.toUpdate = {}
       },
       hideModal() {
         this.$refs.selectModal.hide()
