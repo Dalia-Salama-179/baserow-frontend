@@ -28,7 +28,7 @@
                                         comment.params.original_row_values[key].length > 0">
                             <template v-for="(el, index) in comment.params.original_row_values[key]">
                                 <div class="color-primary-dark"
-                                   v-for="objKey in Object.keys(el)">
+                                     v-for="objKey in Object.keys(el)">
                                     <del class="old-val align-left forced-block"
                                          v-if="objKey !== 'id'"> {{ el[objKey] }}
                                     </del>
@@ -44,7 +44,7 @@
                                         comment.params.new_row_values[key].length > 0">
                             <template v-for="(el, index) in comment.params.new_row_values[key]">
                                 <div class="color-primary-dark"
-                                   v-for="objKey in Object.keys(el)">
+                                     v-for="objKey in Object.keys(el)">
                                     <!--<del class="old-val align-left forced-block"
                                          v-if="objKey !== 'id' && comment.params.original_row_values[key][index]">
                                         {{comment.params.original_row_values[key][index][objKey]}}
@@ -98,7 +98,11 @@
         return this.comment.user.id === this.userId
       },
       timeAgo() {
-        return moment.utc(this.comment.created_on).fromNow()
+        if (moment.utc(this.comment.created_on).fromNow() === 'a few seconds ago' || moment.utc(this.comment.created_on).fromNow() === 'in a few seconds') {
+          return 'in a minute'
+        } else {
+          return moment.utc(this.comment.created_on).fromNow()
+        }
       },
       localTimestamp() {
         return moment.utc(this.comment.created_on).format('L LT')

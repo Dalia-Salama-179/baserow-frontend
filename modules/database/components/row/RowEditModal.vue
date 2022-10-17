@@ -69,6 +69,7 @@
         :read-only="readOnly"
         :table="table"
         :fields="visibleFields"
+        :rerenderUpdate="rerenderUpdate"
       ></component>
     </template>
   </Modal>
@@ -132,6 +133,7 @@ export default {
       optionalRightSideBar: this.$registry
         .get('application', 'database')
         .getRowEditModalRightSidebarComponent(this.readOnly),
+      rerenderUpdate: 0
     }
   },
   computed: {
@@ -201,11 +203,7 @@ export default {
      * notify the parent component to actually update the value.
      */
     update(context) {
-      // console.log('cccccccccccccccccccccccccccccc');
-      // console.log('cccccccccccccccccccccccccccccc',this.row);
-      // console.log('cccccccccccccccccccccccccccccc',this.rowExists);
-      // console.log('cccccccccccccccccccccccccccccc',this.rowId);
-      // console.log('cccccccccccccccccccccccccccccc',this.modalRow);
+      this.rerenderUpdate++;
       context.table = this.table
       this.$emit('update', context)
     },

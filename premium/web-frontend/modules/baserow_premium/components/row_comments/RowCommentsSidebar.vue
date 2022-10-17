@@ -102,6 +102,10 @@ export default {
       type: Array,
       required: true,
     },
+    rerenderUpdate: {
+      type: Number,
+      required: false
+    }
   },
   data() {
     return {
@@ -122,23 +126,31 @@ export default {
       additionalUserData: 'auth/getAdditionalUserData',
     }),
   },
-  async created() {
-    /*if (!this.validPremiumLicense) {
-      return
-    }*/
-
-    try {
-      const tableId = this.table.id
-      const rowId = this.row.id
-      await this.$store.dispatch('row_comments/fetchRowComments', {
-        tableId,
-        rowId,
-      })
-    } catch (e) {
-      notifyIf(e, 'application')
+  watch: {
+    rerenderUpdate() {
+      this.getData()
     }
   },
+  async created() {
+    this.getData()
+  },
   methods: {
+    async getData() {
+      /*if (!this.validPremiumLicense) {
+      return
+    }*/
+      this.$store.dispatch('row_comments/clearCommentsAndLog')
+      try {
+        const tableId = this.table.id
+        const rowId = this.row.id
+        await this.$store.dispatch('row_comments/fetchRowComments', {
+          tableId,
+          rowId,
+        })
+      } catch (e) {
+        notifyIf(e, 'application')
+      }
+    },
     async postComment() {
       const comment = this.comment.trim()
       if (!comment || this.readOnly) {

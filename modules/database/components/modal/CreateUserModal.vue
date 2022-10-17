@@ -168,7 +168,7 @@
         this.hideError()
         try {
           if (this.toUpdate.hasOwnProperty('id')) {
-            const response = await stuffControlService(this.$client).updateWithValidation(this.values, this.toUpdate.id)
+            const response = await stuffControlService(this.$client).update(this.values, this.toUpdate.id)
             this.loading = false
             this.$emit('userCreated')
           } else {
@@ -186,7 +186,7 @@
       return {
         values: {
           email: { email },
-          password: { required },
+          password: { required: !!this.toUpdate.id },
           first_name: {
             minLength: minLength(2),
             maxLength: maxLength(150)
@@ -196,7 +196,7 @@
             maxLength: maxLength(150)
           },
           username: {
-            required,
+            required: !!this.toUpdate.id,
             helpers: helpers.regex('alpha', /^\S*$/),
             minLength: minLength(2),
             maxLength: maxLength(150)

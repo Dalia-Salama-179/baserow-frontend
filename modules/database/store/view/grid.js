@@ -2397,6 +2397,20 @@ export const actions = {
   setPublic({ commit }, { isPublic, publicAuthToken = null }) {
     commit('SET_PUBLIC', { isPublic, publicAuthToken })
   },
+
+  async getRows({ dispatch, getters, commit }) {
+    if (!getters.isMultiSelectActive) {
+      return
+    }
+
+    let rows = []
+
+    if (getters.areMultiSelectRowsWithinBuffer) {
+      rows = getters.getSelectedRows
+    }
+    return rows
+  },
+
 }
 
 export const getters = {
