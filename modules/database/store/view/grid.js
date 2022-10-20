@@ -1571,7 +1571,9 @@ export const actions = {
   ) {
     // console.log('row = row = row', row);
     // console.log('field = field = field', field);
-    if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
+
+
+    /*if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
       // console.log('row = row = row', row);
       // console.log('value = value = value', value);
       const { data } = await RowService(this.$client).fetchAll({
@@ -1621,7 +1623,9 @@ export const actions = {
           row.duplicated = true
         }
       }
-    }
+    }*/
+
+
     // Immediately updated the store with the updated row field
     // value.
     commit('UPDATE_ROW_FIELD_VALUE', { row, field, value })

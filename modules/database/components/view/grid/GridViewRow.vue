@@ -11,19 +11,16 @@
 
         <!-- 'grid-view__row--warning':
                 !row._.matchFilters || !row._.matchSortings || !row._.matchSearch, -->
-        <div
-                class="grid-view__row"
-                :class="{
-        'grid-view__row--selected': row._.selectedBy.length > 0,
-        'grid-view__row--loading': row._.loading,
-        'grid-view__row--hover': row._.hover,
-        'grid-view__row--warning':
-          !row._.matchFilters || !row._.matchSearch || 
-          row._.duplicated || row['field_363'],
-      }"
-                @mouseover="$emit('row-hover', { row, value: true })"
-                @mouseleave="$emit('row-hover', { row, value: false })"
-                @contextmenu.prevent="$emit('row-context', { row, event: $event })"
+        <div class="grid-view__row"
+             :class="{
+                'grid-view__row--selected': row._.selectedBy.length > 0,
+                'grid-view__row--loading': row._.loading,
+                'grid-view__row--hover': row._.hover,
+                'grid-view__row--warning':!row._.matchFilters || !row._.matchSearch || row._.duplicated || row['field_363'],
+            }"
+             @mouseover="$emit('row-hover', { row, value: true })"
+             @mouseleave="$emit('row-hover', { row, value: false })"
+             @contextmenu.prevent="$emit('row-context', { row, event: $event })"
         >
             <!-- !row._.matchFilters || !row._.matchSortings || !row._.matchSearch -->
             <template v-if="includeRowDetails">
