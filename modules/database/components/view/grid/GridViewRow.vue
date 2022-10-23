@@ -338,14 +338,15 @@
             this.$client.post(
               `t2/crunch_base_founder/${this.table.id}/${r.id}/`,
               {
-                cb_url_field_name: 'field_320',
-                cb_uuid_field_name: 'field_363',
-                company_prev_raised_count_field_name: 'field_657',
-                company_total_raised_value_field_name: 'field_658',
-                cb_updated_at: 'field_656',
-                organization_of_interest_field_name: 'field_487',
-                org_founder_map_founding_date_field_name: 'field_476',
-                organization_of_intrest_cb_uid: 'field_367'
+                'cb_url_field_name': 'field_320',
+                'cb_uuid_field_name': 'field_363',
+                'company_prev_raised_count_field_name': 'field_657',
+                'company_total_raised_value_field_name': 'field_658',
+                'cb_updated_at': 'field_656',
+                'organization_of_interest_link_table': 'field_487',
+                'org_founder_map_founding_date_field_name': 'field_476',
+                'organization_of_interest_from_org_founder_map': 'field_484',
+                'organization_of_interest_cb_link': 'field_367',
               }
             ).then(() => {
               let refresh = JSON.parse(localStorage.getItem('refresh'))
@@ -360,13 +361,15 @@
           this.$client.post(
             `t2/crunch_base_founder/${this.table.id}/${row.id}/`,
             {
-              cb_url_field_name: 'field_320',
-              cb_uuid_field_name: 'field_363',
-              company_prev_raised_count_field_name: 'field_657',
-              company_total_raised_value_field_name: 'field_658',
-              cb_updated_at: 'field_656',
-              organization_of_interest_field_name: 'field_487',
-              org_founder_map_founding_date_field_name: 'field_476'
+              'cb_url_field_name': 'field_320',
+              'cb_uuid_field_name': 'field_363',
+              'company_prev_raised_count_field_name': 'field_657',
+              'company_total_raised_value_field_name': 'field_658',
+              'cb_updated_at': 'field_656',
+              'organization_of_interest_link_table': 'field_487',
+              'org_founder_map_founding_date_field_name': 'field_476',
+              'organization_of_interest_from_org_founder_map': 'field_484',
+              'organization_of_interest_cb_link': 'field_367',
             }
           ).then((response) => {
             // console.log('response',response);
