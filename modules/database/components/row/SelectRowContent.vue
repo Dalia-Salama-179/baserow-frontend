@@ -344,6 +344,7 @@ export default {
         return
       }
 
+      console.log(row)
       this.$emit('selected', { row, primary, fields })
     },
     /**

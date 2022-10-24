@@ -346,7 +346,7 @@
                 'organization_of_interest_link_table': 'field_487',
                 'org_founder_map_founding_date_field_name': 'field_476',
                 'organization_of_interest_from_org_founder_map': 'field_484',
-                'organization_of_interest_cb_link': 'field_363',
+                'organization_of_interest_cb_link': 'field_604',
               }
             ).then(() => {
               let refresh = JSON.parse(localStorage.getItem('refresh'))
@@ -369,7 +369,7 @@
               'organization_of_interest_link_table': 'field_487',
               'org_founder_map_founding_date_field_name': 'field_476',
               'organization_of_interest_from_org_founder_map': 'field_484',
-              'organization_of_interest_cb_link': 'field_363',
+              'organization_of_interest_cb_link': 'field_604',
             }
           ).then((response) => {
             // console.log('response',response);
