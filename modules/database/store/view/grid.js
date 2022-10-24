@@ -1168,11 +1168,12 @@ export const actions = {
     commit('SET_ADD_ROW_HOVER', value)
   },
   setSelectedCell({ commit, state, dispatch }, { rowId, fieldId }) {
-    if (fieldId) {
+    if (fieldId && fieldId !== -1) {
       commit('SET_SELECTED_FIELD', fieldId)
       commit('SET_SELECTED_ROW', rowId)
     }
-    commit('SET_SELECTED_CELL', { rowId, fieldId })
+    if (fieldId !== -1)
+      commit('SET_SELECTED_CELL', { rowId, fieldId })
   },
   setMultiSelectHolding({ commit }, value) {
     commit('SET_MULTISELECT_HOLDING', value)
