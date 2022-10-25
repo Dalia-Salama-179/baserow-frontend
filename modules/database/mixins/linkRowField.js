@@ -5,13 +5,21 @@ export default {
      * Removes an existing relation from the value.
      */
     removeValue(event, value, id) {
-      const newValue = JSON.parse(JSON.stringify(value))
-      const index = newValue.findIndex((item) => item.id === id)
+      const val = JSON.parse(JSON.stringify(value))
+      const index = val.findIndex((item) => item.id === id)
       if (index === -1) {
         return
       }
 
-      newValue.splice(index, 1)
+      val.splice(index, 1)
+
+      let newValue = []
+      if (val.length > 0) {
+        val.map(el => {
+          newValue.push(el.id)
+        })
+      }
+
       this.$emit('update', newValue, value)
     },
     /**
@@ -28,8 +36,15 @@ export default {
 
       // Prepare the new value with all the relations and emit that value to the
       // parent.
-      const newValue = JSON.parse(JSON.stringify(value))
-      console.log(newValue)
+      // const newValue = JSON.parse(JSON.stringify(value))
+      const val = JSON.parse(JSON.stringify(value))
+      let newValue = []
+      if (val.length > 0) {
+        val.map(el => {
+          newValue.push(el.id)
+        })
+      }
+
       const rowValue = this.$registry
         .get('field', primary.type)
         .toHumanReadableString(primary, row[`field_${primary.id}`]);
