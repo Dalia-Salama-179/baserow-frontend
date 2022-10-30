@@ -1731,6 +1731,172 @@ export const actions = {
     }
     // commit('UPDATE_ROW_IN_BUFFER', { row, isD: true })
   },
+
+  async updateForeignRowValue(
+    { commit, dispatch },
+    { table, view, row, field, fields, primary, value, oldValue, values }
+  ) {
+    // console.log('row = row = row', row);
+    // console.log('field = field = field', field);
+
+
+    /*if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
+      // console.log('row = row = row', row);
+      // console.log('value = value = value', value);
+      const { data } = await RowService(this.$client).fetchAll({
+        tableId: table.id,
+        search: value[0].value,
+      });
+      if (data.results.length) {
+        let newArray = [...data.results]
+        let bigCities = newArray.filter(function (e) {
+          return e['field_357'] === value[0].value && e['field_604'] === row['field_604'] && e['field_357'] != '' && row['field_357'] != '' && e['field_604'] != '' && row.id != e.id;
+        });
+        if (bigCities.length) {
+          row.duplicated = true
+        }
+      }
+    }
+    if (table.name == 'organizations' && field.name == 'Name' || table.name == 'organizations' && field.name == 'Name' && value && value[0]) {
+      // console.log('row = row = row', row);
+      // console.log('value = value = value', value);
+      const { data } = await RowService(this.$client).fetchAll({
+        tableId: table.id,
+        search: value[0] && value[0].value ? value[0].value : value,
+      });
+      if (data.results.length) {
+        let newArray = [...data.results]
+        let bigCities = newArray.filter(function (e) {
+          return e['field_357'] === value[0] && value[0].value ? value[0].value : value && e['field_604'] === row['field_604'] && row.id != e.id;
+        });
+        if (bigCities.length) {
+          row.duplicated = true
+        }
+      }
+    }
+    if (table.name == 'organizations' && field.name == 'org_crunchbase_url' || table.name == 'organizations' && field.name == 'org_crunchbase_url' && value && value[0]) {
+      // console.log('row = row = row', row);
+      // console.log('value = value = value', value);
+      const { data } = await RowService(this.$client).fetchAll({
+        tableId: table.id,
+        search: value[0] && value[0].value ? value[0].value : value,
+      });
+      if (data.results.length) {
+        let newArray = [...data.results]
+        let bigCities = newArray.filter(function (e) {
+          return e['field_604'] === value[0] && value[0].value ? value[0].value : value && e['field_357'] === row['field_357'] && row.id != e.id;
+        });
+        if (bigCities.length) {
+          row.duplicated = true
+        }
+      }
+    }*/
+
+
+    // Immediately updated the store with the updated row field
+    // value.
+    commit('UPDATE_ROW_FIELD_VALUE', { row, field, value })
+
+    const optimisticFieldValues = {}
+    const valuesBeforeOptimisticUpdate = {}
+
+    // Store the before value of the field that gets updated
+    // in case we need to rollback changes
+    valuesBeforeOptimisticUpdate[`field_${field.id}`] = oldValue
+
+    let fieldsToCallOnRowChange = [...fields, primary]
+
+    // We already added the updated field values to the store
+    // so we can remove the field from our fieldsToCallOnRowChange
+    fieldsToCallOnRowChange = fieldsToCallOnRowChange.filter((el) => {
+      return el.id !== field.id
+    })
+
+    fieldsToCallOnRowChange.forEach((fieldToCall) => {
+      const fieldType = this.$registry.get('field', fieldToCall._.type.type);
+      const fieldID = `field_${fieldToCall.id}`
+      const currentFieldValue = row[fieldID]
+      const optimisticFieldValue = fieldType.onRowChange(
+        row,
+        fieldToCall,
+        currentFieldValue
+      )
+
+      if (currentFieldValue !== optimisticFieldValue) {
+        optimisticFieldValues[fieldID] = optimisticFieldValue
+        valuesBeforeOptimisticUpdate[fieldID] = currentFieldValue
+      }
+    })
+    commit('UPDATE_ROW_IN_BUFFER', {
+      row,
+      values: { ...optimisticFieldValues },
+    })
+    dispatch('onRowChange', { view, row, fields, primary })
+    const fieldType = this.$registry.get('field', field._.type.type)
+    const newValue = fieldType.prepareValueForUpdate(field, value)
+    // const values = {};
+    // values[`field_${field.id}`] = newValue
+    // if (field.name == 'organization' && value && value[0] && table.name == 'org_founder_map') {
+    //   values[`field_${primary.id}`] = value[0].value
+    // }
+    // console.log('table', table);
+    // console.log('field', field);
+    // console.log('row', row);
+    // console.log('values', values);
+    // console.log('value[0]', value[0]);
+    // if (field.name == 'person' && value && value[0] && table.name == 'Founders') {
+    //   // Change 598 to 487 -- T2DS-29
+    //   values[`field_${primary.id}`] = `${row['field_487'][0] ? row['field_487'][0].value : ''}_${value[0].value}`
+    // }
+    // if (field.name == 'organization_of_interest' && value && value[0] && table.name == 'Founders') {
+    //   values[`field_${primary.id}`] = `${value[0].value}_${row['field_441'][0] ? row['field_441'][0].value : ''}`
+    // }
+    // if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
+    //   // const { data } = await RowService(this.$client).fetchAll({
+    //   //   tableId: table.id,
+    //   //   search: value[0].value,
+    //   // });
+    //   // if (data.results.length) {
+    //   //   console.log("data > search", data);
+    //   //   row.duplicated = true
+    //   // }
+    //   // console.log(`field_${primary.id}`);
+    //   values[`field_${primary.id}`] = value[0].value
+    // }
+    // if (field.name == 'first_name' && value && value[0] && table.name == 'person') {
+    //   values[`field_${primary.id}`] = `${values['field_418']}_${row['field_419']}*${row['field_422']}`
+    // }
+    // if (field.name == 'twitter_handle' && value && value[0] && table.name == 'person') {
+    //   values[`field_${primary.id}`] = `${row['field_418']}_${row['field_419']}*${values['field_422']}`
+    // }
+    // if (field.name == 'last_name' && value && value[0] && table.name == 'person') {
+    //   values[`field_${primary.id}`] = `${row['field_418']}_${values['field_419']}*${row['field_422']}`
+    // }
+    try {
+      // if (row.duplicated) values['field_363'] = true
+      // else values['field_363'] = false
+      const updatedRow = await RowService(this.$client).update(
+        table.id,
+        row.id,
+        values
+      )
+      // console.log(row);
+      commit('UPDATE_ROW_IN_BUFFER', { row, values: updatedRow.data })
+      dispatch('onRowChange', { view, row, fields, primary })
+      dispatch('fetchAllFieldAggregationData', {
+        view,
+      })
+    } catch (error) {
+      commit('UPDATE_ROW_IN_BUFFER', {
+        row,
+        values: { ...valuesBeforeOptimisticUpdate },
+      })
+
+      dispatch('onRowChange', { view, row, fields, primary })
+      throw error
+    }
+    // commit('UPDATE_ROW_IN_BUFFER', { row, isD: true })
+  },
   /**
    * This action is used by the grid view to change multiple cells when pasting
    * multiple values. It figures out which cells need to be changed, makes a request

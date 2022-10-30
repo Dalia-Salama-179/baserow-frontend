@@ -68,6 +68,8 @@
     ></SelectRowModal>
     <ForeignRowEditModal
       ref="rowEditModal"
+      :view="$attrs.view"
+      :outerRow="$attrs.row"
       :table-id="field.link_row_table"
       @hidden="hideModal"
     ></ForeignRowEditModal>

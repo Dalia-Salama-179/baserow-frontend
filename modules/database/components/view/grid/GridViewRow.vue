@@ -105,6 +105,7 @@
                     :key="'row-field-' + row.id.toString() + '-' + field.id.toString()"
                     :field="field"
                     :row="row"
+                    :view="view"
                     :state="state"
                     :multi-select-position="getMultiSelectPosition(row.id, field)"
                     :read-only="readOnly"
@@ -142,6 +143,10 @@
     mixins: [gridViewHelpers],
     props: {
       table: {
+        type: Object,
+        required: true
+      },
+      view: {
         type: Object,
         required: true
       },

@@ -18,7 +18,7 @@ import RowEditModal from '@baserow/modules/database/components/row/RowEditModal'
 import FieldService from '@baserow/modules/database/services/field'
 import RowService from '@baserow/modules/database/services/row'
 import { populateField } from '@baserow/modules/database/store/field'
-
+import { notifyIf } from '@baserow/modules/core/utils/error'
 /**
  * This component can open the row edit modal having the fields of that table in the
  * fields store. It will make a request to the backend fetching the missing
@@ -32,6 +32,12 @@ export default {
       type: Number,
       required: true,
     },
+    view: {
+      type: Object
+    },
+    outerRow: {
+      type: Object
+    },
   },
   data() {
     return {
@@ -43,23 +49,31 @@ export default {
   },
   methods: {
    async udate(event){
-      // console.log('cccccccccccccccccccccc');
-      // console.log(event);
-      // console.log(this.table);
-      // console.log(this.fields);
-      // console.log(this.primary);
-      // console.log(this.fetchedTableAndFields);
+
       let objs ={}
       objs[`field_${event.field.id}`] = event.value
-      // console.log(objs);
-      // console.log(event.table.id);
-      // console.log(event.row.id);
-      const { data } = await RowService(this.$client).update(
-          event.table.id,
-          event.row.id,
-          objs
-      )
-      // console.log(data);
+      // const { data } = await RowService(this.$client).update(
+      //     event.table.id,
+      //     event.row.id,
+      //     objs
+      // )
+     try {
+       await this.$store.dispatch(
+               'page/view/grid/updateForeignRowValue', {
+                 table: this.table,
+                 view: this.view,
+                 fields: this.fields,
+                 primary: this.primary,
+                 row: this.outerRow,
+                 field: event.field,
+                 value: event.value,
+                 oldValue: event.oldValue,
+                 values: objs
+               }
+       )
+     } catch (error) {
+       notifyIf(error, 'field')
+     }
     },
     async fetchTableAndFields() {
       // Find the table in the applications to prevent a request to the backend and to
