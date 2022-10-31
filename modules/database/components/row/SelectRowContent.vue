@@ -128,6 +128,7 @@
             :isLength="rows.length"
             :table="table"
             :fields="newFields"
+            :primary="primary"
             @update="update"
           >
           </RowEditModalFieldsListCreate> 
