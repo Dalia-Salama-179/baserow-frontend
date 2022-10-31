@@ -45,6 +45,7 @@
       ref="rowEditModal"
       :table-id="field.link_row_table"
       @hidden="modalOpen = false"
+      @update="$emit('update')"
     ></ForeignRowEditModal>
   </div>
 </template>

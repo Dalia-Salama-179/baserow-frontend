@@ -47,11 +47,41 @@ export default {
      // console.log(objs);
      // console.log(event.table.id);
      // console.log(event.row.id);
+     let toSendObj = {}
+
+     Object.keys(objs).map(key => {
+       if (Array.isArray(objs[key])) {
+         toSendObj[key] = []
+         objs[key].map(el => {
+           toSendObj[key].push(el.id)
+         })
+       } else {
+         toSendObj[key] = objs[key]
+       }
+     })
+
      const { data } = await RowService(this.$client).update(
              event.table.id,
              event.row.id,
-             objs
+             toSendObj
      )
+
+     try {
+       await this.$store.dispatch(
+               'page/view/grid/updateRowValue', {
+                 table: this.table,
+                 fields: this.fields,
+                 primary: this.primary,
+                 row: event.row,
+                 field: event.field,
+                 value: event.value,
+                 oldValue: event.oldValue,
+                 view: this.view
+               }
+       )
+     } catch (error) {
+       // notifyIf(error, 'field')
+     }
     },
     async fetchTableAndFields() {
       // Find the table in the applications to prevent a request to the backend and to

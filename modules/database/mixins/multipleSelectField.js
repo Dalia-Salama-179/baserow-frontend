@@ -24,14 +24,7 @@ export default {
      */
     removeValue(event, currentValues, itemIdToRemove) {
       const vals = currentValues.filter((item) => item.id !== itemIdToRemove)
-
-      let ids = []
-      if (vals.length) {
-        vals.map(el => {
-          ids.push(el.id)
-        })
-      }
-      this.$emit('update', ids, currentValues)
+      this.$emit('update', vals, currentValues)
     },
     /**
      * Checks if the new value is a valid select_option id for the field and if
@@ -51,15 +44,8 @@ export default {
         newValue.push(newOption)
       }
 
-      let ids = []
-      if (newValue.length) {
-        newValue.map(el => {
-          ids.push(el.id)
-        })
-      }
-
       if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
-        this.$emit('update', ids, oldValue)
+        this.$emit('update', newValue, oldValue)
       }
     },
   },
