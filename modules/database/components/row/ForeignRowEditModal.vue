@@ -7,7 +7,6 @@
     :rows="[]"
     :visible-fields="fields"
     :primary="primary"
-    :outerRow="outerRow"
     @update="udate"
     @hidden="$emit('hidden', $event)"
   ></RowEditModal>
