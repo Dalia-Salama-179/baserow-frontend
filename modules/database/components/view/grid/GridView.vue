@@ -369,7 +369,6 @@
                           value,
                           oldValue
                         }) {
-        console.log(row)
         // console.log('updateupdateupdateupdateupdateupdate');
         // console.log('this.fields',this.fields);
         // console.log('this.table',this.table);

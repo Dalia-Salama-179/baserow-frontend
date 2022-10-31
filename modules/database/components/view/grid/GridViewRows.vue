@@ -10,7 +10,6 @@
       v-for="(row, index) in rows"
       :key="`row-${row.id}`"
       :row="row"
-      :view="view"
       :fields="fields"
       :all-fields="allFields"
       :field-widths="fieldWidths"

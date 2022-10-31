@@ -55,8 +55,6 @@
       :is="$options.methods.getComponent(parent, props)"
       v-else
       :table="props.table"
-      :view="props.view"
-      :row="props.row"
       ref="selectedField"
       :field="props.field"
       :value="props.row['field_' + props.field.id]"

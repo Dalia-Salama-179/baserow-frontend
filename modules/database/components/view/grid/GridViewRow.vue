@@ -105,7 +105,6 @@
                     :key="'row-field-' + row.id.toString() + '-' + field.id.toString()"
                     :field="field"
                     :row="row"
-                    :view="view"
                     :state="state"
                     :multi-select-position="getMultiSelectPosition(row.id, field)"
                     :read-only="readOnly"
