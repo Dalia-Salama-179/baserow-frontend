@@ -145,10 +145,6 @@
         type: Object,
         required: true
       },
-      view: {
-        type: Object,
-        required: true
-      },
       row: {
         type: Object,
         required: true
