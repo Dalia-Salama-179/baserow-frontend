@@ -18,6 +18,8 @@ import RowEditModal from '@baserow/modules/database/components/row/RowEditModal'
 import FieldService from '@baserow/modules/database/services/field'
 import RowService from '@baserow/modules/database/services/row'
 import { populateField } from '@baserow/modules/database/store/field'
+import { notifyIf } from '@baserow/modules/core/utils/error'
+
 /**
  * This component can open the row edit modal having the fields of that table in the
  * fields store. It will make a request to the backend fetching the missing
@@ -80,7 +82,7 @@ export default {
                }
        )
      } catch (error) {
-       // notifyIf(error, 'field')
+       notifyIf(error, 'field')
      }
     },
     async fetchTableAndFields() {

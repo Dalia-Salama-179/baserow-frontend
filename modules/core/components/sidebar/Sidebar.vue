@@ -152,6 +152,17 @@
                                 ></GroupContext>
                             </div>
                         </li>
+
+                        <li v-if="isSuperuser" class="tree__item">
+                            <div class="tree__action sidebar__action">
+                                <a class="tree__link"
+                                   @click="showTables">
+                                    <i class="tree__icon fas fa-users-cog"></i>
+                                    <span class="sidebar__item-name">Tables Control</span>
+                                </a>
+                            </div>
+                        </li>
+
                         <li v-if="isSuperuser" class="tree__item">
                             <div class="tree__action sidebar__action">
                                 <a class="tree__link"
@@ -369,6 +380,13 @@
         this.$nuxt.$router.push(
           {
             name: 'stuff-control'
+          }
+        )
+      },
+      showTables() {
+        this.$nuxt.$router.push(
+          {
+            name: 'tables-control'
           }
         )
       },

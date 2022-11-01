@@ -60,4 +60,9 @@ export const routes = [
     path: '/stuff-control',
     component: path.resolve(__dirname, 'pages/stuff-control.vue'),
   },
+  {
+    name: 'tables-control',
+    path: '/tables-control',
+    component: path.resolve(__dirname, 'pages/tables-control.vue'),
+  },
 ]
