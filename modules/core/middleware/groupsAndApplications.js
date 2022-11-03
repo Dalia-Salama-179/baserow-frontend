@@ -33,6 +33,7 @@ export default async function GroupsAndApplications({ store, req, app }) {
     // If the applications haven't been loaded we will also load them all.
     if (!store.getters['application/isLoaded']) {
       await store.dispatch('application/fetchAll')
+      await store.dispatch('tablesControl/setAll')
     }
   }
 }

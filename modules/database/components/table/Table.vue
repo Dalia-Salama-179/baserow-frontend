@@ -47,7 +47,7 @@
           ></ViewsContext>
         </li>
         <li
-          v-if="hasSelectedView && !readOnly"
+          v-if="hasSelectedView && !readOnly && tables.find(ta => ta.table.id === table.id).can_edit"
           class="header__filter-item header__filter-item--no-margin-left"
         >
           <a
@@ -265,6 +265,9 @@ export default {
           .some((deco) => deco.isCompatible(this.view))
       )
     },
+    tables() {
+      return this.$store.getters['tablesControl/getAll']
+    }
   },
   watch: {
     tableLoading(value) {

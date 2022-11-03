@@ -12,15 +12,16 @@
         @change="renameTable(database, table, $event)"
       ></Editable>
     </a>
-    <a
-      v-show="!database._.loading"
-      class="tree__options"
-      @click="$refs.context.toggle($event.currentTarget, 'bottom', 'right', 0)"
-      @mousedown.stop
-    >
-      <i class="fas fa-ellipsis-v"></i>
-    </a>
-    <Context ref="context">
+    <template v-show="!database._.loading">
+      <a v-if="editable && editable.can_edit"
+          class="tree__options"
+          @click="$refs.context.toggle($event.currentTarget, 'bottom', 'right', 0)"
+          @mousedown.stop
+      >
+        <i class="fas fa-ellipsis-v"></i>
+      </a>
+    </template>
+    <Context ref="context" v-if="editable && editable.can_edit">
       <div class="context__menu-title">{{ table.name }}</div>
       <ul class="context__menu">
         <li>
@@ -74,6 +75,10 @@ export default {
       type: Object,
       required: true,
     },
+    editable: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {

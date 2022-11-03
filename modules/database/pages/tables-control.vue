@@ -99,6 +99,7 @@
           }, id)
           this.fetchFields(this.limit, this.offset)
           this.loading = false
+          await this.$store.dispatch('tablesControl/setAll')
         } catch (e) {
           this.loading = false
         }
