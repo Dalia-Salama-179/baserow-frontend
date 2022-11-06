@@ -163,10 +163,10 @@
                             </div>
                         </li>
 
-                        <li v-if="isSuperuser" class="tree__item">
+                        <li v-if="isStaff" class="tree__item">
                             <div class="tree__action sidebar__action">
                                 <a class="tree__link"
-                                   @click="superUser">
+                                   @click="staffControlHandler">
                                     <i class="tree__icon fas fa-users-cog"></i>
                                     <span class="sidebar__item-name">Stuff Control</span>
                                 </a>
@@ -376,7 +376,7 @@
       })
     },
     methods: {
-      superUser() {
+      staffControlHandler() {
         this.$nuxt.$router.push(
           {
             name: 'stuff-control'

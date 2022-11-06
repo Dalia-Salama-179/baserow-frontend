@@ -13,7 +13,7 @@
       ></Editable>
     </a>
     <template v-show="!database._.loading">
-      <a v-if="editable && editable.can_edit"
+      <a v-if="(editable && editable.can_edit) || user.is_superuser"
           class="tree__options"
           @click="$refs.context.toggle($event.currentTarget, 'bottom', 'right', 0)"
           @mousedown.stop
@@ -21,7 +21,7 @@
         <i class="fas fa-ellipsis-v"></i>
       </a>
     </template>
-    <Context ref="context" v-if="editable && editable.can_edit">
+    <Context ref="context" v-if="(editable && editable.can_edit) || user.is_superuser">
       <div class="context__menu-title">{{ table.name }}</div>
       <ul class="context__menu">
         <li>
@@ -62,10 +62,16 @@
 import { notifyIf } from '@baserow/modules/core/utils/error'
 import ExportTableModal from '@baserow/modules/database/components/export/ExportTableModal'
 import WebhookModal from '@baserow/modules/database/components/webhook/WebhookModal'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'SidebarItem',
   components: { ExportTableModal, WebhookModal },
+  computed: {
+    ...mapGetters({
+      user: 'auth/getUserObject',
+    }),
+  },
   props: {
     database: {
       type: Object,

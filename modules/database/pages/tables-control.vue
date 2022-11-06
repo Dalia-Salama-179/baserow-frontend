@@ -40,6 +40,7 @@
 
   export default {
     name: 'tables-control',
+    middleware: 'superUser',
     components: {Paginator},
     layout: 'app',
     data() {
@@ -56,12 +57,12 @@
             field: 'table.name'
           },
           {
-            label: 'Editable',
-            field: 'can_edit'
-          },
-          {
             label: 'Created At',
             field: 'created_on'
+          },
+          {
+            label: 'Editable',
+            field: 'can_edit'
           },
         ],
         totalPages: 0,

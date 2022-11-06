@@ -43,14 +43,14 @@
                         </div>
                     </FormElement>
 
-                    <FormElement :error="fieldHasErrors('username')" class="control">
+                    <!--<FormElement :error="fieldHasErrors('username')" class="control">
                         <label class="control__label">{{ $t('field.username') }}</label>
                         <div class="control__elements">
                             <input
                                     v-model="values.username"
-                                    :class="{ 'input--error': fieldHasErrors('username') }"
+                                    :class="{ 'input&#45;&#45;error': fieldHasErrors('username') }"
                                     type="text"
-                                    class="input input--large"
+                                    class="input input&#45;&#45;large"
                                     @blur="$v.values.username.$touch()"
                             />
                             <div v-if="fieldHasErrors('username')" class="error">
@@ -63,7 +63,7 @@
                                 </p>
                             </template>
                         </div>
-                    </FormElement>
+                    </FormElement>-->
 
                     <FormElement :error="fieldHasErrors('email')" class="control">
                         <label class="control__label">{{ $t('field.emailAddress') }}</label>
@@ -154,6 +154,9 @@
         if (this.toUpdate.hasOwnProperty('id')) {
           this.values = { ...this.toUpdate }
         }
+      },
+      'values.email'(newVal) {
+        this.$set(this.values, 'username', newVal)
       }
     },
     methods: {
@@ -195,12 +198,12 @@
             minLength: minLength(2),
             maxLength: maxLength(150)
           },
-          username: {
+          /*username: {
             required: !!this.toUpdate.id,
             helpers: helpers.regex('alpha', /^\S*$/),
             minLength: minLength(2),
             maxLength: maxLength(150)
-          }
+          }*/
         }
       }
     }

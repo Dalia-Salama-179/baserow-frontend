@@ -47,7 +47,7 @@
           ></ViewsContext>
         </li>
         <li
-          v-if="hasSelectedView && !readOnly && tables.find(ta => ta.table.id === table.id).can_edit"
+          v-if="hasSelectedView && !readOnly && (tables.find(ta => ta.table.id === table.id).can_edit || user.is_superuser)"
           class="header__filter-item header__filter-item--no-margin-left"
         >
           <a
@@ -163,6 +163,7 @@ import ViewDecoratorMenu from '@baserow/modules/database/components/view/ViewDec
 import ViewSearch from '@baserow/modules/database/components/view/ViewSearch'
 import EditableViewName from '@baserow/modules/database/components/view/EditableViewName'
 import ShareViewLink from '@baserow/modules/database/components/view/ShareViewLink'
+import { mapGetters } from 'vuex'
 
 /**
  * This page component is the skeleton for a table. Depending on the selected view it
@@ -267,7 +268,10 @@ export default {
     },
     tables() {
       return this.$store.getters['tablesControl/getAll']
-    }
+    },
+    ...mapGetters({
+      user: 'auth/getUserObject',
+    }),
   },
   watch: {
     tableLoading(value) {
