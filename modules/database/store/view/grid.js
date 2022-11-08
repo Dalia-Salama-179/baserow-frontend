@@ -1678,12 +1678,13 @@ export const actions = {
     // console.log('row', row);
     // console.log('values', values);
     // console.log('value[0]', value[0]);
-    if (field.name == 'person' && value && value[0] && table.name == 'Founders') {
+    console.log(value)
+    if (field.name == 'person' && value && table.name == 'Founders') {
       // Change 598 to 487 -- T2DS-29
-      values[`field_${primary.id}`] = `${row['field_487'][0] ? row['field_487'][0].value : ''}_${value[0].value}`
+      values[`field_${primary.id}`] = `${row['field_487'][0] ? row['field_487'][0].value+'_' : ''}${value[0]? value[0].value: ''}`
     }
-    if (field.name == 'organization_of_interest' && value && value[0] && table.name == 'Founders') {
-      values[`field_${primary.id}`] = `${value[0].value}_${row['field_441'][0] ? row['field_441'][0].value : ''}`
+    if (field.name == 'organization_of_interest' && value && table.name == 'Founders') {
+      values[`field_${primary.id}`] = `${value[0]? value[0].value+'_': ''}${row['field_441'][0] ? row['field_441'][0].value : ''}`
     }
     if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
       // const { data } = await RowService(this.$client).fetchAll({
@@ -1698,13 +1699,13 @@ export const actions = {
       values[`field_${primary.id}`] = value[0].value
     }
     if (field.name == 'first_name' && value && value[0] && table.name == 'person') {
-      values[`field_${primary.id}`] = `${values['field_418']}_${row['field_419']}*${row['field_422']}`
+      values[`field_${primary.id}`] = `${values['field_418']? values['field_418']+'_': ''}${row['field_419']? row['field_419']+'*': ''}${row['field_422']? row['field_422']: ''}`
     }
     if (field.name == 'twitter_handle' && value && value[0] && table.name == 'person') {
-      values[`field_${primary.id}`] = `${row['field_418']}_${row['field_419']}*${values['field_422']}`
+      values[`field_${primary.id}`] = `${row['field_418']? row['field_418']+'_': ''}${row['field_419']? row['field_419']+'*': ''}${values['field_422']?values['field_422']: ''}`
     }
     if (field.name == 'last_name' && value && value[0] && table.name == 'person') {
-      values[`field_${primary.id}`] = `${row['field_418']}_${values['field_419']}*${row['field_422']}`
+      values[`field_${primary.id}`] = `${row['field_418']? row['field_418']+'_': ''}${values['field_419']? values['field_419']+'*': ''}${row['field_422']? row['field_422']: ''}`
     }
     try {
       if (row.duplicated) values['field_363'] = true
