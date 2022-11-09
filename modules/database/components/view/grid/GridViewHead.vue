@@ -21,29 +21,32 @@
       :include-field-width-handles="includeFieldWidthHandles"
       :read-only="readOnly"
       :store-prefix="storePrefix"
+      :editable="editable"
       @refresh="$emit('refresh', $event)"
       @dragging="$emit('dragging', $event)"
       @field-created="$emit('field-created', $event)"
       @update-inserted-field-order="updateInsertedFieldOrder"
     ></GridViewFieldType>
-    <div
-      v-if="includeAddField && !readOnly"
-      class="grid-view__column"
-      :style="{ width: 100 + 'px' }"
-    >
-      <a
-        ref="createFieldContextLink"
-        class="grid-view__add-column"
-        @click="$refs.createFieldContext.toggle($refs.createFieldContextLink)"
+    <template v-if="editable">
+      <div
+              v-if="includeAddField && !readOnly"
+              class="grid-view__column"
+              :style="{ width: 100 + 'px' }"
       >
-        <i class="fas fa-plus"></i>
-      </a>
-      <CreateFieldContext
-        ref="createFieldContext"
-        :table="table"
-        @field-created="$emit('field-created', $event)"
-      ></CreateFieldContext>
-    </div>
+        <a
+                ref="createFieldContextLink"
+                class="grid-view__add-column"
+                @click="$refs.createFieldContext.toggle($refs.createFieldContextLink)"
+        >
+          <i class="fas fa-plus"></i>
+        </a>
+        <CreateFieldContext
+                ref="createFieldContext"
+                :table="table"
+                @field-created="$emit('field-created', $event)"
+        ></CreateFieldContext>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -99,6 +102,14 @@ export default {
       type: Boolean,
       required: true,
     },
+  },
+  computed: {
+    tables() {
+      return this.$store.getters['tablesControl/getAll']
+    },
+    editable() {
+      return this.tables.find(ta => ta.table.id === this.table.id).can_edit
+    }
   },
   methods: {
     /**

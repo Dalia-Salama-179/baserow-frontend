@@ -25,112 +25,114 @@
       <div v-if="field.error" class="grid-view__description-icon-error">
         <i v-tooltip="field.error" class="fas fa-exclamation-triangle"></i>
       </div>
-      <a
-        v-if="!readOnly"
-        ref="contextLink"
-        class="grid-view__description-options"
-        @click="$refs.context.toggle($refs.contextLink, 'bottom', 'right', 0)"
-        @mousedown.stop
-      >
-        <i class="fas fa-caret-down"></i>
-      </a>
-      <FieldContext
-        v-if="!readOnly"
-        ref="context"
-        :table="table"
-        :field="field"
-        @update="$emit('refresh', $event)"
-        @delete="$emit('refresh')"
-      >
-        <li v-if="!field.primary && !readOnly">
-          <a
-            ref="insertLeftLink"
-            @click="
+      <template v-if="editable || user.is_superuser">
+        <a
+                v-if="!readOnly"
+                ref="contextLink"
+                class="grid-view__description-options"
+                @click="$refs.context.toggle($refs.contextLink, 'bottom', 'right', 0)"
+                @mousedown.stop
+        >
+          <i class="fas fa-caret-down"></i>
+        </a>
+        <FieldContext
+                v-if="!readOnly"
+                ref="context"
+                :table="table"
+                :field="field"
+                @update="$emit('refresh', $event)"
+                @delete="$emit('refresh')"
+        >
+          <li v-if="!field.primary && !readOnly">
+            <a
+                    ref="insertLeftLink"
+                    @click="
               $refs.insertFieldContext.toggle($refs.insertLeftLink, 'left')
             "
-          >
-            <i class="context__menu-icon fas fa-fw fa-arrow-left"></i>
-            {{ $t('gridViewFieldType.insertLeft') }}
-          </a>
-        </li>
-        <li v-if="!field.primary && !readOnly">
-          <a
-            ref="insertRightLink"
-            @click="
+            >
+              <i class="context__menu-icon fas fa-fw fa-arrow-left"></i>
+              {{ $t('gridViewFieldType.insertLeft') }}
+            </a>
+          </li>
+          <li v-if="!field.primary && !readOnly">
+            <a
+                    ref="insertRightLink"
+                    @click="
               $refs.insertFieldContext.toggle($refs.insertRightLink, 'right')
             "
-          >
-            <i class="context__menu-icon fas fa-fw fa-arrow-right"></i>
-            {{ $t('gridViewFieldType.insertRight') }}
-          </a>
-          <InsertFieldContext
-            ref="insertFieldContext"
-            :table="table"
-            :from-field="field"
-            @field-created="$emit('field-created', $event)"
-            @update-inserted-field-order="updateInsertedFieldOrder"
-          ></InsertFieldContext>
-        </li>
-        <li />
-        <li v-if="canFilter">
-          <a @click="createFilter($event, view, field)">
-            <i class="context__menu-icon fas fa-fw fa-filter"></i>
-            {{ $t('gridViewFieldType.createFilter') }}
-          </a>
-        </li>
-        <li v-if="getCanSortInView(field)">
-          <a @click="createSort($event, view, field, 'ASC')">
-            <i class="context__menu-icon fas fa-fw fa-sort-amount-down-alt"></i>
-            {{ $t('gridViewFieldType.sortField') }}
-            <template v-if="getSortIndicator(field, 0) === 'text'">{{
-              getSortIndicator(field, 1)
-            }}</template>
-            <i
-              v-if="getSortIndicator(field, 0) === 'icon'"
-              class="fa"
-              :class="'fa-' + getSortIndicator(field, 1)"
-            ></i>
-            <i class="fas fa-long-arrow-alt-right"></i>
-            <template v-if="getSortIndicator(field, 0) === 'text'">{{
-              getSortIndicator(field, 2)
-            }}</template>
-            <i
-              v-if="getSortIndicator(field, 0) === 'icon'"
-              class="fa"
-              :class="'fa-' + getSortIndicator(field, 2)"
-            ></i>
-          </a>
-        </li>
-        <li v-if="getCanSortInView(field)">
-          <a @click="createSort($event, view, field, 'DESC')">
-            <i class="context__menu-icon fas fa-fw fa-sort-amount-down"></i>
-            {{ $t('gridViewFieldType.sortField') }}
-            <template v-if="getSortIndicator(field, 0) === 'text'">{{
-              getSortIndicator(field, 2)
-            }}</template>
-            <i
-              v-if="getSortIndicator(field, 0) === 'icon'"
-              class="fa"
-              :class="'fa-' + getSortIndicator(field, 2)"
-            ></i>
-            <i class="fas fa-long-arrow-alt-right"></i>
-            <template v-if="getSortIndicator(field, 0) === 'text'">{{
-              getSortIndicator(field, 1)
-            }}</template>
-            <i
-              v-if="getSortIndicator(field, 0) === 'icon'"
-              class="fa"
-              :class="'fa-' + getSortIndicator(field, 1)"
-            ></i>
-          </a>
-        </li>
-        <li v-if="!field.primary && canFilter">
-          <a @click="hide($event, view, field)">
-            <i class="context__menu-icon fas fa-fw fa-eye-slash"></i>
-            {{ $t('gridViewFieldType.hideField') }}
-          </a>
-        </li>
-      </FieldContext>
+            >
+              <i class="context__menu-icon fas fa-fw fa-arrow-right"></i>
+              {{ $t('gridViewFieldType.insertRight') }}
+            </a>
+            <InsertFieldContext
+                    ref="insertFieldContext"
+                    :table="table"
+                    :from-field="field"
+                    @field-created="$emit('field-created', $event)"
+                    @update-inserted-field-order="updateInsertedFieldOrder"
+            ></InsertFieldContext>
+          </li>
+          <li />
+          <li v-if="canFilter">
+            <a @click="createFilter($event, view, field)">
+              <i class="context__menu-icon fas fa-fw fa-filter"></i>
+              {{ $t('gridViewFieldType.createFilter') }}
+            </a>
+          </li>
+          <li v-if="getCanSortInView(field)">
+            <a @click="createSort($event, view, field, 'ASC')">
+              <i class="context__menu-icon fas fa-fw fa-sort-amount-down-alt"></i>
+              {{ $t('gridViewFieldType.sortField') }}
+              <template v-if="getSortIndicator(field, 0) === 'text'">{{
+                getSortIndicator(field, 1)
+                }}</template>
+              <i
+                      v-if="getSortIndicator(field, 0) === 'icon'"
+                      class="fa"
+                      :class="'fa-' + getSortIndicator(field, 1)"
+              ></i>
+              <i class="fas fa-long-arrow-alt-right"></i>
+              <template v-if="getSortIndicator(field, 0) === 'text'">{{
+                getSortIndicator(field, 2)
+                }}</template>
+              <i
+                      v-if="getSortIndicator(field, 0) === 'icon'"
+                      class="fa"
+                      :class="'fa-' + getSortIndicator(field, 2)"
+              ></i>
+            </a>
+          </li>
+          <li v-if="getCanSortInView(field)">
+            <a @click="createSort($event, view, field, 'DESC')">
+              <i class="context__menu-icon fas fa-fw fa-sort-amount-down"></i>
+              {{ $t('gridViewFieldType.sortField') }}
+              <template v-if="getSortIndicator(field, 0) === 'text'">{{
+                getSortIndicator(field, 2)
+                }}</template>
+              <i
+                      v-if="getSortIndicator(field, 0) === 'icon'"
+                      class="fa"
+                      :class="'fa-' + getSortIndicator(field, 2)"
+              ></i>
+              <i class="fas fa-long-arrow-alt-right"></i>
+              <template v-if="getSortIndicator(field, 0) === 'text'">{{
+                getSortIndicator(field, 1)
+                }}</template>
+              <i
+                      v-if="getSortIndicator(field, 0) === 'icon'"
+                      class="fa"
+                      :class="'fa-' + getSortIndicator(field, 1)"
+              ></i>
+            </a>
+          </li>
+          <li v-if="!field.primary && canFilter">
+            <a @click="hide($event, view, field)">
+              <i class="context__menu-icon fas fa-fw fa-eye-slash"></i>
+              {{ $t('gridViewFieldType.hideField') }}
+            </a>
+          </li>
+        </FieldContext>
+      </template>
       <GridViewFieldWidthHandle
         v-if="includeFieldWidthHandles"
         class="grid-view__description-width"
@@ -178,6 +180,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    editable: {
+      type: Boolean,
+      required: true
+    }
   },
   data() {
     return {
@@ -197,6 +203,9 @@ export default {
       }
       return false
     },
+    ...mapGetters({
+      user: 'auth/getUserObject',
+    }),
   },
   beforeCreate() {
     this.$options.computed = {

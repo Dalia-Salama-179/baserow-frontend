@@ -1678,7 +1678,6 @@ export const actions = {
     // console.log('row', row);
     // console.log('values', values);
     // console.log('value[0]', value[0]);
-    console.log(value)
     if (field.name == 'person' && value && table.name == 'Founders') {
       // Change 598 to 487 -- T2DS-29
       values[`field_${primary.id}`] = `${row['field_487'][0] ? row['field_487'][0].value+'_' : ''}${value[0]? value[0].value: ''}`
