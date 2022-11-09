@@ -153,7 +153,7 @@
                             </div>
                         </li>
 
-                        <li v-if="isSuperuser" class="tree__item">
+                        <li v-if="isStaff" class="tree__item">
                             <div class="tree__action sidebar__action">
                                 <a class="tree__link"
                                    @click="showTables">
@@ -163,7 +163,7 @@
                             </div>
                         </li>
 
-                        <li v-if="isStaff" class="tree__item">
+                        <li v-if="isStaff || isSuperuser" class="tree__item">
                             <div class="tree__action sidebar__action">
                                 <a class="tree__link"
                                    @click="staffControlHandler">

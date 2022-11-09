@@ -62,7 +62,7 @@
 
   export default {
     name: 'stuff-control',
-    middleware: 'staff',
+    middleware: ['staff', 'superUser'],
     components: { CreateUserModal, Paginator },
     layout: 'app',
     mixins: [modal],

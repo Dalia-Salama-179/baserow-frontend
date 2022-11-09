@@ -23,11 +23,11 @@
       :store-prefix="storePrefix"
       :editable="editable"
       @refresh="$emit('refresh', $event)"
-      @dragging="$emit('dragging', $event)"
+      @dragging="drag"
       @field-created="$emit('field-created', $event)"
       @update-inserted-field-order="updateInsertedFieldOrder"
     ></GridViewFieldType>
-    <template v-if="editable">
+    <template v-if="editable || user.is_superuser">
       <div
               v-if="includeAddField && !readOnly"
               class="grid-view__column"
@@ -56,6 +56,7 @@ import CreateFieldContext from '@baserow/modules/database/components/field/Creat
 import GridViewFieldType from '@baserow/modules/database/components/view/grid/GridViewFieldType'
 import gridViewHelpers from '@baserow/modules/database/mixins/gridViewHelpers'
 import GridViewRowIdentifierDropdown from '@baserow/modules/database/components/view/grid/GridViewRowIdentifierDropdown'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'GridViewHead',
@@ -109,7 +110,10 @@ export default {
     },
     editable() {
       return this.tables.find(ta => ta.table.id === this.table.id).can_edit
-    }
+    },
+    ...mapGetters({
+      user: 'auth/getUserObject',
+    }),
   },
   methods: {
     /**
@@ -145,6 +149,9 @@ export default {
         notifyIf(error, 'view')
       }
     },
+    drag(e) {
+      if (this.editable || this.user.is_staff) this.$emit('dragging', e)
+    }
   },
 }
 </script>

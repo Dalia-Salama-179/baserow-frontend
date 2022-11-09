@@ -40,7 +40,7 @@
 
   export default {
     name: 'tables-control',
-    middleware: 'superUser',
+    middleware: 'staff',
     components: {Paginator},
     layout: 'app',
     data() {
