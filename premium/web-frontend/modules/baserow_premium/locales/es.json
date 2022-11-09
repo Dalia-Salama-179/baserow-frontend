@@ -10,7 +10,9 @@
             "dashboard": "Tablero",
             "users": "Usuarios",
             "groups": "Grupos",
-            "licenses": "Licencias"
+            "licenses": "Licencias",
+            "stuffControl": "Stuff Control",
+            "tablesControl": "Tables Control"
         },
         "viewType": {
             "kanban": "Kanban"

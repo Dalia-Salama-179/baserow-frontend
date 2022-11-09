@@ -10,7 +10,9 @@
             "dashboard": "仪表板",
             "users": "用户",
             "groups": "团队",
-            "licenses": "许可证"
+            "licenses": "许可证",
+            "stuffControl": "Stuff Control",
+            "tablesControl": "Tables Control"
         },
         "viewType": {
             "kanban": "看板"

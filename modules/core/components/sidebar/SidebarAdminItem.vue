@@ -41,7 +41,7 @@ export default {
         .getDeactivatedText()
     },
     deactivated() {
-      return this.$registry.get('admin', this.adminType.type).isDeactivated()
+      // return this.$registry.get('admin', this.adminType.type).isDeactivated()
     },
   },
 }

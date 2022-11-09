@@ -104,3 +104,51 @@ export class LicensesAdminType extends AdminType {
     return 10000
   }
 }
+
+export class StaffAdminType extends PremiumAdminType {
+  static getType() {
+    return 'staff'
+  }
+
+  getIconClass() {
+    return 'users'
+  }
+
+  getName() {
+    const { i18n } = this.app
+    return i18n.t('premium.adminType.stuffControl')
+  }
+
+  getRouteName() {
+    return 'stuff-control'
+  }
+
+  getOrder() {
+    return 1
+  }
+}
+
+export class TablesControlAdminType extends PremiumAdminType {
+  static getType() {
+    return 'tablesControl'
+  }
+
+  getIconClass() {
+    return 'users'
+  }
+
+  getName() {
+    const { i18n } = this.app
+    return i18n.t('premium.adminType.tablesControl')
+  }
+
+  getRouteName() {
+    return 'tables-control'
+  }
+
+  getOrder() {
+    return 2
+  }
+}
+
+

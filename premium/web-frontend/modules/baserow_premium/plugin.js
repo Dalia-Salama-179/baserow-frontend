@@ -1,13 +1,15 @@
 import { PremiumPlugin } from '@baserow_premium/plugins'
 import {
   JSONTableExporter,
-  XMLTableExporter,
+  XMLTableExporter
 } from '@baserow_premium/tableExporterTypes'
 import {
-  DashboardType,
-  GroupsAdminType,
-  UsersAdminType,
-  LicensesAdminType,
+  // DashboardType,
+  // GroupsAdminType,
+  // UsersAdminType,
+  // LicensesAdminType,
+  StaffAdminType,
+  TablesControlAdminType
 } from '@baserow_premium/adminTypes'
 import rowCommentsStore from '@baserow_premium/store/row_comments'
 import kanbanStore from '@baserow_premium/store/view/kanban'
@@ -18,12 +20,12 @@ import { KanbanViewType } from '@baserow_premium/viewTypes'
 
 import {
   LeftBorderColorViewDecoratorType,
-  BackgroundColorViewDecoratorType,
+  BackgroundColorViewDecoratorType
 } from '@baserow_premium/viewDecorators'
 
 import {
   SingleSelectColorValueProviderType,
-  ConditionalColorValueProviderType,
+  ConditionalColorValueProviderType
 } from '@baserow_premium/decoratorValueProviders'
 
 import en from '@baserow_premium/locales/en.json'
@@ -59,10 +61,14 @@ export default (context) => {
   store.registerModule('impersonating', impersonatingStore)
 
   app.$registry.register('plugin', new PremiumPlugin(context))
-  app.$registry.register('admin', new DashboardType(context))
-  app.$registry.register('admin', new UsersAdminType(context))
-  app.$registry.register('admin', new GroupsAdminType(context))
-  app.$registry.register('admin', new LicensesAdminType(context))
+  app.$registry.register('admin', new StaffAdminType(context))
+
+  if (app.store.getters['auth/isStaff'])
+    app.$registry.register('admin', new TablesControlAdminType(context))
+  // app.$registry.register('admin', new DashboardType(context))
+  // app.$registry.register('admin', new UsersAdminType(context))
+  // app.$registry.register('admin', new GroupsAdminType(context))
+  // app.$registry.register('admin', new LicensesAdminType(context))
   app.$registry.register('exporter', new JSONTableExporter(context))
   app.$registry.register('exporter', new XMLTableExporter(context))
   app.$registry.register('view', new KanbanViewType(context))

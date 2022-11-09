@@ -10,7 +10,7 @@ import {
   UploadFileUserFileUploadType,
   UploadViaURLUserFileUploadType,
 } from '@baserow/modules/core/userFileUploadTypes'
-import { SettingsAdminType } from '@baserow/modules/core/adminTypes'
+// import { SettingsAdminType } from '@baserow/modules/core/adminTypes'
 
 import settingsStore from '@baserow/modules/core/store/settings'
 import applicationStore from '@baserow/modules/core/store/application'
@@ -57,7 +57,7 @@ export default (context, inject) => {
     'userFileUpload',
     new UploadViaURLUserFileUploadType(context)
   )
-  registry.register('admin', new SettingsAdminType(context))
+  // registry.register('admin', new SettingsAdminType(context))
   inject('registry', registry)
 
   store.registerModule('settings', settingsStore)

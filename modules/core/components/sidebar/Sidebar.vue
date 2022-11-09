@@ -87,7 +87,7 @@
                             <TrashModal ref="trashModal"></TrashModal>
                         </div>
                     </li>
-                    <li v-if="isStaff" class="tree__item">
+                    <li v-if="isStaff || isSuperuser" class="tree__item">
                         <div
                                 class="tree__action sidebar__action"
                                 :class="{ 'tree__action--disabled': isAdminPage }"
@@ -153,25 +153,6 @@
                             </div>
                         </li>
 
-                        <li v-if="isStaff" class="tree__item">
-                            <div class="tree__action sidebar__action">
-                                <a class="tree__link"
-                                   @click="showTables">
-                                    <i class="tree__icon fas fa-users-cog"></i>
-                                    <span class="sidebar__item-name">Tables Control</span>
-                                </a>
-                            </div>
-                        </li>
-
-                        <li v-if="isStaff || isSuperuser" class="tree__item">
-                            <div class="tree__action sidebar__action">
-                                <a class="tree__link"
-                                   @click="staffControlHandler">
-                                    <i class="tree__icon fas fa-users-cog"></i>
-                                    <span class="sidebar__item-name">Stuff Control</span>
-                                </a>
-                            </div>
-                        </li>
                         <!--<li v-if="selectedGroup.permissions === 'ADMIN'" class="tree__item">
                             <div class="tree__action">
                                 <a class="tree__link" @click="$refs.groupMembersModal.show()">
@@ -376,20 +357,6 @@
       })
     },
     methods: {
-      staffControlHandler() {
-        this.$nuxt.$router.push(
-          {
-            name: 'stuff-control'
-          }
-        )
-      },
-      showTables() {
-        this.$nuxt.$router.push(
-          {
-            name: 'tables-control'
-          }
-        )
-      },
       getApplicationComponent(application) {
         return this.$registry
           .get('application', application.type)
@@ -413,9 +380,11 @@
 
         // We only want to autoselect the first active admin type because the other ones
         // can't be selected.
-        const activated = this.sortedAdminTypes.filter((adminType) => {
-          return !this.$registry.get('admin', adminType.type).isDeactivated()
-        })
+
+        const activated = this.sortedAdminTypes
+        // const activated = this.sortedAdminTypes.filter((adminType) => {
+        //   return !this.$registry.get('admin', adminType.type).isDeactivated()
+        // })
 
         if (activated.length > 0) {
           this.$nuxt.$router.push({ name: activated[0].routeName })
