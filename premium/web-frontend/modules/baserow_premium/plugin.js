@@ -63,6 +63,7 @@ export default (context) => {
   app.$registry.register('plugin', new PremiumPlugin(context))
   app.$registry.register('admin', new StaffAdminType(context))
 
+  console.log(app.store.getters['auth/isStaff'])
   if (app.store.getters['auth/isStaff'])
     app.$registry.register('admin', new TablesControlAdminType(context))
   // app.$registry.register('admin', new DashboardType(context))
