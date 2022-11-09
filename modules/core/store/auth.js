@@ -202,7 +202,6 @@ export const getters = {
     return state.user ? state.user.id : null
   },
   isStaff(state) {
-    console.log(state.user)
     return state.user ? state.user.is_staff : false
   },
   isSuperuser(state) {

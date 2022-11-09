@@ -100,12 +100,14 @@
                             </a>
                         </div>
                         <ul v-show="isAdminPage" class="tree sidebar__tree">
-                            <SidebarAdminItem
-                                    v-for="adminType in sortedAdminTypes"
-                                    :key="adminType.type"
-                                    :admin-type="adminType"
-                            >
-                            </SidebarAdminItem>
+                            <template v-for="adminType in sortedAdminTypes">
+                                <SidebarAdminItem
+                                        v-if="adminType.getRouteName() === 'tables-control'? isStaff: true"
+                                        :key="adminType.type"
+                                        :admin-type="adminType"
+                                >
+                                </SidebarAdminItem>
+                            </template>
                         </ul>
                     </li>
                     <template v-if="hasSelectedGroup && !isCollapsed">
