@@ -150,7 +150,7 @@ export default {
       }
     },
     drag(e) {
-      if (this.editable || this.user.is_staff) this.$emit('dragging', e)
+      if (this.editable || this.user.is_superuser) this.$emit('dragging', e)
     }
   },
 }

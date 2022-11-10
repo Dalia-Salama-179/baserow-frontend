@@ -47,7 +47,7 @@
           ></ViewsContext>
         </li>
         <li
-          v-if="hasSelectedView && !readOnly && (tables.find(ta => ta.table.id === table.id).can_edit || user.is_staff)"
+          v-if="hasSelectedView && !readOnly && (tables.find(ta => ta.table.id === table.id).can_edit || user.is_superuser)"
           class="header__filter-item header__filter-item--no-margin-left"
         >
           <a

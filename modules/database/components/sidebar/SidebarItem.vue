@@ -13,7 +13,7 @@
       ></Editable>
     </a>
     <template v-show="!database._.loading">
-      <a v-if="(editable && editable.can_edit) || user.is_staff"
+      <a v-if="(editable && editable.can_edit) || user.is_superuser"
           class="tree__options"
           @click="$refs.context.toggle($event.currentTarget, 'bottom', 'right', 0)"
           @mousedown.stop
@@ -21,7 +21,7 @@
         <i class="fas fa-ellipsis-v"></i>
       </a>
     </template>
-    <Context ref="context" v-if="(editable && editable.can_edit) || user.is_staff">
+    <Context ref="context" v-if="(editable && editable.can_edit) || user.is_superuser">
       <div class="context__menu-title">{{ table.name }}</div>
       <ul class="context__menu">
         <li>

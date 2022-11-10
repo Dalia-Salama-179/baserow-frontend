@@ -102,7 +102,7 @@
                         <ul v-show="isAdminPage" class="tree sidebar__tree">
                             <template v-for="adminType in sortedAdminTypes">
                                 <SidebarAdminItem
-                                        v-if="adminType.getRouteName() === 'tables-control'? isStaff: true"
+                                        v-if="adminType.getRouteName() === 'tables-control'? isSuperuser: true"
                                         :key="adminType.type"
                                         :admin-type="adminType"
                                 >
