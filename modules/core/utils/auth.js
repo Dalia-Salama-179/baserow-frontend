@@ -7,7 +7,6 @@ export const setToken = (token, { $cookies, $env }, key = cookieTokenName) => {
   const secure = isSecureURL($env.PUBLIC_WEB_FRONTEND_URL)
   $cookies.set(key, token, {
     path: '/',
-    maxAge: 60 * 60 * 24 * 7,
     sameSite: 'lax',
     secure,
   })
