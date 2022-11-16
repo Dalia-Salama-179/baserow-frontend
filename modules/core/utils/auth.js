@@ -4,12 +4,8 @@ const cookieTokenName = 'jwt_token'
 
 export const setToken = (token, { $cookies, $env }, key = cookieTokenName) => {
   if (process.SERVER_BUILD) return
-  const secure = isSecureURL($env.PUBLIC_WEB_FRONTEND_URL)
-  $cookies.set(key, token, {
-    path: '/',
-    sameSite: 'lax',
-    secure,
-  })
+  // const secure = isSecureURL($env.PUBLIC_WEB_FRONTEND_URL)
+  $cookies.set(key, token)
 }
 
 export const unsetToken = ({ $cookies }, key = cookieTokenName) => {
