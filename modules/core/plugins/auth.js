@@ -4,6 +4,7 @@ export default function ({ store }) {
   // the refreshing timeout here.
   if (
     store.getters['auth/isAuthenticated'] &&
+    !store.getters['auth/isRefreshing'] &&
     // @TODO Maybe replace this in the config with mode: 'client'.
     process.browser
   ) {
