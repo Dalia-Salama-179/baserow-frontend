@@ -115,7 +115,7 @@ export const actions = {
       commit('SET_USER_DATA', data)
       dispatch('startRefreshTimeout')
     } catch (error) {
-      console.log(error)
+      alert('1')
       // If the server can't be reached because of a network error we want to
       // fail hard so that the correct error message is shown.
       if (error.response === undefined) {
