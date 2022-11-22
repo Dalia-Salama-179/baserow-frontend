@@ -1707,8 +1707,8 @@ export const actions = {
       values[`field_${primary.id}`] = `${row['field_418']? row['field_418']+'_': ''}${values['field_419']? values['field_419']+'*': ''}${row['field_422']? row['field_422']: ''}`
     }
     try {
-      if (row.duplicated) values['field_363'] = true
-      else values['field_363'] = false
+      // if (row.duplicated) values['field_363'] = true
+      // else values['field_363'] = false
       const updatedRow = await RowService(this.$client).update(
         table.id,
         row.id,
