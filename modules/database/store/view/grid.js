@@ -12,7 +12,7 @@ import RowService from '@baserow/modules/database/services/row'
 import {
   calculateSingleRowSearchMatches,
   getRowSortFunction,
-  matchSearchFilters,
+  matchSearchFilters
 } from '@baserow/modules/database/utils/view'
 import { RefreshCancelledError } from '@baserow/modules/core/errors'
 
@@ -33,7 +33,7 @@ export function populateRow(row, metadata = {}) {
     // Keeping the selected state with the row has the best performance when navigating
     // between cells.
     selected: false,
-    selectedFieldId: -1,
+    selectedFieldId: -1
   }
   return row
 }
@@ -268,7 +268,7 @@ export const mutations = {
       Object.assign(state.fieldOptions[fieldId], values)
     } else {
       state.fieldOptions = Object.assign({}, state.fieldOptions, {
-        [fieldId]: values,
+        [fieldId]: values
       })
     }
   },
@@ -419,7 +419,7 @@ export const mutations = {
     }
   },
   UPDATE_ROW_IN_BUFFER(state, { row, values, isD, metadata = false }) {
-    const index = state.rows.findIndex((item) => item.id === row.id);
+    const index = state.rows.findIndex((item) => item.id === row.id)
     // console.log('==========================');
     // console.log(row);
     // console.log(values);
@@ -480,12 +480,12 @@ export const mutations = {
   },
   SET_FIELD_AGGREGATION_DATA(state, { fieldId, value: newValue }) {
     const current = state.fieldAggregationData[fieldId] || {
-      loading: false,
+      loading: false
     }
 
     state.fieldAggregationData = {
       ...state.fieldAggregationData,
-      [fieldId]: { ...current, value: newValue },
+      [fieldId]: { ...current, value: newValue }
     }
   },
   SET_FIELD_AGGREGATION_DATA_LOADING(
@@ -493,14 +493,14 @@ export const mutations = {
     { fieldId, value: newLoadingValue }
   ) {
     const current = state.fieldAggregationData[fieldId] || {
-      value: null,
+      value: null
     }
 
     state.fieldAggregationData = {
       ...state.fieldAggregationData,
-      [fieldId]: { ...current, loading: newLoadingValue },
+      [fieldId]: { ...current, loading: newLoadingValue }
     }
-  },
+  }
 }
 
 // Contains the info needed for the delayed scroll top action.
@@ -508,7 +508,7 @@ const fireScrollTop = {
   last: Date.now(),
   timeout: null,
   processing: false,
-  distance: 0,
+  distance: 0
 }
 
 // Contains the last row request to be able to cancel it.
@@ -640,7 +640,7 @@ export const actions = {
           publicUrl: getters.isPublic,
           publicAuthToken: getters.getPublicAuthToken,
           orderBy: getOrderBy(getters, rootGetters),
-          filters: getFilters(getters, rootGetters),
+          filters: getFilters(getters, rootGetters)
         })
         .then(({ data }) => {
           data.results.forEach((part, index) => {
@@ -652,7 +652,7 @@ export const actions = {
             appendToRows: appendToBuffer,
             count: data.count,
             bufferStartIndex,
-            bufferLimit,
+            bufferLimit
           })
           dispatch('visibleByScrollTop')
           dispatch('updateSearch', { fields, primary })
@@ -731,7 +731,7 @@ export const actions = {
       commit('SET_ROWS_INDEX', {
         startIndex: visibleRowStartIndex,
         endIndex: visibleRowEndIndex,
-        top,
+        top
       })
     }
   },
@@ -749,7 +749,7 @@ export const actions = {
       dispatch('fetchByScrollTop', {
         scrollTop,
         fields,
-        primary,
+        primary
       })
       dispatch('visibleByScrollTop', scrollTop)
     }
@@ -787,7 +787,7 @@ export const actions = {
 
     commit('SET_SEARCH', {
       activeSearchTerm: '',
-      hideRowsNotMatchingSearch: true,
+      hideRowsNotMatchingSearch: true
     })
     commit('SET_LAST_GRID_ID', gridId)
 
@@ -801,7 +801,7 @@ export const actions = {
       publicUrl: getters.isPublic,
       publicAuthToken: getters.getPublicAuthToken,
       orderBy: getOrderBy(getters, rootGetters),
-      filters: getFilters(getters, rootGetters),
+      filters: getFilters(getters, rootGetters)
     })
     data.results.forEach((part, index) => {
       extractMetadataAndPopulateRow(data, index)
@@ -813,14 +813,14 @@ export const actions = {
       appendToRows: data.results.length,
       count: data.count,
       bufferStartIndex: 0,
-      bufferLimit: data.count > limit ? limit : data.count,
+      bufferLimit: data.count > limit ? limit : data.count
     })
     commit('SET_ROWS_INDEX', {
       startIndex: 0,
       // @TODO mut calculate how many rows would fit and based on that calculate
       // what the end index should be.
       endIndex: data.count > 31 ? 31 : data.count,
-      top: 0,
+      top: 0
     })
     commit('REPLACE_ALL_FIELD_OPTIONS', data.field_options)
     dispatch('updateSearch', { fields, primary })
@@ -848,7 +848,7 @@ export const actions = {
         signal: lastRefreshRequestController.signal,
         publicUrl: getters.isPublic,
         publicAuthToken: getters.getPublicAuthToken,
-        filters: getFilters(getters, rootGetters),
+        filters: getFilters(getters, rootGetters)
       })
       .then((response) => {
         const count = response.data.count
@@ -873,11 +873,11 @@ export const actions = {
             publicUrl: getters.isPublic,
             publicAuthToken: getters.getPublicAuthToken,
             orderBy: getOrderBy(getters, rootGetters),
-            filters: getFilters(getters, rootGetters),
+            filters: getFilters(getters, rootGetters)
           })
           .then(({ data }) => ({
             data,
-            offset,
+            offset
           }))
       )
       .then(({ data, offset }) => {
@@ -892,7 +892,7 @@ export const actions = {
           appendToRows: data.results.length,
           count: data.count,
           bufferStartIndex: offset,
-          bufferLimit: data.results.length,
+          bufferLimit: data.results.length
         })
         // commit('SET_SELECTED_CELL', { rowId, fieldId })
 
@@ -909,7 +909,7 @@ export const actions = {
         }
         // console.log('VIEW ==== VIEW', view);
         dispatch('fetchAllFieldAggregationData', {
-          view,
+          view
         })
         lastRefreshRequest = null
         dispatch('setSelectedCell', {
@@ -950,13 +950,13 @@ export const actions = {
       commit('SET_FIELD_AGGREGATION_DATA', { fieldId: field.id, value: null })
       commit('SET_FIELD_AGGREGATION_DATA_LOADING', {
         fieldId: field.id,
-        value: true,
+        value: true
       })
     }
 
     commit('UPDATE_FIELD_OPTIONS_OF_FIELD', {
       fieldId: field.id,
-      values,
+      values
     })
 
     if (!readOnly) {
@@ -967,12 +967,12 @@ export const actions = {
       try {
         await ViewService(this.$client).updateFieldOptions({
           viewId: gridId,
-          values: updateValues,
+          values: updateValues
         })
       } catch (error) {
         commit('UPDATE_FIELD_OPTIONS_OF_FIELD', {
           fieldId: field.id,
-          values: oldValues,
+          values: oldValues
         })
         throw error
       } finally {
@@ -989,7 +989,7 @@ export const actions = {
   setFieldOptionsOfField({ commit, getters }, { field, values }) {
     commit('UPDATE_FIELD_OPTIONS_OF_FIELD', {
       fieldId: field.id,
-      values,
+      values
     })
   },
   /**
@@ -1009,7 +1009,7 @@ export const actions = {
       try {
         await ViewService(this.$client).updateFieldOptions({
           viewId: gridId,
-          values: updateValues,
+          values: updateValues
         })
       } catch (error) {
         dispatch('forceUpdateAllFieldOptions', oldFieldOptions)
@@ -1046,7 +1046,7 @@ export const actions = {
       if (options.aggregation_raw_type) {
         commit('SET_FIELD_AGGREGATION_DATA_LOADING', {
           fieldId,
-          value: true,
+          value: true
         })
         atLeastOneAggregation = true
       }
@@ -1067,7 +1067,7 @@ export const actions = {
       ).fetchFieldAggregations({
         gridId: view.id,
         search,
-        signal: lastAggregationRequest.controller.signal,
+        signal: lastAggregationRequest.controller.signal
       })
 
       const { data } = await lastAggregationRequest.request
@@ -1077,7 +1077,7 @@ export const actions = {
         if (options.aggregation_raw_type) {
           commit('SET_FIELD_AGGREGATION_DATA', {
             fieldId,
-            value: data[`field_${fieldId}`],
+            value: data[`field_${fieldId}`]
           })
         }
       })
@@ -1086,7 +1086,7 @@ export const actions = {
         if (options.aggregation_raw_type) {
           commit('SET_FIELD_AGGREGATION_DATA_LOADING', {
             fieldId,
-            value: false,
+            value: false
           })
         }
       })
@@ -1099,7 +1099,7 @@ export const actions = {
           if (options.aggregation_raw_type) {
             commit('SET_FIELD_AGGREGATION_DATA', {
               fieldId,
-              value: null,
+              value: null
             })
           }
         })
@@ -1109,7 +1109,7 @@ export const actions = {
           if (options.aggregation_raw_type) {
             commit('SET_FIELD_AGGREGATION_DATA_LOADING', {
               fieldId,
-              value: false,
+              value: false
             })
           }
         })
@@ -1150,7 +1150,7 @@ export const actions = {
     return await dispatch('updateAllFieldOptions', {
       oldFieldOptions,
       newFieldOptions,
-      readOnly,
+      readOnly
     })
   },
   /**
@@ -1168,12 +1168,9 @@ export const actions = {
     commit('SET_ADD_ROW_HOVER', value)
   },
   setSelectedCell({ commit, state, dispatch }, { rowId, fieldId }) {
-    if (fieldId && fieldId !== -1) {
-      commit('SET_SELECTED_FIELD', fieldId)
-      commit('SET_SELECTED_ROW', rowId)
-    }
-    if (fieldId !== -1)
-      commit('SET_SELECTED_CELL', { rowId, fieldId })
+    commit('SET_SELECTED_FIELD', fieldId)
+    commit('SET_SELECTED_ROW', rowId)
+    commit('SET_SELECTED_CELL', { rowId, fieldId })
   },
   setMultiSelectHolding({ commit }, value) {
     commit('SET_MULTISELECT_HOLDING', value)
@@ -1197,7 +1194,7 @@ export const actions = {
     commit('SET_MULTISELECT_HOLDING', true)
     // Do not enable multi-select if only a single cell is selected
     commit('SET_MULTISELECT_ACTIVE', false)
-    const bufferIndex = state.rows.findIndex((r) => r.id === rowId);
+    const bufferIndex = state.rows.findIndex((r) => r.id === rowId)
     // // console.log('bufferIndex',bufferIndex);
     commit('SET_MULTISELECT_ROWIDFRIST', bufferIndex)
   },
@@ -1209,7 +1206,7 @@ export const actions = {
       commit('UPDATE_MULTISELECT', {
         position: 'tail',
         rowIndex: getters.getRowIndexById(rowId),
-        fieldIndex,
+        fieldIndex
       })
 
       commit('SET_MULTISELECT_ACTIVE', true)
@@ -1239,7 +1236,7 @@ export const actions = {
       rows = await dispatch('fetchRowsByIndex', {
         startIndex: minRowIndex,
         limit,
-        fields,
+        fields
       })
     }
 
@@ -1287,7 +1284,7 @@ export const actions = {
       orderBy: getOrderBy(getters, rootGetters),
       filters: getFilters(getters, rootGetters),
       includeFields: fields,
-      excludeFields,
+      excludeFields
     })
     return data.results
   },
@@ -1401,11 +1398,11 @@ export const actions = {
         oldId: row.id,
         id: data.id,
         order: data.order,
-        values: data,
+        values: data
       })
       await dispatch('onRowChange', { view, row, fields, primary })
       await dispatch('fetchAllFieldAggregationData', {
-        view,
+        view
       })
       let newData = { ...data }
       newData['_'] = row._
@@ -1526,7 +1523,7 @@ export const actions = {
       fields,
       primary,
       row,
-      values: { order, ...optimisticFieldValues },
+      values: { order, ...optimisticFieldValues }
     })
 
     try {
@@ -1547,7 +1544,7 @@ export const actions = {
       dispatch('fetchByScrollTopDelayed', {
         scrollTop: getScrollTop(),
         fields,
-        primary,
+        primary
       })
       dispatch('fetchAllFieldAggregationData', { view: grid })
     } catch (error) {
@@ -1556,7 +1553,7 @@ export const actions = {
         fields,
         primary,
         row,
-        values: { order: oldOrder, ...valuesBeforeOptimisticUpdate },
+        values: { order: oldOrder, ...valuesBeforeOptimisticUpdate }
       })
       throw error
     }
@@ -1647,7 +1644,7 @@ export const actions = {
     })
 
     fieldsToCallOnRowChange.forEach((fieldToCall) => {
-      const fieldType = this.$registry.get('field', fieldToCall._.type.type);
+      const fieldType = this.$registry.get('field', fieldToCall._.type.type)
       const fieldID = `field_${fieldToCall.id}`
       const currentFieldValue = row[fieldID]
       const optimisticFieldValue = fieldType.onRowChange(
@@ -1663,12 +1660,12 @@ export const actions = {
     })
     commit('UPDATE_ROW_IN_BUFFER', {
       row,
-      values: { ...optimisticFieldValues },
+      values: { ...optimisticFieldValues }
     })
     dispatch('onRowChange', { view, row, fields, primary })
     const fieldType = this.$registry.get('field', field._.type.type)
     const newValue = fieldType.prepareValueForUpdate(field, value)
-    const values = {};
+    const values = {}
     values[`field_${field.id}`] = newValue
     if (field.name == 'organization' && value && value[0] && table.name == 'org_founder_map') {
       values[`field_${primary.id}`] = value[0].value
@@ -1680,10 +1677,10 @@ export const actions = {
     // console.log('value[0]', value[0]);
     if (field.name == 'person' && value && table.name == 'Founders') {
       // Change 598 to 487 -- T2DS-29
-      values[`field_${primary.id}`] = `${row['field_487'][0] ? row['field_487'][0].value+'_' : ''}${value[0]? value[0].value: ''}`
+      values[`field_${primary.id}`] = `${row['field_487'][0] ? row['field_487'][0].value + '_' : ''}${value[0] ? value[0].value : ''}`
     }
     if (field.name == 'organization_of_interest' && value && table.name == 'Founders') {
-      values[`field_${primary.id}`] = `${value[0]? value[0].value+'_': ''}${row['field_441'][0] ? row['field_441'][0].value : ''}`
+      values[`field_${primary.id}`] = `${value[0] ? value[0].value + '_' : ''}${row['field_441'][0] ? row['field_441'][0].value : ''}`
     }
     if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
       // const { data } = await RowService(this.$client).fetchAll({
@@ -1698,13 +1695,13 @@ export const actions = {
       values[`field_${primary.id}`] = value[0].value
     }
     if (field.name == 'first_name' && value && value[0] && table.name == 'person') {
-      values[`field_${primary.id}`] = `${values['field_418']? values['field_418']+'_': ''}${row['field_419']? row['field_419']+'*': ''}${row['field_422']? row['field_422']: ''}`
+      values[`field_${primary.id}`] = `${values['field_418'] ? values['field_418'] + '_' : ''}${row['field_419'] ? row['field_419'] + '*' : ''}${row['field_422'] ? row['field_422'] : ''}`
     }
     if (field.name == 'twitter_handle' && value && value[0] && table.name == 'person') {
-      values[`field_${primary.id}`] = `${row['field_418']? row['field_418']+'_': ''}${row['field_419']? row['field_419']+'*': ''}${values['field_422']?values['field_422']: ''}`
+      values[`field_${primary.id}`] = `${row['field_418'] ? row['field_418'] + '_' : ''}${row['field_419'] ? row['field_419'] + '*' : ''}${values['field_422'] ? values['field_422'] : ''}`
     }
     if (field.name == 'last_name' && value && value[0] && table.name == 'person') {
-      values[`field_${primary.id}`] = `${row['field_418']? row['field_418']+'_': ''}${values['field_419']? values['field_419']+'*': ''}${row['field_422']? row['field_422']: ''}`
+      values[`field_${primary.id}`] = `${row['field_418'] ? row['field_418'] + '_' : ''}${values['field_419'] ? values['field_419'] + '*' : ''}${row['field_422'] ? row['field_422'] : ''}`
     }
     try {
       // if (row.duplicated) values['field_363'] = true
@@ -1718,12 +1715,12 @@ export const actions = {
       commit('UPDATE_ROW_IN_BUFFER', { row, values: updatedRow.data })
       dispatch('onRowChange', { view, row, fields, primary })
       dispatch('fetchAllFieldAggregationData', {
-        view,
+        view
       })
     } catch (error) {
       commit('UPDATE_ROW_IN_BUFFER', {
         row,
-        values: { ...valuesBeforeOptimisticUpdate },
+        values: { ...valuesBeforeOptimisticUpdate }
       })
 
       dispatch('onRowChange', { view, row, fields, primary })
@@ -1740,8 +1737,8 @@ export const actions = {
     { getters, commit, dispatch },
     { table, view, primary, fields, getScrollTop, data, rowIndex, fieldIndex }
   ) {
-    let duplicated = {};
-    let rowsNew = [];
+    let duplicated = {}
+    let rowsNew = []
     // If the origin origin row and field index are not provided, we need to use the
     // head indexes of the multiple select.
     const rowHeadIndex = rowIndex || getters.getMultiSelectHeadRowIndex
@@ -1763,12 +1760,12 @@ export const actions = {
     commit('UPDATE_MULTISELECT', {
       position: 'head',
       rowIndex: rowHeadIndex,
-      fieldIndex: fieldHeadIndex,
+      fieldIndex: fieldHeadIndex
     })
     commit('UPDATE_MULTISELECT', {
       position: 'tail',
       rowIndex: rowTailIndex,
-      fieldIndex: fieldTailIndex,
+      fieldIndex: fieldTailIndex
     })
     commit('SET_MULTISELECT_ACTIVE', true)
     // Unselect a single selected cell because we've just updated the multiple
@@ -1806,7 +1803,7 @@ export const actions = {
     if (limit > 0) {
       const rowsNotInBuffer = await dispatch('fetchRowsByIndex', {
         startIndex,
-        limit,
+        limit
       })
       // Depends on whether the missing rows are before or after the buffer.
       rowsInOrder =
@@ -1839,11 +1836,11 @@ export const actions = {
         var resultIndex = rowsNew.findIndex(obj => {
           return obj.id === row.id
         })
-        let newEle;
+        let newEle
         if (resultIndex == -1) {
           newEle = { ...row }
           newEle[fieldId] = newValue
-          rowsNew.push(newEle);
+          rowsNew.push(newEle)
         } else {
           newEle = rowsNew[resultIndex]
           newEle[fieldId] = newValue
@@ -1852,24 +1849,24 @@ export const actions = {
         if (table.name == 'organizations' && field.name == 'org_crunchbase_url') {
           const { data } = await RowService(this.$client).fetchAll({
             tableId: table.id,
-            search: newValue,
-          });
+            search: newValue
+          })
           if (data.results.length) {
-            let newArray = [...data.results];
-            let bigCities = newArray.filter(function (e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '' && rowsNew[resultIndex].id != e.id;
-              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '' && row.id != e.id;
-            });
+            let newArray = [...data.results]
+            let bigCities = newArray.filter(function(e) {
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '' && rowsNew[resultIndex].id != e.id
+              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '' && row.id != e.id
+            })
             // console.log(rowsNew);
-            let resultNew = rowsNew.filter(function (e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '' && rowsNew[resultIndex].id != e.id;
-              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '' && row.id != e.id;
-            });
+            let resultNew = rowsNew.filter(function(e) {
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '' && rowsNew[resultIndex].id != e.id
+              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '' && row.id != e.id
+            })
             // console.log(bigCities);
             // console.log(resultNew);
             if (bigCities.length || resultNew.length) {
-              duplicated[row.id] = true;
-              let values = {};
+              duplicated[row.id] = true
+              let values = {}
               values['field_363'] = true
               const updatedRow = await RowService(this.$client).update(
                 table.id,
@@ -1878,8 +1875,8 @@ export const actions = {
               )
               // console.log(updatedRow);
             } else {
-              duplicated[row.id] = false;
-              let values = {};
+              duplicated[row.id] = false
+              let values = {}
               values['field_363'] = false
               const updatedRow = await RowService(this.$client).update(
                 table.id,
@@ -1893,24 +1890,24 @@ export const actions = {
         if (table.name == 'organizations' && field.name == 'Name') {
           const { data } = await RowService(this.$client).fetchAll({
             tableId: table.id,
-            search: newValue,
-          });
+            search: newValue
+          })
           if (data.results.length) {
-            let newArray = [...data.results];
-            let bigCities = newArray.filter(function (e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '' && rowsNew[resultIndex].id != e.id;
-              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '' && row.id != e.id;
-            });
-            let resultNew = rowsNew.filter(function (e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '' && rowsNew[resultIndex].id != e.id;
-              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '' && row.id != e.id;
-            });
+            let newArray = [...data.results]
+            let bigCities = newArray.filter(function(e) {
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '' && rowsNew[resultIndex].id != e.id
+              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '' && row.id != e.id
+            })
+            let resultNew = rowsNew.filter(function(e) {
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '' && rowsNew[resultIndex].id != e.id
+              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '' && row.id != e.id
+            })
             // console.log(bigCities);
             // console.log(resultNew);
             if (bigCities.length || resultNew.length) {
-              duplicated[row.id] = true;
-              let values = {};
-              values['field_363'] = true;
+              duplicated[row.id] = true
+              let values = {}
+              values['field_363'] = true
               const updatedRow = await RowService(this.$client).update(
                 table.id,
                 row.id,
@@ -1918,8 +1915,8 @@ export const actions = {
               )
               // console.log(updatedRow);
             } else {
-              duplicated[row.id] = false;
-              let values = {};
+              duplicated[row.id] = false
+              let values = {}
               values['field_363'] = false
               const updatedRow = await RowService(this.$client).update(
                 table.id,
@@ -1965,7 +1962,7 @@ export const actions = {
         fields,
         primary,
         row,
-        values,
+        values
       })
     }
 
@@ -1974,11 +1971,11 @@ export const actions = {
     await dispatch('fetchByScrollTopDelayed', {
       scrollTop: getScrollTop(),
       fields,
-      primary,
+      primary
     })
     dispatch('fetchAllFieldAggregationData', { view })
     if (limit == 0) {
-      let newArray = data.slice(rowsInOrder.length, data.length);
+      let newArray = data.slice(rowsInOrder.length, data.length)
       // console.log('newArraynewArray', newArray);
       // console.log('fieldsInOrder', fieldsInOrder);
       newArray.forEach(async element => {
@@ -1989,10 +1986,10 @@ export const actions = {
           let byValue = element[0]
           let result = await dispatch('createNewRow', {
             view, table, fields, primary, byField, byValue
-          });
+          })
         }
         // console.log('result', result);
-      });
+      })
     }
   },
   /**
@@ -2026,7 +2023,7 @@ export const actions = {
         fields,
         primary,
         values: newRow,
-        metadata,
+        metadata
       })
     } else if (oldRowExists && newRowExists) {
       // If the new order already exists in the buffer and is not the row that has
@@ -2106,7 +2103,7 @@ export const actions = {
         if (index !== newIndex) {
           commit('MOVE_EXISTING_ROW_IN_BUFFER', {
             row: oldRow,
-            index: newIndex,
+            index: newIndex
           })
         }
         commit('SET_BUFFER_LIMIT', getters.getBufferLimit + 1)
@@ -2114,7 +2111,7 @@ export const actions = {
         // If the new row should be in the buffer, but wasn't.
         commit('INSERT_EXISTING_ROW_IN_BUFFER_AT_INDEX', {
           row: newRow,
-          index: newIndex,
+          index: newIndex
         })
         commit('SET_BUFFER_LIMIT', getters.getBufferLimit + 1)
       } else if (newIsFirst) {
@@ -2146,12 +2143,12 @@ export const actions = {
         fields,
         primary,
         row,
-        getScrollTop,
+        getScrollTop
       })
       await dispatch('fetchByScrollTopDelayed', {
         scrollTop: getScrollTop(),
         fields,
-        primary,
+        primary
       })
       dispatch('fetchAllFieldAggregationData', { view })
     } catch (error) {
@@ -2180,7 +2177,7 @@ export const actions = {
       rows = await dispatch('fetchRowsByIndex', {
         startIndex: minRowIndex,
         limit,
-        includeFields: fields,
+        includeFields: fields
       })
     }
     const rowIdsToDelete = rows.map((r) => r.id)
@@ -2192,14 +2189,14 @@ export const actions = {
         fields,
         primary,
         row,
-        getScrollTop,
+        getScrollTop
       })
     }
     dispatch('clearAndDisableMultiSelect', { view })
     await dispatch('fetchByScrollTopDelayed', {
       scrollTop: getScrollTop(),
       fields,
-      primary,
+      primary
     })
     dispatch('fetchAllFieldAggregationData', { view })
   },
@@ -2302,7 +2299,7 @@ export const actions = {
       primary = null,
       activeSearchTerm = state.activeSearchTerm,
       hideRowsNotMatchingSearch = state.hideRowsNotMatchingSearch,
-      refreshMatchesOnClient = true,
+      refreshMatchesOnClient = true
     }
   ) {
     commit('SET_SEARCH', { activeSearchTerm, hideRowsNotMatchingSearch })
@@ -2312,7 +2309,7 @@ export const actions = {
           row,
           fields,
           primary,
-          forced: true,
+          forced: true
         })
       )
     }
@@ -2380,14 +2377,14 @@ export const actions = {
         fields,
         primary,
         row,
-        values: row,
+        values: row
       })
       commit('SET_ROW_MATCH_SORTINGS', { row, value: true })
     }
     dispatch('fetchByScrollTopDelayed', {
       scrollTop: getScrollTop(),
       fields,
-      primary,
+      primary
     })
   },
   updateRowMetadata(
@@ -2414,7 +2411,7 @@ export const actions = {
       rows = getters.getSelectedRows
     }
     return rows
-  },
+  }
 
 }
 
@@ -2524,7 +2521,7 @@ export const getters = {
   getMultiSelectRowIndexSorted(state) {
     return [
       Math.min(state.multiSelectHeadRowIndex, state.multiSelectTailRowIndex),
-      Math.max(state.multiSelectHeadRowIndex, state.multiSelectTailRowIndex),
+      Math.max(state.multiSelectHeadRowIndex, state.multiSelectTailRowIndex)
     ]
   },
   getMultiSelectFieldIndexSorted(state) {
@@ -2536,7 +2533,7 @@ export const getters = {
       Math.max(
         state.multiSelectHeadFieldIndex,
         state.multiSelectTailFieldIndex
-      ),
+      )
     ]
   },
   getMultiSelectHeadFieldIndex(state) {
@@ -2548,7 +2545,7 @@ export const getters = {
   // Get the index of a row given it's row id.
   // This will calculate the row index from the current buffer position and offset.
   getRowIndexById: (state, getters) => (rowId) => {
-    const bufferIndex = state.rows.findIndex((r) => r.id === rowId);
+    const bufferIndex = state.rows.findIndex((r) => r.id === rowId)
     // console.log('bufferIndex', bufferIndex);
     if (bufferIndex !== -1) {
       return getters.getBufferStartIndex + bufferIndex
@@ -2577,7 +2574,7 @@ export const getters = {
   },
   getAllFieldAggregationData(state) {
     return state.fieldAggregationData
-  },
+  }
 }
 
 export default {
@@ -2585,5 +2582,5 @@ export default {
   state,
   getters,
   actions,
-  mutations,
+  mutations
 }
