@@ -1325,6 +1325,7 @@ export const actions = {
     { commit, getters, dispatch },
     { view, table, fields, primary, values = {}, byField = null, byValue = null, before = null, isValueName = null, notInset = true, isValues = false }
   ) {
+    console.log(getters.getAllRows)
     // Fill the not provided values with the empty value of the field type so we can
     // immediately commit the created row to the state.
     const valuesForApiRequest = {}
@@ -1335,19 +1336,34 @@ export const actions = {
       const fieldType = this.$registry.get('field', field._ && field._.type && field._.type.type ? field._.type.type : field.type)
       if (!(name in values) && !isValues) {
         const empty = fieldType.getNewRowValue(field)
-        if (field.name == 'aingel_id' && table.name == 'organizations') {
-          values[name] = uuid()
-        } else if (isValueName !== null) {
-          if (field.primary) {
-            values[name] = isValueName
+
+        if ((field.name == 'created_at' && table.name == 'person') ||
+            (field.name == 'Date Of Creation' && table.name == 'Founders') ||
+            (field.name == 'creation_date' && table.name == 'org_founder_map') ||
+            (field.name == 'created_at' && table.name == 'organizations')
+        ) {
+          values[name] =  new Date().toLocaleString().replace(',','')
+        } else {
+          if ((field.name == 'aingel_id' && table.name == 'organizations') ||
+            (field.name == 'RecordID' && table.name == 'person') ||
+            (field.name == 'RecordID' && table.name == 'customer') ||
+            (field.name == 'RecordID' && table.name == 'Founders') ||
+            (field.name == 'RecordID' && table.name == 'org_founder_map') ||
+            (field.name == 'RecordID' && table.name == 'organizations')
+          ) {
+            values[name] = uuid()
+          } else if (isValueName !== null) {
+            if (field.primary) {
+              values[name] = isValueName
+            } else {
+              values[name] = empty
+            }
+          } else if (byField && byValue && field.name == byField.name) {
+            // console.log('ccccccccccccccccccccccccccccccc');
+            values[`field_${byField.id}`] = byValue
           } else {
             values[name] = empty
           }
-        } else if (byField && byValue && field.name == byField.name) {
-          // console.log('ccccccccccccccccccccccccccccccc');
-          values[`field_${byField.id}`] = byValue
-        } else {
-          values[name] = empty
         }
       }
       // if (isValues) {
