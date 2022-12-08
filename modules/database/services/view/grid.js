@@ -16,7 +16,8 @@ export default (client) => {
       filters = {},
       includeFields = [],
       excludeFields = [],
-    }) {
+    })
+    {
       const include = []
       const params = new URLSearchParams()
       params.append('limit', limit)
@@ -79,7 +80,8 @@ export default (client) => {
       publicUrl = false,
       publicAuthToken = null,
       filters = {},
-    }) {
+    })
+     {
       const params = new URLSearchParams()
       params.append('count', true)
 
@@ -106,7 +108,8 @@ export default (client) => {
       const url = publicUrl ? 'public/rows/' : ''
       return client.get(`/database/views/grid/${gridId}/${url}`, config)
     },
-    filterRows({ gridId, rowIds, fieldIds = null }) {
+    filterRows({ gridId, rowIds, fieldIds = null })
+    {
       const data = { row_ids: rowIds }
 
       if (fieldIds !== null) {
@@ -115,14 +118,16 @@ export default (client) => {
 
       return client.post(`/database/views/grid/${gridId}/`, data)
     },
-    fetchPublicViewInfo(viewSlug, publicAuthToken = null) {
+    fetchPublicViewInfo(viewSlug, publicAuthToken = null)
+    {
       const config = {}
       if (publicAuthToken) {
         addPublicAuthTokenHeader(config, publicAuthToken)
       }
       return client.get(`/database/views/grid/${viewSlug}/public/info/`, config)
     },
-    fetchFieldAggregations({ gridId, search, signal = null }) {
+    fetchFieldAggregations({ gridId, search, signal = null })
+    {
       const params = new URLSearchParams()
 
       if (search) {
@@ -137,5 +142,10 @@ export default (client) => {
 
       return client.get(`/database/views/grid/${gridId}/aggregations/`, config)
     },
+    getLatest(tableId, columnId)
+    {
+      return client.get(`/t2/get-last-id/${tableId}/${columnId}/`)
+    },
+
   }
 }

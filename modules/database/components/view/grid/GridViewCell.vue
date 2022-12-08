@@ -46,10 +46,7 @@
       :field="props.field"
       :value="props.row['field_' + props.field.id]"
       :state="props.state"
-      :read-only="props.field.primary && props.table.name == 'org_founder_map' ? true : props.readOnly ||
-      props.field.primary && props.table.name == 'Founders' ? true : props.readOnly ||
-      props.field.primary && props.table.name == 'organizations' ? true : props.readOnly ||
-      props.field.primary && props.table.name == 'person' ? true : props.readOnly "
+      :read-only="$options.methods.check(props) "
     />
     <component
       :is="$options.methods.getComponent(parent, props)"
@@ -60,10 +57,7 @@
       :value="props.row['field_' + props.field.id]"
       :selected="parent.isCellSelected(props.field.id)"
       :store-prefix="props.storePrefix"
-      :read-only="props.field.primary && props.table.name == 'org_founder_map' ? true : props.readOnly ||
-      props.field.primary && props.table.name == 'Founders' ? true : props.readOnly ||
-      props.field.primary && props.table.name == 'organizations' ? true : props.readOnly ||
-      props.field.primary && props.table.name == 'person' ? true : props.readOnly "
+      :read-only="$options.methods.check(props) "
       @update="(...args) => $options.methods.update(listeners, props, ...args)"
       @paste="(...args) => $options.methods.paste(listeners, props, ...args)"
       @edit="(...args) => $options.methods.edit(listeners, props, ...args)"
@@ -93,6 +87,13 @@ export default {
      * cell, it is replaced with a the real field component which has the ability to
      * change the data.
      */
+     check(props) {
+     return ((props.field.primary || props.field.name == 'org_record_id' || props.field.name == 'RecordID'  ) && props.table.name == 'org_founder_map' ? true : props.readOnly ||
+     (props.field.primary || props.field.name == 'Request_Id' || props.field.name == 'RecordID'  ) && props.table.name == 'in customer request' ? true : props.readOnly ||
+     (props.field.primary || props.field.name == 'founder_record_id' || props.field.name == 'RecordID'  ) && props.table.name == 'Founders' ? true : props.readOnly ||
+                        props.field.primary && props.table.name == 'organizations' ? true : props.readOnly ||
+                        props.field.primary && props.table.name == 'person' ? true : props.readOnly)
+    },
     getFunctionalComponent(parent, props) {
       return parent.$registry
         .get('field', props.field.type)

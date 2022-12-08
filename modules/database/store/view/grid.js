@@ -1330,6 +1330,28 @@ export const actions = {
     // immediately commit the created row to the state.
     const valuesForApiRequest = {}
     const allFields = [primary].concat(fields)
+    let last_id
+    console.log(allFields ,table)
+    if (table.name == 'Founders' ||
+        table.name == 'in customer request' ||
+        table.name == 'org_founder_map'){
+        let filed
+        switch (table.name) {
+            case 'Founders':
+                filed = allFields.find((x)=>x.name=='founder_record_id')
+              break;
+            case 'in customer request':
+                filed = allFields.find((x)=>x.name=='Request_Id')
+              break;
+            case 'org_founder_map':
+                filed = allFields.find((x)=>x.name=='org_record_id')
+              break;
+          }
+          if(filed){
+            const id = await GridService(this.$client).getLatest(filed.table_id, filed.id )
+            last_id = Number(id.data.last_id)
+          }
+    }
     allFields.forEach((field) => {
       const name = `field_${field.id}`
       // console.log('field', field);
@@ -1349,10 +1371,15 @@ export const actions = {
             (field.name == 'RecordID' && table.name == 'customer') ||
             (field.name == 'RecordID' && table.name == 'Founders') ||
             (field.name == 'RecordID' && table.name == 'org_founder_map') ||
+            (field.name == 'RecordID' && table.name == 'in customer request') ||
             (field.name == 'RecordID' && table.name == 'organizations')
           ) {
             values[name] = uuid()
-          } else if (isValueName !== null) {
+          }else if( (field.name == 'Request_Id' && table.name == 'in customer request') ||
+                    (field.name == 'org_record_id' && table.name == 'org_founder_map')||
+                    (field.name == 'founder_record_id' && table.name == 'Founders')){
+            values[name] = last_id?(last_id + 1) :'NAN'
+           } else if (isValueName !== null) {
             if (field.primary) {
               values[name] = isValueName
             } else {
