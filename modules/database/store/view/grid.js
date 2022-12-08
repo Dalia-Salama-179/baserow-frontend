@@ -1368,7 +1368,7 @@ export const actions = {
         } else {
           if ((field.name == 'aingel_id' && table.name == 'organizations') ||
             (field.name == 'RecordID' && table.name == 'person') ||
-            (field.name == 'RecordID' && table.name == 'customer') ||
+            (field.name == 'RecordID' && table.name == 'in_customer') ||
             (field.name == 'RecordID' && table.name == 'Founders') ||
             (field.name == 'RecordID' && table.name == 'org_founder_map') ||
             (field.name == 'RecordID' && table.name == 'in customer request') ||
