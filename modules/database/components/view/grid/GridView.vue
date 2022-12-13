@@ -947,102 +947,129 @@
        * cells we can paste the data.
        */
       async pasteFromMultipleCellSelection(event) {
-        // console.log('event',event.clipboardData.getData('text'));
-        this.isNewValue = event.clipboardData.getData('text')
-        // console.log('isNewValueisNewValueisNewValue', this.isNewValue);
-        // console.log(this.isRow);
-        if (this.isField && this.isField.type == 'link_row' && this.isRow && this.stopRow && this.isRow.id == this.stopRow.id) {
-          try {
-            // console.log('/////////////////////////////');
-            const {
-              data
-            } = await RowService(this.$client).fetchAll({
-              tableId: this.isField.link_row_table,
-              search: this.isNewValue
-            })
-            if (data.results.length) {
-              let newArray = [...data.results]
-              let bigCities = newArray.filter(function(e) {
-                return e['field_412'] === this.isNewValue
-              })
-              // console.log(bigCities);
-              if (bigCities.length) {
-                let obj = this.isRow[`field_${this.isField.id}`]
-                obj.unshift({
-                  id: bigCities[bigCities.length - 1].id,
-                  value: bigCities[bigCities.length - 1][Object.keys(bigCities[bigCities.length - 1])[2]]
+            // console.log('event',event.clipboardData.getData('text'));
+            this.isNewValue = event.clipboardData.getData('text')
+            // console.log('isNewValueisNewValueisNewValue', this.isNewValue);
+            // console.log(this.isRow);
+            if (
+              this.isField &&
+              this.isField.type == 'link_row' &&
+              this.isRow &&
+              this.stopRow &&
+              this.isRow.id == this.stopRow.id
+            ) {
+              try {
+                // console.log('/////////////////////////////');
+                const { data } = await RowService(this.$client).fetchAll({
+                  tableId: this.isField.link_row_table,
+                  search: this.isNewValue,
                 })
-                let objUpdate = {
-                  row: this.isRow,
-                  field: this.isField,
-                  value: obj,
-                  oldValue: this.isRow[`field_${this.isField.id}`]
+                if (data.results.length) {
+                  const newArray = [...data.results]
+                  const bigCities = newArray.filter(function (e) {
+                    return e.field_412 === this.isNewValue
+                  })
+                  // console.log(bigCities);
+                  if (bigCities.length) {
+                    const obj = this.isRow[`field_${this.isField.id}`]
+                    obj.unshift({
+                      id: bigCities[bigCities.length - 1].id,
+                      value:
+                        bigCities[bigCities.length - 1][
+                          Object.keys(bigCities[bigCities.length - 1])[2]
+                        ],
+                    })
+                    const objUpdate = {
+                      row: this.isRow,
+                      field: this.isField,
+                      value: obj,
+                      oldValue: this.isRow[`field_${this.isField.id}`],
+                    }
+                    await this.updateValue(objUpdate)
+                  }
+                } else {
+                  const before = null
+                  const values = {}
+                  const isValueName = this.isNewValue
+                  const table = await TableService(this.$client).get(
+                    this.isField.link_row_table
+                  )
+                  const { data } = await FieldService(this.$client).fetchAll(
+                    this.isField.link_row_table
+                  )
+                  const resultCreate = await this.$store.dispatch(
+                    this.storePrefix + 'view/grid/createNewRow',
+                    {
+                      view: this.view,
+                      table: table.data,
+                      fields: data,
+                      notInset: false,
+                      primary: data[0],
+                      isValueName,
+                      values,
+                      before,
+                    }
+                  )
+                  // console.log('resultCreate === 1',resultCreate);
+                  const obj = this.isRow[`field_${this.isField.id}`]
+                  obj.unshift({
+                    id: resultCreate.id,
+                    value: resultCreate[Object.keys(resultCreate)[2]],
+                  })
+                  const objUpdate = {
+                    row: this.isRow,
+                    field: this.isField,
+                    value: obj,
+                    oldValue: this.isRow[`field_${this.isField.id}`],
+                  }
+                  await this.updateValue(objUpdate)
                 }
-                await this.updateValue(objUpdate)
+              } catch (error) {
+                notifyIf(error, 'row')
               }
-            } else {
-              let before = null
-              let values = {}
-              let isValueName = this.isNewValue
-              const table = await TableService(this.$client).get(this.isField.link_row_table)
-              const {
-                data
-              } = await FieldService(this.$client).fetchAll(
-                this.isField.link_row_table
-              )
-              let resultCreate = await this.$store.dispatch(this.storePrefix + 'view/grid/createNewRow',
-                {
-                  view: this.view,
-                  table: table.data,
-                  fields: data,
-                  notInset: false,
-                  primary: data[0],
-                  isValueName,
-                  values,
-                  before
-                }
-              )
-              // console.log('resultCreate === 1',resultCreate);
-              let obj = this.isRow[`field_${this.isField.id}`]
-              obj.unshift({
-                id: resultCreate.id,
-                value: resultCreate[Object.keys(resultCreate)[2]]
+              this.$store.dispatch(this.storePrefix + 'view/grid/refresh', {
+                view: this.$props.view,
+                fields: this.$props.fields,
+                primary: this.$props.primary,
               })
-              let objUpdate = {
-                row: this.isRow,
-                field: this.isField,
-                value: obj,
-                oldValue: this.isRow[`field_${this.isField.id}`]
-              }
-              await this.updateValue(objUpdate)
             }
-          } catch (error) {
-            notifyIf(error, 'row')
-          }
-          this.$store.dispatch(this.storePrefix + 'view/grid/refresh', {
-            view: this.$props.view,
-            fields: this.$props.fields,
-            primary: this.$props.primary
-          })
-        }
-        if (!this.isMultiSelectActive) {
-          return
-        }
-        // console.log('==============================dfcf ===========');
-        // console.log('dddddddddddddddddddddddddddddddddddddddddddddddddd');
-        this.$store.dispatch(this.storePrefix + 'view/grid/refresh', {
-          view: this.$props.view,
-          fields: this.$props.fields,
-          primary: this.$props.primary
-        })
-        const parsed = await this.$papa.parsePromise(
-          event.clipboardData.getData('text'), {
-            delimiter: '\t'
-          }
-        )
-        const data = parsed.data
-        await this.pasteData(data)
-      },
+            if (!this.isMultiSelectActive) {
+            } else {
+              console.log(
+                this.$store.getters[this.storePrefix + 'view/grid/getSelectedRows']
+              )
+              console.log(
+                this.$store.getters[
+                  this.storePrefix + 'view/grid/getMultiSelectFieldIndexSorted'
+                ]
+              )
+              const Rows =
+                this.$store.getters[this.storePrefix + 'view/grid/getSelectedRows']
+              const fields =
+                this.$store.getters[
+                  this.storePrefix + 'view/grid/getMultiSelectFieldIndexSorted'
+                ]
+              this.$store.dispatch('notification/setPasting', true)
+              for (const row of Rows) {
+                for (let i = fields[0]; i <= fields[1]; i++) {
+                  const allFields = this.leftFields.concat(this.visibleFields)
+                  const objUpdate = {
+                    row,
+                    field: allFields[i],
+                    value: this.isNewValue,
+                    oldValue: row[`field_${allFields[i].id}`],
+                  }
+                  await this.updateValue(objUpdate)
+                }
+              }
+              this.$store.dispatch('notification/setPasting', false)
+              this.$store.dispatch(this.storePrefix + 'view/grid/refresh', {
+                view: this.$props.view,
+                fields: this.$props.fields,
+                primary: this.$props.primary,
+              })
+            }
+          },
       /**
        * Called when data must be pasted into the grid view. It basically forwards the
        * request to a store action which handles the actual updating of rows. It also
