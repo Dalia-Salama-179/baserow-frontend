@@ -88,6 +88,9 @@ export default {
      * change the data.
      */
      check(props) {
+      if (props.field.name == 'Name' && props.table.name == 'organizations') {
+        return false
+      }
      return ((props.field.primary || props.field.name == 'org_record_id' || props.field.name == 'RecordID'|| props.field.name == 'creation_date'  ) && props.table.name == 'org_founder_map' ? true : props.readOnly ||
      (props.field.primary || props.field.name == 'Request_Id' || props.field.name == 'RecordID'  ) && props.table.name == 'in customer request' ? true : props.readOnly ||
      (props.field.primary || props.field.name == 'founder_record_id' || props.field.name == 'RecordID'  ) && props.table.name == 'Founders' ? true : props.readOnly ||
