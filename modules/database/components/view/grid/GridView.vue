@@ -1088,6 +1088,7 @@
         if (this.endSelect && this.startSelect && this.endSelect.type == this.startSelect.type && this.startSelect.type == 'link_row') {
           const rows = this.$store.getters[this.storePrefix + 'view/grid/getAllRows']
           let index = this.$store.state['page/view/grid'].rowIdFrist
+          this.$store.dispatch('notification/setPasting', true)
           try {
             let newRow
             for (let item in dataNew) {
@@ -1227,6 +1228,12 @@
           } catch (error) {
             notifyIf(error, 'row')
           }
+          await this.$store.dispatch(this.storePrefix + 'view/grid/refresh', {
+            view: this.view,
+            fields: this.fields,
+            primary: this.primary
+          })
+          this.$store.dispatch('notification/setPasting', false)
           return
         }
         this.$store.dispatch('notification/setPasting', true)

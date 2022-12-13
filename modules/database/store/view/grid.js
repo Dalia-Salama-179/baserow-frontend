@@ -831,7 +831,7 @@ export const actions = {
    * update search highlighting if a new activeSearchTerm and hideRowsNotMatchingSearch
    * are provided in the refreshEvent.
    */
-  refresh(
+  async refresh(
     { dispatch, commit, getters, rootGetters, state },
     { view, fields, primary, includeFieldOptions = false }
   ) {
@@ -841,7 +841,7 @@ export const actions = {
       lastRefreshRequestController.abort()
     }
     lastRefreshRequestController = new AbortController()
-    lastRefreshRequest = GridService(this.$client)
+    lastRefreshRequest = await GridService(this.$client)
       .fetchCount({
         gridId,
         search: getters.getServerSearchTerm,
