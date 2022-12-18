@@ -265,28 +265,50 @@
           search: row['field_357']
         })
           .then((response) => {
-            if (response.data.results.length) {
-              let newArray = [...response.data.results]
-              let bigCities = newArray.filter(function(e) {
-                return e['field_604'] == row['field_604'] && e['field_357'] == row['field_357'] && e.id != row.id
+          if (response.data.results.length) {
+            let newArray = [...response.data.results]
+            let bigCities = newArray.filter(function (e) {
+              return (
+                e['field_604'] == row['field_604'] &&
+                e['field_357'] == row['field_357']
+              )
+            })
+            if (bigCities.length > 1) {
+              bigCities.forEach((el, i) => {
+                const values = {}
+                values.field_363 = true
+                RowService(this.$client)
+                  .update(this.table.id, el.id, values)
+                  .then((response) => {
+                    if (i === bigCities.length - 1) {
+                      const refresh = JSON.parse(
+                        localStorage.getItem('refresh')
+                      )
+                      this.$store.dispatch(
+                        this.storePrefix + 'view/grid/refresh',
+                        refresh
+                      )
+                    }
+                  })
               })
-              if (bigCities.length) {
-                let values = {}
-                values['field_363'] = true
-                RowService(this.$client).update(
-                  this.table.id,
-                  row.id,
-                  values
-                ).then((response) => {
-                  let refresh = JSON.parse(localStorage.getItem('refresh'))
-                  this.$store.dispatch(this.storePrefix + 'view/grid/refresh', refresh)
+            } else {
+              const values = {}
+              values.field_363 = false
+              RowService(this.$client)
+                .update(this.table.id, row.id, values)
+                .then((response) => {
+                  const refresh = JSON.parse(localStorage.getItem('refresh'))
+                  this.$store.dispatch(
+                    this.storePrefix + 'view/grid/refresh',
+                    refresh
+                  )
                 })
-              }
             }
-          })
-          .catch((error) => {
-            console.log('error error', error)
-          })
+          }
+        })
+        .catch((error) => {
+          console.log('error error', error)
+        })
 
         const selectedRows = await this.$store.dispatch('page/view/grid/getRows')
         if (selectedRows && selectedRows.length) {
