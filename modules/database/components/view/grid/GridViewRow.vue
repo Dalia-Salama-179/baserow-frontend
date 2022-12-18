@@ -361,7 +361,7 @@
               `t2/crunch_base_founder/${this.table.id}/${r.id}/`,
               {
                 'cb_url_field_name': 'field_320',
-                'cb_uuid_field_name': 'field_363',
+                'cb_uuid_field_name': 'field_659',
                 'company_prev_raised_count_field_name': 'field_657',
                 'company_total_raised_value_field_name': 'field_658',
                 'cb_updated_at': 'field_656',
@@ -384,7 +384,7 @@
             `t2/crunch_base_founder/${this.table.id}/${row.id}/`,
             {
               'cb_url_field_name': 'field_320',
-              'cb_uuid_field_name': 'field_363',
+              'cb_uuid_field_name': 'field_659',
               'company_prev_raised_count_field_name': 'field_657',
               'company_total_raised_value_field_name': 'field_658',
               'cb_updated_at': 'field_656',
