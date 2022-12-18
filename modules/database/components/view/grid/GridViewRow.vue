@@ -80,7 +80,7 @@
                                 class="button button--primary buttonNew" v-show="row._.hover">
                             CB
                         </button>
-                        <button v-if="table.name == 'Founders'" @click="getCrunchFounders(row)" title="Get crunch base"
+                        <button v-if="table.name == 'Founders' || table.name == 'person'" @click="table.name == 'Founders' ? getCrunchFounders(row) :getCrunchPerson(row)" title="Get crunch base"
                                 class="button button--primary buttonNew" v-show="row._.hover">
                             CB
                         </button>
@@ -405,6 +405,53 @@
             })
         }
       },
+      async getCrunchPerson(row) {
+      const selectedRows = await this.$store.dispatch('page/view/grid/getRows')
+      if (selectedRows && selectedRows.length) {
+        selectedRows.forEach((r) => {
+          this.$client
+            .post(`t2/crunch_base_person/${this.table.id}/${r.id}/`, {
+              cb_url_field_name: 'field_421',
+              cb_uuid_field_name: 'field_427',
+            })
+            .then(() => {
+              const refresh = JSON.parse(localStorage.getItem('refresh'))
+              this.$store.dispatch(
+                this.storePrefix + 'view/grid/refresh',
+                refresh
+              )
+            })
+            .catch(() => {
+              const refresh = JSON.parse(localStorage.getItem('refresh'))
+              this.$store.dispatch(
+                this.storePrefix + 'view/grid/refresh',
+                refresh
+              )
+            })
+        })
+      } else {
+        this.$client
+          .post(`t2/crunch_base_person/${this.table.id}/${row.id}/`, {
+            cb_url_field_name: 'field_421',
+            cb_uuid_field_name: 'field_427',
+          })
+          .then((response) => {
+            // console.log('response',response);
+            const refresh = JSON.parse(localStorage.getItem('refresh'))
+            this.$store.dispatch(
+              this.storePrefix + 'view/grid/refresh',
+              refresh
+            )
+          })
+          .catch(() => {
+            const refresh = JSON.parse(localStorage.getItem('refresh'))
+            this.$store.dispatch(
+              this.storePrefix + 'view/grid/refresh',
+              refresh
+            )
+          })
+      }
+    },
       isCellSelected(fieldId) {
         return this.row._.selected && this.row._.selectedFieldId === fieldId
       },
