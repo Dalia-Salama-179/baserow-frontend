@@ -270,10 +270,10 @@
             let bigCities = newArray.filter(function (e) {
               return (
                 e['field_604'] == row['field_604'] &&
-                e['field_357'] == row['field_357']
+                e['field_357'] == row['field_357']&& e.id != row.id
               )
             })
-            if (bigCities.length > 1) {
+            if (bigCities.length >= 1) {
               bigCities.forEach((el, i) => {
                 const values = {}
                 values.field_363 = true
