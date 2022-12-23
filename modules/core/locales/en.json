@@ -198,6 +198,10 @@
         "title": "Copying...",
         "content": "Preparing your data"
     },
+    "LoadingtingNotification": {
+        "title": "Under processing...",
+        "content": "Your request is under processing"
+    },
     "pastingNotification": {
         "title": "Pasting...",
         "content": "Preparing your data"

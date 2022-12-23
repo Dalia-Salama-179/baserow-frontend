@@ -260,11 +260,12 @@
     },
     methods: {
       async getCrunchBase(row) {
-        const { data } = RowService(this.$client).fetchAll({
+        this.$store.dispatch('notification/setLoad', true)
+        await RowService(this.$client).fetchAll({
           tableId: this.table.id,
           search: row['field_357']
         })
-          .then((response) => {
+          .then(async (response) => {
           if (response.data.results.length) {
             let newArray = [...response.data.results]
             let bigCities = newArray.filter(function (e) {
@@ -277,22 +278,22 @@
             if (bigCities.length >= 1) {
               const values = {}
               values.field_363 = true
-              RowService(this.$client)
+              await RowService(this.$client)
                 .update(this.table.id, row.id, values)
-                .then((response) => {
+                .then(async (response) => {
                   const refresh = JSON.parse(localStorage.getItem('refresh'))
-                  this.$store.dispatch(
+                  await this.$store.dispatch(
                     this.storePrefix + 'view/grid/refresh',
                     refresh
                   )})
             } else {
               const values = {}
               values.field_363 = false
-              RowService(this.$client)
+              await RowService(this.$client)
                 .update(this.table.id, row.id, values)
-                .then((response) => {
+                .then(async (response) => {
                   const refresh = JSON.parse(localStorage.getItem('refresh'))
-                  this.$store.dispatch(
+                  await this.$store.dispatch(
                     this.storePrefix + 'view/grid/refresh',
                     refresh
                   )
@@ -346,6 +347,8 @@
               this.$store.dispatch(this.storePrefix + 'view/grid/refresh', refresh)
             })
         }
+        this.$store.dispatch('notification/setLoad', false)
+
       },
       async getCrunchFounders(row) {
         const selectedRows = await this.$store.dispatch('page/view/grid/getRows')

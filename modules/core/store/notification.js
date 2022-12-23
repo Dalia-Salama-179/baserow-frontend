@@ -7,6 +7,7 @@ export const state = () => ({
   authorizationError: false,
   copying: false,
   pasting: false,
+  load: false,
   // See UNDO_REDO_STATES for all possible values.
   undoRedoState: UNDO_REDO_STATES.HIDDEN,
   items: [],
@@ -37,6 +38,9 @@ export const mutations = {
   },
   SET_UNDO_REDO_STATE(state, value) {
     state.undoRedoState = value
+  },
+  SET_Load(state, value) {
+    state.load = value
   },
 }
 
@@ -97,6 +101,9 @@ export const actions = {
   },
   setUndoRedoState({ commit }, value) {
     commit('SET_UNDO_REDO_STATE', value)
+  },
+  setLoad({ commit }, value) {
+    commit('SET_Load', value)
   },
 }
 

@@ -374,13 +374,14 @@
         // console.log('this.table',this.table);
         // console.log('this.view',this.view);
         // console.log('this.primary',this.primary);
-        // console.log('field',field);
+        console.log('field',field);
         // console.log('this.isField',this.isField);
         // console.log('this.isNewValue',this.isNewValue);
         // console.log('row',row);
         // console.log('value',value);
         // console.log('oldValue',oldValue);
         try {
+          this.$store.dispatch('notification/setLoad', true)
           await this.$store.dispatch(
             this.storePrefix + 'view/grid/updateRowValue', {
               table: this.table,
@@ -393,6 +394,63 @@
               oldValue
             }
           )
+           if (
+          (this.table.name == 'organizations' &&
+            field.name == 'org_crunchbase_url') ||
+          (this.table.name == 'organizations' && field.name == 'Name')
+        ) {
+          await RowService(this.$client)
+            .fetchAll({
+              tableId: this.table.id,
+              search: row.field_357,
+            })
+            .then(async (response) => {
+              if (response.data.results.length) {
+                const newArray = [...response.data.results]
+                const bigCities = newArray.filter((e) => {
+                  return (
+                    e.field_604 == row.field_604 &&
+                    e.field_357 == row.field_357 &&
+                    e.id != row.id
+                  )
+                })
+                if (bigCities.length >= 1) {
+                  const values = {}
+                  values.field_363 = true
+                  await RowService(this.$client)
+                    .update(this.table.id, row.id, values)
+                    .then(async (response) => {
+                      const refresh = JSON.parse(
+                        localStorage.getItem('refresh')
+                      )
+                      await this.$store.dispatch(
+                        this.storePrefix + 'view/grid/refresh',
+                        refresh
+                      )
+                    })
+                } else {
+                  const values = {}
+                  values.field_363 = false
+                  await RowService(this.$client)
+                    .update(this.table.id, row.id, values)
+                    .then(async (response) => {
+                      const refresh = JSON.parse(
+                        localStorage.getItem('refresh')
+                      )
+                      await this.$store.dispatch(
+                        this.storePrefix + 'view/grid/refresh',
+                        refresh
+                      )
+                    })
+                }
+              }
+              this.$store.dispatch('notification/setLoad', false)
+            })
+            .catch((error) => {
+              this.$store.dispatch('notification/setLoad', false)
+              console.log('error error', error)
+            })
+        }
         } catch (error) {
           notifyIf(error, 'field')
         }
@@ -1084,11 +1142,11 @@
         if (data.length === 0 || data[0].length === 0 || this.readOnly) {
           return
         }
+        this.$store.dispatch('notification/setPasting', true)
 
         if (this.endSelect && this.startSelect && this.endSelect.type == this.startSelect.type && this.startSelect.type == 'link_row') {
           const rows = this.$store.getters[this.storePrefix + 'view/grid/getAllRows']
           let index = this.$store.state['page/view/grid'].rowIdFrist
-          this.$store.dispatch('notification/setPasting', true)
           try {
             let newRow
             for (let item in dataNew) {
