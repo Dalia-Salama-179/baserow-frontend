@@ -270,27 +270,21 @@
             let bigCities = newArray.filter(function (e) {
               return (
                 e['field_604'] == row['field_604'] &&
-                e['field_357'] == row['field_357']&& e.id != row.id
+                e['field_357'] == row['field_357']&&
+                e.id != row.id
               )
             })
             if (bigCities.length >= 1) {
-              bigCities.forEach((el, i) => {
-                const values = {}
-                values.field_363 = true
-                RowService(this.$client)
-                  .update(this.table.id, el.id, values)
-                  .then((response) => {
-                    if (i === bigCities.length - 1) {
-                      const refresh = JSON.parse(
-                        localStorage.getItem('refresh')
-                      )
-                      this.$store.dispatch(
-                        this.storePrefix + 'view/grid/refresh',
-                        refresh
-                      )
-                    }
-                  })
-              })
+              const values = {}
+              values.field_363 = true
+              RowService(this.$client)
+                .update(this.table.id, row.id, values)
+                .then((response) => {
+                  const refresh = JSON.parse(localStorage.getItem('refresh'))
+                  this.$store.dispatch(
+                    this.storePrefix + 'view/grid/refresh',
+                    refresh
+                  )})
             } else {
               const values = {}
               values.field_363 = false

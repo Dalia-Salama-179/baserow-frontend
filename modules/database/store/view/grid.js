@@ -429,14 +429,14 @@ export const mutations = {
       if (metadata) {
         existingRowState._.metadata = metadata
       }
-      if (row.duplicated) {
-        existingRowState._.duplicated = true
-        existingRowState['field_363'] = true
-        // state.rows[index] = existingRowState
-      } else {
-        existingRowState._.duplicated = false
-        existingRowState['field_363'] = false
-      }
+      // if (row.duplicated) {
+      //   existingRowState._.duplicated = true
+      //   existingRowState['field_363'] = true
+      //   // state.rows[index] = existingRowState
+      // } else {
+      //   existingRowState._.duplicated = false
+      //   existingRowState['field_363'] = false
+      // }
       // console.log(state.rows[index]);
     }
   },
@@ -1349,7 +1349,7 @@ export const actions = {
           }
           if(filed){
             const id = await GridService(this.$client).getLatest(filed.table_id, filed.id )
-            last_id = Number(id.data.last_id)
+            last_id = Number(id.data.max_id)
           }
     }
     allFields.forEach((field) => {
@@ -1992,7 +1992,7 @@ export const actions = {
       // console.log('duplicatedvaluesvalues', duplicated[row.id]);
       // console.log('duplicatedvaluesvalues', Object.keys(duplicated)[row.id]);
       if (duplicated[row.id]) row.duplicated = true
-      else row.duplicated = false
+      else row.duplicated = false 
       if (duplicated[row.id]) row['field_363'] = true
       else row['field_363'] = false
       // console.log('duplicated row row row', row);
