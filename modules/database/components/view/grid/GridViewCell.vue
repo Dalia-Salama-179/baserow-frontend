@@ -93,11 +93,10 @@ export default {
       }
      return ((props.field.primary || props.field.name == 'org_record_id' || props.field.name == 'RecordID'|| props.field.name == 'creation_date'  ) && props.table.name == 'org_founder_map' ? true : props.readOnly ||
      (props.field.primary || props.field.name == 'Request_Id' || props.field.name == 'RecordID'  ) && props.table.name == 'in customer request' ? true : props.readOnly ||
-     (props.field.primary || props.field.name == 'founder_record_id' || props.field.name == 'RecordID'  ) && props.table.name == 'Founders' ? true : props.readOnly ||
+     (props.field.primary || props.field.name == 'founder_record_id' || props.field.name == 'RecordID' || props.field.name == 'Date Of Creation'  ) && props.table.name == 'Founders' ? true : props.readOnly ||
      (props.field.primary || props.field.name == 'created_at' || props.field.name == 'RecordID'  ) && props.table.name == 'organizations' ? true : props.readOnly ||
      (props.field.primary || props.field.name == 'RecordID'  ) && props.table.name == 'in_customer' ? true : props.readOnly ||
-
-                        props.field.primary && props.table.name == 'person' ? true : props.readOnly)
+     (props.field.primary || props.field.name == 'RecordID'|| props.field.name == 'created_at'  ) && props.table.name == 'person' ? true : props.readOnly )
     },
     getFunctionalComponent(parent, props) {
       return parent.$registry
