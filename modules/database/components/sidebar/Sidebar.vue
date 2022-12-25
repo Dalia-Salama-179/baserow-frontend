@@ -33,7 +33,11 @@
           }"
           :database="application"
           :table="table"
-          :editable="tables.find(ta => ta.table.id === table.id)"
+          :editable="
+            tables.find((ta) => ta.table.id === table.id)
+              ? tables.find((ta) => ta.table.id === table.id)
+              : table
+          "
         ></SidebarItem>
       </ul>
       <a class="tree__sub-add" @click="$refs.createTableModal.show()">
@@ -75,7 +79,7 @@ export default {
     },
     tables() {
       return this.$store.getters['tablesControl/getAll']
-    }
+    },
   },
   methods: {
     async selected(application) {

@@ -374,7 +374,7 @@
         // console.log('this.table',this.table);
         // console.log('this.view',this.view);
         // console.log('this.primary',this.primary);
-        console.log('field',field);
+        // console.log('field',field);
         // console.log('this.isField',this.isField);
         // console.log('this.isNewValue',this.isNewValue);
         // console.log('row',row);
@@ -451,7 +451,10 @@
               console.log('error error', error)
             })
         }
+              this.$store.dispatch('notification/setLoad', false)
+
         } catch (error) {
+          this.$store.dispatch('notification/setLoad', false)
           notifyIf(error, 'field')
         }
       },
