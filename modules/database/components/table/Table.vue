@@ -47,7 +47,7 @@
           ></ViewsContext>
         </li>
         <li
-          v-if="hasSelectedView && !readOnly && (tables.find(ta => ta.table.id === table.id).can_edit || user.is_superuser)"
+          v-if="hasSelectedView && !readOnly && (editable() || user.is_superuser)"
           class="header__filter-item header__filter-item--no-margin-left"
         >
           <a
@@ -301,6 +301,14 @@ export default {
     getViewHeaderComponent(view) {
       const type = this.$registry.get('view', view.type)
       return type.getHeaderComponent()
+    },
+    editable() {
+      const table = this.tables.find((ta) => ta.table.id === this.table.id)
+      if (table) {
+        return table.can_edit
+      } else {
+        return true
+      }
     },
     /**
      * When the window resizes, we want to check if the content of the header is

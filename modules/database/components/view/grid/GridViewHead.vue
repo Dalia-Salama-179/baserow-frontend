@@ -29,21 +29,21 @@
     ></GridViewFieldType>
     <template v-if="editable || user.is_superuser">
       <div
-              v-if="includeAddField && !readOnly"
-              class="grid-view__column"
-              :style="{ width: 100 + 'px' }"
+        v-if="includeAddField && !readOnly"
+        class="grid-view__column"
+        :style="{ width: 100 + 'px' }"
       >
         <a
-                ref="createFieldContextLink"
-                class="grid-view__add-column"
-                @click="$refs.createFieldContext.toggle($refs.createFieldContextLink)"
+          ref="createFieldContextLink"
+          class="grid-view__add-column"
+          @click="$refs.createFieldContext.toggle($refs.createFieldContextLink)"
         >
           <i class="fas fa-plus"></i>
         </a>
         <CreateFieldContext
-                ref="createFieldContext"
-                :table="table"
-                @field-created="$emit('field-created', $event)"
+          ref="createFieldContext"
+          :table="table"
+          @field-created="$emit('field-created', $event)"
         ></CreateFieldContext>
       </div>
     </template>
@@ -109,7 +109,12 @@ export default {
       return this.$store.getters['tablesControl/getAll']
     },
     editable() {
-      return this.tables.find(ta => ta.table.id === this.table.id).can_edit
+      const table = this.tables.find((ta) => ta.table.id === this.table.id)
+      if (table) {
+        return table.can_edit
+      } else {
+        return true
+      }
     },
     ...mapGetters({
       user: 'auth/getUserObject',
@@ -151,7 +156,7 @@ export default {
     },
     drag(e) {
       if (this.editable || this.user.is_superuser) this.$emit('dragging', e)
-    }
+    },
   },
 }
 </script>
