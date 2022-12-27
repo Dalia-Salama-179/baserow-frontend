@@ -1326,7 +1326,10 @@ export const actions = {
     console.log(allFields ,table)
     if (table.name == 'Founders' ||
         table.name == 'in customer request' ||
-        table.name == 'org_founder_map'){
+        table.name == 'org_founder_map'
+        || table.name == 'Founder_POC'
+        || table.name == 'In_Customer_Request_POC'
+        || table.name == 'Org_founder_map_POC' ){
         let filed
         switch (table.name) {
             case 'Founders':
@@ -1351,25 +1354,25 @@ export const actions = {
       if (!(name in values) && !isValues) {
         const empty = fieldType.getNewRowValue(field)
 
-        if ((field.name == 'created_at' && table.name == 'person') ||
-            (field.name == 'Date Of Creation' && table.name == 'Founders') ||
-            (field.name == 'creation_date' && table.name == 'org_founder_map') ||
-            (field.name == 'created_at' && table.name == 'organizations')
+        if ((field.name == 'created_at' && ( table.name == 'Person_POC' || table.name == 'person')) ||
+            (field.name == 'Date Of Creation' && ( table.name == 'Founder_POC' || table.name == 'Founders')) ||
+            (field.name == 'creation_date' && ( table.name == 'Org_founder_map_POC' || table.name == 'org_founder_map')) ||
+            (field.name == 'created_at' && ( table.name == 'Organization_POC' || table.name == 'organizations'))
         ) {
           values[name] =  new Date().toLocaleString().replace(',','')
         } else {
-          if ((field.name == 'aingel_id' && table.name == 'organizations') ||
-            (field.name == 'RecordID' && table.name == 'person') ||
-            (field.name == 'RecordID' && table.name == 'in_customer') ||
-            (field.name == 'RecordID' && table.name == 'Founders') ||
-            (field.name == 'RecordID' && table.name == 'org_founder_map') ||
-            (field.name == 'RecordID' && table.name == 'in customer request') ||
-            (field.name == 'RecordID' && table.name == 'organizations')
+          if ((field.name == 'aingel_id' && ( table.name == 'Organization_POC' || table.name == 'organizations')) ||
+            (field.name == 'RecordID' && ( table.name == 'Person_POC' || table.name == 'person')) ||
+            (field.name == 'RecordID' && ( table.name == 'In_Customer_POC' || table.name == 'in_customer')) ||
+            (field.name == 'RecordID' && ( table.name == 'Founder_POC' || table.name == 'Founders')) ||
+            (field.name == 'RecordID' && ( table.name == 'Org_founder_map_POC' || table.name == 'org_founder_map')) ||
+            (field.name == 'RecordID' && ( table.name == 'In_Customer_Request_POC' || table.name == 'in customer request')) ||
+            (field.name == 'RecordID' && ( table.name == 'Organization_POC' || table.name == 'organizations'))
           ) {
             values[name] = uuid()
-          }else if( (field.name == 'Request_Id' && table.name == 'in customer request') ||
-                    (field.name == 'org_record_id' && table.name == 'org_founder_map')||
-                    (field.name == 'founder_record_id' && table.name == 'Founders')){
+          }else if( (field.name == 'Request_Id' && ( table.name == 'In_Customer_Request_POC' || table.name == 'in customer request')) ||
+                    (field.name == 'org_record_id' && ( table.name == 'Org_founder_map_POC' || table.name == 'org_founder_map'))||
+                    (field.name == 'founder_record_id' && ( table.name == 'Founder_POC' || table.name == 'Founders'))){
             values[name] = last_id?(last_id + 1) :'NAN'
            } else if (isValueName !== null) {
             if (field.primary) {
@@ -1647,7 +1650,7 @@ export const actions = {
     values[`field_${field.id}`] = newValue
     const refresh = JSON.parse(localStorage.getItem('refresh'))
 
-    if (field.name == 'organization' && value && value[0] && table.name == 'org_founder_map') {
+    if (field.name == 'organization' && value && value[0] && (table.name =='org_founder_map' || table.name == 'org_founder_map')) {
       values[`field_${primary.id}`] = value[0].value
     }
     // console.log('table', table);
@@ -1655,16 +1658,16 @@ export const actions = {
     // console.log('row', row);
     // console.log('values', values);
     // console.log('value[0]', value[0]);
-    if (field.name == 'person' && value && table.name == 'Founders') {
+    if (field.name == 'person' && value && (table.name== 'Founder_POC' || table.name == 'Founders')) {
       const organizationOfInterest = gridViewHelpers.methods.getFieldByName('organization_of_interest')
       values[`field_${primary.id}`] = `${row[organizationOfInterest][0] ? row[organizationOfInterest][0].value + '_' : ''}${value[0] ? value[0].value : ''}`
     }
-    if (field.name == 'organization_of_interest' && value && table.name == 'Founders') {
+    if (field.name == 'organization_of_interest' && value && (table.name== 'Founder_POC' || table.name == 'Founders')) {
       const person = gridViewHelpers.methods.getFieldByName('person')
 
       values[`field_${primary.id}`] = `${value[0] ? value[0].value + '_' : ''}${row[person][0] ? row[person ][0].value : ''}`
     }
-    if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
+    if (field.name == 'org_founder_map' && value && value[0] && (table.name == 'Organization_POC' || table.name == 'organizations')) {
       // const { data } = await RowService(this.$client).fetchAll({
       //   tableId: table.id,
       //   search: value[0].value,
@@ -1676,17 +1679,17 @@ export const actions = {
       // console.log(`field_${primary.id}`);
       values[`field_${primary.id}`] = value[0].value
     }
-    if (field.name == 'first_name' && value && value[0] && table.name == 'person') {
+    if (field.name == 'first_name' && value && value[0] && (table.name=='Person_POC'|| table.name == 'person')) {
       const firstName = gridViewHelpers.methods.getFieldByName('first_name')
       const lastName = gridViewHelpers.methods.getFieldByName('last_name')
       const twitterHandle = gridViewHelpers.methods.getFieldByName('twitter_handle')
 
       values[`field_${primary.id}`] = `${values[firstName] ? values[firstName] + '_' : ''}${row[lastName] ? row[lastName] + '*' : ''}${row[twitterHandle] ? row[twitterHandle] : ''}`
     }
-    if (field.name == 'twitter_handle' && value && value[0] && table.name == 'person') {
+    if (field.name == 'twitter_handle' && value && value[0] && (table.name=='Person_POC'|| table.name == 'person')) {
       values[`field_${primary.id}`] = `${row[firstName] ? row[firstName] + '_' : ''}${row[lastName] ? row[lastName] + '*' : ''}${values[twitterHandle] ? values[twitterHandle] : ''}`
     }
-    if (field.name == 'last_name' && value && value[0] && table.name == 'person') {
+    if (field.name == 'last_name' && value && value[0] && (table.name=='Person_POC'|| table.name == 'person')) {
       values[`field_${primary.id}`] = `${row[firstName] ? row[firstName] + '_' : ''}${values[lastName] ? values[lastName] + '*' : ''}${row[twitterHandle] ? row[twitterHandle] : ''}`
     }
     try {
@@ -1830,7 +1833,7 @@ export const actions = {
           newEle[fieldId] = newValue
           rowsNew[resultIndex] = newEle
         }
-        if (table.name == 'organizations' && field.name == 'org_crunchbase_url') {
+        if ((table.name == 'Organization_POC' || table.name == 'organizations') && field.name == 'org_crunchbase_url') {
           const { data } = await RowService(this.$client).fetchAll({
             tableId: table.id,
             search: newValue
@@ -1875,7 +1878,7 @@ export const actions = {
             return
           }
         }
-        if (table.name == 'organizations' && field.name == 'Name') {
+        if ((table.name == 'Organization_POC' || table.name == 'organizations') && field.name == 'Name') {
           const { data } = await RowService(this.$client).fetchAll({
             tableId: table.id,
             search: newValue

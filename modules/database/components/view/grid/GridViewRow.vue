@@ -85,7 +85,7 @@
             ></component>
             <!-- v-show="row._.hover" -->
             <button
-              v-if="table.name == 'organizations'"
+              v-if="table.name == 'organizations' || table.name == 'Organization_POC'"
               v-show="row._.hover"
               title="Get crunch base"
               class="button button--primary buttonNew"
@@ -94,7 +94,7 @@
               CB
             </button>
             <button
-              v-if="table.name == 'Founders' || table.name == 'person'"
+              v-if="table.name == 'Founders' || table.name == 'person' || table.name ==  'Founder_POC' || table.name == 'Person_POC'"
               v-show="row._.hover"
               title="Get crunch base"
               class="button button--primary buttonNew"

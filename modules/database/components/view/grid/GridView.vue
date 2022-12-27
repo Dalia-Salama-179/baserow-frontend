@@ -397,9 +397,9 @@
             }
           )
            if (
-          (this.table.name == 'organizations' &&
+          ((this.table.name == 'organizations' || this.table.name == 'Organization_POC') &&
             field.name == 'org_crunchbase_url') ||
-          (this.table.name == 'organizations' && field.name == 'Name')
+          ((this.table.name == 'organizations' || this.table.name == 'Organization_POC') && field.name == 'Name')
         ) {
           await RowService(this.$client)
             .fetchAll({
