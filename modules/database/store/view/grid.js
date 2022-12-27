@@ -15,6 +15,7 @@ import {
   matchSearchFilters
 } from '@baserow/modules/database/utils/view'
 import { RefreshCancelledError } from '@baserow/modules/core/errors'
+import gridViewHelpers from '@baserow/modules/database/mixins/gridViewHelpers'
 
 export function populateRow(row, metadata = {}) {
   row._ = {
@@ -429,15 +430,6 @@ export const mutations = {
       if (metadata) {
         existingRowState._.metadata = metadata
       }
-      // if (row.duplicated) {
-      //   existingRowState._.duplicated = true
-      //   existingRowState['field_363'] = true
-      //   // state.rows[index] = existingRowState
-      // } else {
-      //   existingRowState._.duplicated = false
-      //   existingRowState['field_363'] = false
-      // }
-      // console.log(state.rows[index]);
     }
   },
   UPDATE_ROW_FIELD_VALUE(state, { row, field, value }) {
@@ -1610,63 +1602,6 @@ export const actions = {
     { commit, dispatch },
     { table, view, row, field, fields, primary, value, oldValue }
   ) {
-    // console.log('row = row = row', row);
-    // console.log('field = field = field', field);
-
-
-    /*if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
-      // console.log('row = row = row', row);
-      // console.log('value = value = value', value);
-      const { data } = await RowService(this.$client).fetchAll({
-        tableId: table.id,
-        search: value[0].value,
-      });
-      if (data.results.length) {
-        let newArray = [...data.results]
-        let bigCities = newArray.filter(function (e) {
-          return e['field_357'] === value[0].value && e['field_604'] === row['field_604'] && e['field_357'] != '' && row['field_357'] != '' && e['field_604'] != '' && row.id != e.id;
-        });
-        if (bigCities.length) {
-          row.duplicated = true
-        }
-      }
-    }
-    if (table.name == 'organizations' && field.name == 'Name' || table.name == 'organizations' && field.name == 'Name' && value && value[0]) {
-      // console.log('row = row = row', row);
-      // console.log('value = value = value', value);
-      const { data } = await RowService(this.$client).fetchAll({
-        tableId: table.id,
-        search: value[0] && value[0].value ? value[0].value : value,
-      });
-      if (data.results.length) {
-        let newArray = [...data.results]
-        let bigCities = newArray.filter(function (e) {
-          return e['field_357'] === value[0] && value[0].value ? value[0].value : value && e['field_604'] === row['field_604'] && row.id != e.id;
-        });
-        if (bigCities.length) {
-          row.duplicated = true
-        }
-      }
-    }
-    if (table.name == 'organizations' && field.name == 'org_crunchbase_url' || table.name == 'organizations' && field.name == 'org_crunchbase_url' && value && value[0]) {
-      // console.log('row = row = row', row);
-      // console.log('value = value = value', value);
-      const { data } = await RowService(this.$client).fetchAll({
-        tableId: table.id,
-        search: value[0] && value[0].value ? value[0].value : value,
-      });
-      if (data.results.length) {
-        let newArray = [...data.results]
-        let bigCities = newArray.filter(function (e) {
-          return e['field_604'] === value[0] && value[0].value ? value[0].value : value && e['field_357'] === row['field_357'] && row.id != e.id;
-        });
-        if (bigCities.length) {
-          row.duplicated = true
-        }
-      }
-    }*/
-
-
     // Immediately updated the store with the updated row field
     // value.
     commit('UPDATE_ROW_FIELD_VALUE', { row, field, value })
@@ -1710,6 +1645,8 @@ export const actions = {
     const newValue = fieldType.prepareValueForUpdate(field, value)
     const values = {}
     values[`field_${field.id}`] = newValue
+    const refresh = JSON.parse(localStorage.getItem('refresh'))
+
     if (field.name == 'organization' && value && value[0] && table.name == 'org_founder_map') {
       values[`field_${primary.id}`] = value[0].value
     }
@@ -1719,11 +1656,13 @@ export const actions = {
     // console.log('values', values);
     // console.log('value[0]', value[0]);
     if (field.name == 'person' && value && table.name == 'Founders') {
-      // Change 598 to 487 -- T2DS-29
-      values[`field_${primary.id}`] = `${row['field_487'][0] ? row['field_487'][0].value + '_' : ''}${value[0] ? value[0].value : ''}`
+      const organizationOfInterest = gridViewHelpers.methods.getFieldByName('organization_of_interest')
+      values[`field_${primary.id}`] = `${row[organizationOfInterest][0] ? row[organizationOfInterest][0].value + '_' : ''}${value[0] ? value[0].value : ''}`
     }
     if (field.name == 'organization_of_interest' && value && table.name == 'Founders') {
-      values[`field_${primary.id}`] = `${value[0] ? value[0].value + '_' : ''}${row['field_441'][0] ? row['field_441'][0].value : ''}`
+      const person = gridViewHelpers.methods.getFieldByName('person')
+
+      values[`field_${primary.id}`] = `${value[0] ? value[0].value + '_' : ''}${row[person][0] ? row[person ][0].value : ''}`
     }
     if (field.name == 'org_founder_map' && value && value[0] && table.name == 'organizations') {
       // const { data } = await RowService(this.$client).fetchAll({
@@ -1738,17 +1677,19 @@ export const actions = {
       values[`field_${primary.id}`] = value[0].value
     }
     if (field.name == 'first_name' && value && value[0] && table.name == 'person') {
-      values[`field_${primary.id}`] = `${values['field_418'] ? values['field_418'] + '_' : ''}${row['field_419'] ? row['field_419'] + '*' : ''}${row['field_422'] ? row['field_422'] : ''}`
+      const firstName = gridViewHelpers.methods.getFieldByName('first_name')
+      const lastName = gridViewHelpers.methods.getFieldByName('last_name')
+      const twitterHandle = gridViewHelpers.methods.getFieldByName('twitter_handle')
+
+      values[`field_${primary.id}`] = `${values[firstName] ? values[firstName] + '_' : ''}${row[lastName] ? row[lastName] + '*' : ''}${row[twitterHandle] ? row[twitterHandle] : ''}`
     }
     if (field.name == 'twitter_handle' && value && value[0] && table.name == 'person') {
-      values[`field_${primary.id}`] = `${row['field_418'] ? row['field_418'] + '_' : ''}${row['field_419'] ? row['field_419'] + '*' : ''}${values['field_422'] ? values['field_422'] : ''}`
+      values[`field_${primary.id}`] = `${row[firstName] ? row[firstName] + '_' : ''}${row[lastName] ? row[lastName] + '*' : ''}${values[twitterHandle] ? values[twitterHandle] : ''}`
     }
     if (field.name == 'last_name' && value && value[0] && table.name == 'person') {
-      values[`field_${primary.id}`] = `${row['field_418'] ? row['field_418'] + '_' : ''}${values['field_419'] ? values['field_419'] + '*' : ''}${row['field_422'] ? row['field_422'] : ''}`
+      values[`field_${primary.id}`] = `${row[firstName] ? row[firstName] + '_' : ''}${values[lastName] ? values[lastName] + '*' : ''}${row[twitterHandle] ? row[twitterHandle] : ''}`
     }
     try {
-      // if (row.duplicated) values['field_363'] = true
-      // else values['field_363'] = false
       const updatedRow = await RowService(this.$client).update(
         table.id,
         row.id,
@@ -1894,23 +1835,27 @@ export const actions = {
             tableId: table.id,
             search: newValue
           })
+          const Name = gridViewHelpers.methods.getFieldByName('', true)
+          const orUrl = gridViewHelpers.methods.getFieldByName('org_crunchbase_url')
+          const potentialDuplicate = gridViewHelpers.methods.getFieldByName('potential_duplicate')
+
           if (data.results.length) {
             let newArray = [...data.results]
             let bigCities = newArray.filter(function(e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '' && rowsNew[resultIndex].id != e.id
-              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '' && row.id != e.id
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex][Name] != '') return e[orUrl] === newValue && e[Name] === rowsNew[resultIndex][Name] && rowsNew[resultIndex] && rowsNew[resultIndex][Name] != '' && rowsNew[resultIndex].id != e.id
+              else return e[orUrl] === newValue && e[Name] === row[Name] && row[Name] != '' && row.id != e.id
             })
             // console.log(rowsNew);
             let resultNew = rowsNew.filter(function(e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '') return e['field_604'] === newValue && e['field_357'] === rowsNew[resultIndex]['field_357'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_357'] != '' && rowsNew[resultIndex].id != e.id
-              else return e['field_604'] === newValue && e['field_357'] === row['field_357'] && row['field_357'] != '' && row.id != e.id
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex][Name] != '') return e[orUrl] === newValue && e[Name] === rowsNew[resultIndex][Name] && rowsNew[resultIndex] && rowsNew[resultIndex][Name] != '' && rowsNew[resultIndex].id != e.id
+              else return e[orUrl] === newValue && e[Name] === row[Name] && row[Name] != '' && row.id != e.id
             })
             // console.log(bigCities);
             // console.log(resultNew);
             if (bigCities.length || resultNew.length) {
               duplicated[row.id] = true
               let values = {}
-              values['field_363'] = true
+              values[potentialDuplicate] = true
               const updatedRow = await RowService(this.$client).update(
                 table.id,
                 row.id,
@@ -1920,7 +1865,7 @@ export const actions = {
             } else {
               duplicated[row.id] = false
               let values = {}
-              values['field_363'] = false
+              values[potentialDuplicate] = false
               const updatedRow = await RowService(this.$client).update(
                 table.id,
                 row.id,
@@ -1935,22 +1880,24 @@ export const actions = {
             tableId: table.id,
             search: newValue
           })
+          const Name = gridViewHelpers.methods.getFieldByName('', true)
+          const orUrl = gridViewHelpers.methods.getFieldByName('org_crunchbase_url')
+          const potentialDuplicate = gridViewHelpers.methods.getFieldByName('potential_duplicate')
+
           if (data.results.length) {
             let newArray = [...data.results]
             let bigCities = newArray.filter(function(e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '' && rowsNew[resultIndex].id != e.id
-              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '' && row.id != e.id
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex][orUrl] != '') return e[Name] === newValue && e[orUrl] === rowsNew[resultIndex][orUrl] && rowsNew[resultIndex] && rowsNew[resultIndex][orUrl] != '' && rowsNew[resultIndex].id != e.id
+              else return e[Name] === newValue && e[orUrl] === row[orUrl] && row[orUrl] != '' && row.id != e.id
             })
             let resultNew = rowsNew.filter(function(e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '') return e['field_357'] === newValue && e['field_604'] === rowsNew[resultIndex]['field_604'] && rowsNew[resultIndex] && rowsNew[resultIndex]['field_604'] != '' && rowsNew[resultIndex].id != e.id
-              else return e['field_357'] === newValue && e['field_604'] === row['field_604'] && row['field_604'] != '' && row.id != e.id
+              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex][orUrl] != '') return e[Name] === newValue && e[orUrl] === rowsNew[resultIndex][orUrl] && rowsNew[resultIndex] && rowsNew[resultIndex][orUrl] != '' && rowsNew[resultIndex].id != e.id
+              else return e[Name] === newValue && e[orUrl] === row[orUrl] && row[orUrl] != '' && row.id != e.id
             })
-            // console.log(bigCities);
-            // console.log(resultNew);
             if (bigCities.length || resultNew.length) {
               duplicated[row.id] = true
               let values = {}
-              values['field_363'] = true
+              values[potentialDuplicate] = true
               const updatedRow = await RowService(this.$client).update(
                 table.id,
                 row.id,
@@ -1960,7 +1907,7 @@ export const actions = {
             } else {
               duplicated[row.id] = false
               let values = {}
-              values['field_363'] = false
+              values[potentialDuplicate] = false
               const updatedRow = await RowService(this.$client).update(
                 table.id,
                 row.id,
@@ -1985,6 +1932,8 @@ export const actions = {
 
     // Loop over the old rows, find the matching updated row and update them in the
     // buffer accordingly.
+    const potentialDuplicate = gridViewHelpers.methods.getFieldByName('potential_duplicate')
+
     for (const row of oldRowsInOrder) {
       // The values are the updated row returned by the response.
       const values = updatedRows.find((updatedRow) => updatedRow.id === row.id)
@@ -1993,8 +1942,8 @@ export const actions = {
       // console.log('duplicatedvaluesvalues', Object.keys(duplicated)[row.id]);
       if (duplicated[row.id]) row.duplicated = true
       else row.duplicated = false 
-      if (duplicated[row.id]) row['field_363'] = true
-      else row['field_363'] = false
+      if (duplicated[row.id]) row[potentialDuplicate] = true
+      else row[potentialDuplicate] = false
       // console.log('duplicated row row row', row);
       // Calling the updatedExistingRow will automatically remove the row from the
       // view if it doesn't matter the filters anymore and it will also be moved to

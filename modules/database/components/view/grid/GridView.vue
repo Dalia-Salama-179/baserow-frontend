@@ -382,6 +382,8 @@
         // console.log('oldValue',oldValue);
         try {
           this.$store.dispatch('notification/setLoad', true)
+          const Name = this.getFieldByName('', true)
+
           await this.$store.dispatch(
             this.storePrefix + 'view/grid/updateRowValue', {
               table: this.table,
@@ -402,21 +404,22 @@
           await RowService(this.$client)
             .fetchAll({
               tableId: this.table.id,
-              search: row.field_357,
+              search: row[Name],
             })
             .then(async (response) => {
               if (response.data.results.length) {
                 const newArray = [...response.data.results]
+                const orgUrlName = this.getFieldByName('org_crunchbase_url')
                 const bigCities = newArray.filter((e) => {
                   return (
-                    e.field_604 == row.field_604 &&
-                    e.field_357 == row.field_357 &&
+                    e[orgUrlName] == row[orgUrlName] &&
+                    e[Name] == row[Name] &&
                     e.id != row.id
                   )
                 })
                 if (bigCities.length >= 1) {
                   const values = {}
-                  values.field_363 = true
+                  values[this.getFieldByName('potential_duplicate')] = true
                   await RowService(this.$client)
                     .update(this.table.id, row.id, values)
                     .then(async (response) => {
@@ -430,7 +433,7 @@
                     })
                 } else {
                   const values = {}
-                  values.field_363 = false
+                  values[this.getFieldByName('potential_duplicate')] = false
                   await RowService(this.$client)
                     .update(this.table.id, row.id, values)
                     .then(async (response) => {
