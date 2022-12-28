@@ -83,7 +83,9 @@ export default {
       const twitterHandle = this.getFieldByName('twitter_handle')
 
       if (
-        (this.table.name === 'person' || this.table.name === 'Person_POC') &&
+        (this.table.name === 'person' ||
+          this.table.name === 'Person_POC' ||
+          this.table.name === 'Person_R2') &&
         (field.name === 'first_name' ||
           field.name === 'twitter_handle' ||
           field.name === 'last_name')
