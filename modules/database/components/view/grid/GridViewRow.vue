@@ -1,4 +1,3 @@
-<!-- edited By Ahmed Elsayed -->
 <template>
   <RecursiveWrapper
     :components="
@@ -20,7 +19,9 @@
           !row._.matchFilters ||
           !row._.matchSearch ||
           row._.duplicated ||
-          row[getFieldByName('potential_duplicate')],
+          (row[getFieldByName('potential_duplicate')] &&
+            table.name == 'organizations') ||
+          table.name == 'Organization_POC',
       }"
       @mouseover="$emit('row-hover', { row, value: true })"
       @mouseleave="$emit('row-hover', { row, value: false })"
@@ -33,7 +34,9 @@
             !row._.matchFilters ||
             !row._.matchSearch ||
             row._.duplicated ||
-            row[getFieldByName('potential_duplicate')]
+            (row[getFieldByName('potential_duplicate')] &&
+              table.name == 'organizations') ||
+            table.name == 'Organization_POC'
           "
           class="grid-view__row-warning"
         >
@@ -45,7 +48,10 @@
           </template>
           <template
             v-else-if="
-              row._.duplicated || row[getFieldByName('potential_duplicate')]
+              row._.duplicated ||
+              (row[getFieldByName('potential_duplicate')] &&
+                table.name == 'organizations') ||
+              table.name == 'Organization_POC'
             "
             >{{ $t('gridViewRow.rowHasDuplicated') }}
           </template>
@@ -85,7 +91,10 @@
             ></component>
             <!-- v-show="row._.hover" -->
             <button
-              v-if="table.name == 'organizations' || table.name == 'Organization_POC'"
+              v-if="
+                table.name == 'organizations' ||
+                table.name == 'Organization_POC'
+              "
               v-show="row._.hover"
               title="Get crunch base"
               class="button button--primary buttonNew"
@@ -94,7 +103,12 @@
               CB
             </button>
             <button
-              v-if="table.name == 'Founders' || table.name == 'person' || table.name ==  'Founder_POC' || table.name == 'Person_POC'"
+              v-if="
+                table.name == 'Founders' ||
+                table.name == 'person' ||
+                table.name == 'Founder_POC' ||
+                table.name == 'Person_POC'
+              "
               v-show="row._.hover"
               title="Get crunch base"
               class="button button--primary buttonNew"
@@ -283,65 +297,68 @@ export default {
   methods: {
     async getCrunchBase(row) {
       this.$store.dispatch('notification/setLoad', true)
-      const Name = this.getFieldByName('', true)
-      await RowService(this.$client)
-        .fetchAll({
-          tableId: this.table.id,
-          search: row[Name],
-        })
-        .then(async (response) => {
-          if (response.data.results.length) {
-            const newArray = [...response.data.results]
-            const orgUrlName = this.getFieldByName('org_crunchbase_url')
-            const bigCities = newArray.filter(function (e) {
-              return (
-                e[orgUrlName] == row[orgUrlName] &&
-                e[Name] == row[Name] &&
-                e.id != row.id
-              )
-            })
-            if (bigCities.length >= 1) {
-              const values = {}
-              values[this.getFieldByName('potential_duplicate')] = true
-              await RowService(this.$client)
-                .update(this.table.id, row.id, values)
-                .then(async (response) => {
-                  const refresh = JSON.parse(localStorage.getItem('refresh'))
-                  await this.$store.dispatch(
-                    this.storePrefix + 'view/grid/refresh',
-                    refresh
-                  )
-                })
-            } else {
-              const values = {}
-              values[this.getFieldByName('potential_duplicate')] = false
-              await RowService(this.$client)
-                .update(this.table.id, row.id, values)
-                .then(async (response) => {
-                  const refresh = JSON.parse(localStorage.getItem('refresh'))
-                  await this.$store.dispatch(
-                    this.storePrefix + 'view/grid/refresh',
-                    refresh
-                  )
-                })
-            }
-          }
-        })
-        .catch((error) => {
-          console.log('error error', error)
-        })
-
       const selectedRows = await this.$store.dispatch('page/view/grid/getRows')
       if (selectedRows && selectedRows.length) {
-        selectedRows.map((r) => {
+        selectedRows.map(async (r) => {
+          const Name = this.getFieldByName('', true)
+          await RowService(this.$client)
+            .fetchAll({
+              tableId: this.table.id,
+              search: r[Name],
+            })
+            .then(async (response) => {
+              if (response.data.results.length) {
+                const newArray = [...response.data.results]
+                const orgUrlName = this.getFieldByName('org_crunchbase_url')
+                const bigCities = newArray.filter(function (e) {
+                  return (
+                    e[orgUrlName] == r[orgUrlName] &&
+                    e[Name] == r[Name] &&
+                    e.id != r.id
+                  )
+                })
+                if (bigCities.length >= 1) {
+                  const values = {}
+                  values[this.getFieldByName('potential_duplicate')] = true
+                  await RowService(this.$client)
+                    .update(this.table.id, r.id, values)
+                    .then(async (response) => {
+                      const refresh = JSON.parse(
+                        localStorage.getItem('refresh')
+                      )
+                      await this.$store.dispatch(
+                        this.storePrefix + 'view/grid/refresh',
+                        refresh
+                      )
+                    })
+                } else {
+                  const values = {}
+                  values[this.getFieldByName('potential_duplicate')] = false
+                  await RowService(this.$client)
+                    .update(this.table.id, r.id, values)
+                    .then(async (response) => {
+                      const refresh = JSON.parse(
+                        localStorage.getItem('refresh')
+                      )
+                      await this.$store.dispatch(
+                        this.storePrefix + 'view/grid/refresh',
+                        refresh
+                      )
+                    })
+                }
+              }
+            })
+            .catch((error) => {
+              console.log('error error', error)
+            })
           this.$client
             .post(`t2/crunch_base_organization/${this.table.id}/${r.id}/`, {
-              cb_url_field_name: 'field_604',
-              cb_uuid_field_name: 'field_367',
-              company_prev_raised_count_field_name: 'field_654',
-              company_total_raised_value_field_name: 'field_655',
-              cb_updated_at: 'field_656',
-              organization_of_intrest_cb_uid: 'field_367',
+              cb_url_field_name: 'field_868',
+              cb_uuid_field_name: 'field_875',
+              company_prev_raised_count_field_name: 'field_1127',
+              company_total_raised_value_field_name: 'field_1125',
+              cb_updated_at: 'field_1126',
+              organization_of_intrest_cb_uid: 'field_875',
             })
             .then((response) => {
               const refresh = JSON.parse(localStorage.getItem('refresh'))
@@ -350,7 +367,7 @@ export default {
                 refresh
               )
             })
-            .catch((error) => {
+            .catch(() => {
               const refresh = JSON.parse(localStorage.getItem('refresh'))
               this.$store.dispatch(
                 this.storePrefix + 'view/grid/refresh',
@@ -359,14 +376,61 @@ export default {
             })
         })
       } else {
+        const Name = this.getFieldByName('', true)
+        await RowService(this.$client)
+          .fetchAll({
+            tableId: this.table.id,
+            search: row[Name],
+          })
+          .then(async (response) => {
+            if (response.data.results.length) {
+              const newArray = [...response.data.results]
+              const orgUrlName = this.getFieldByName('org_crunchbase_url')
+              const bigCities = newArray.filter(function (e) {
+                return (
+                  e[orgUrlName] == row[orgUrlName] &&
+                  e[Name] == row[Name] &&
+                  e.id != row.id
+                )
+              })
+              if (bigCities.length >= 1) {
+                const values = {}
+                values[this.getFieldByName('potential_duplicate')] = true
+                await RowService(this.$client)
+                  .update(this.table.id, row.id, values)
+                  .then(async (response) => {
+                    const refresh = JSON.parse(localStorage.getItem('refresh'))
+                    await this.$store.dispatch(
+                      this.storePrefix + 'view/grid/refresh',
+                      refresh
+                    )
+                  })
+              } else {
+                const values = {}
+                values[this.getFieldByName('potential_duplicate')] = false
+                await RowService(this.$client)
+                  .update(this.table.id, row.id, values)
+                  .then(async (response) => {
+                    const refresh = JSON.parse(localStorage.getItem('refresh'))
+                    await this.$store.dispatch(
+                      this.storePrefix + 'view/grid/refresh',
+                      refresh
+                    )
+                  })
+              }
+            }
+          })
+          .catch((error) => {
+            console.log('error error', error)
+          })
         this.$client
           .post(`t2/crunch_base_organization/${this.table.id}/${row.id}/`, {
-            cb_url_field_name: 'field_604',
-            cb_uuid_field_name: 'field_367',
-            company_prev_raised_count_field_name: 'field_654',
-            company_total_raised_value_field_name: 'field_655',
-            cb_updated_at: 'field_656',
-            organization_of_intrest_cb_uid: 'field_367',
+            cb_url_field_name: 'field_868',
+            cb_uuid_field_name: 'field_875',
+            company_prev_raised_count_field_name: 'field_1127',
+            company_total_raised_value_field_name: 'field_1125',
+            cb_updated_at: 'field_1126',
+            organization_of_intrest_cb_uid: 'field_875',
           })
           .then((response) => {
             const refresh = JSON.parse(localStorage.getItem('refresh'))
@@ -375,7 +439,7 @@ export default {
               refresh
             )
           })
-          .catch((error) => {
+          .catch(() => {
             const refresh = JSON.parse(localStorage.getItem('refresh'))
             this.$store.dispatch(
               this.storePrefix + 'view/grid/refresh',
@@ -388,18 +452,14 @@ export default {
     async getCrunchFounders(row) {
       const selectedRows = await this.$store.dispatch('page/view/grid/getRows')
       if (selectedRows && selectedRows.length) {
-        selectedRows.map((r) => {
+        selectedRows.forEach((r) => {
           this.$client
             .post(`t2/crunch_base_founder/${this.table.id}/${r.id}/`, {
-              cb_url_field_name: 'field_320',
-              cb_uuid_field_name: 'field_659',
-              company_prev_raised_count_field_name: 'field_657',
-              company_total_raised_value_field_name: 'field_658',
-              cb_updated_at: 'field_656',
-              organization_of_interest_link_table: 'field_487',
-              org_founder_map_founding_date_field_name: 'field_476',
-              organization_of_interest_from_org_founder_map: 'field_484',
-              organization_of_interest_cb_link: 'field_604',
+              cb_url_field_name: 'field_1008',
+              cb_uuid_field_name: 'field_1336',
+              company_prev_raised_count_field_name: 'field_1123',
+              company_total_raised_value_field_name: 'field_1124',
+              organization_of_interest_link_table: 'field_1002',
             })
             .then(() => {
               const refresh = JSON.parse(localStorage.getItem('refresh'))
@@ -408,7 +468,7 @@ export default {
                 refresh
               )
             })
-            .catch((error) => {
+            .catch(() => {
               const refresh = JSON.parse(localStorage.getItem('refresh'))
               this.$store.dispatch(
                 this.storePrefix + 'view/grid/refresh',
@@ -419,15 +479,11 @@ export default {
       } else {
         this.$client
           .post(`t2/crunch_base_founder/${this.table.id}/${row.id}/`, {
-            cb_url_field_name: 'field_320',
-            cb_uuid_field_name: 'field_659',
-            company_prev_raised_count_field_name: 'field_657',
-            company_total_raised_value_field_name: 'field_658',
-            cb_updated_at: 'field_656',
-            organization_of_interest_link_table: 'field_487',
-            org_founder_map_founding_date_field_name: 'field_476',
-            organization_of_interest_from_org_founder_map: 'field_484',
-            organization_of_interest_cb_link: 'field_604',
+            cb_url_field_name: 'field_1008',
+            cb_uuid_field_name: 'field_1336',
+            company_prev_raised_count_field_name: 'field_1123',
+            company_total_raised_value_field_name: 'field_1124',
+            organization_of_interest_link_table: 'field_1002',
           })
           .then((response) => {
             // console.log('response',response);
@@ -437,7 +493,7 @@ export default {
               refresh
             )
           })
-          .catch((error) => {
+          .catch(() => {
             // console.log('error',error);
             const refresh = JSON.parse(localStorage.getItem('refresh'))
             this.$store.dispatch(
@@ -453,8 +509,8 @@ export default {
         selectedRows.forEach((r) => {
           this.$client
             .post(`t2/crunch_base_person/${this.table.id}/${r.id}/`, {
-              cb_url_field_name: 'field_421',
-              cb_uuid_field_name: 'field_427',
+              cb_url_field_name: 'field_978',
+              cb_uuid_field_name: 'field_984',
             })
             .then(() => {
               const refresh = JSON.parse(localStorage.getItem('refresh'))
@@ -474,8 +530,8 @@ export default {
       } else {
         this.$client
           .post(`t2/crunch_base_person/${this.table.id}/${row.id}/`, {
-            cb_url_field_name: 'field_421',
-            cb_uuid_field_name: 'field_427',
+            cb_url_field_name: 'field_978',
+            cb_uuid_field_name: 'field_984',
           })
           .then((response) => {
             // console.log('response',response);

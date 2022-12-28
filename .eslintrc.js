@@ -26,5 +26,13 @@ module.exports = {
     'import/order': 'off',
     'vue/html-self-closing': 'off',
     'vue/no-unused-components': 'warn',
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
+
   },
+  
 }
