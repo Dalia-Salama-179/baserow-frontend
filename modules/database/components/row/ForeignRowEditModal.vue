@@ -1,7 +1,7 @@
 <!-- edited By Ahmed Elsayed -->
 <template>
   <RowEditModal
-    ref="modal"
+    :ref="'modal' + id"
     :read-only="false"
     :table="table"
     :rows="[]"
@@ -19,6 +19,7 @@ import FieldService from '@baserow/modules/database/services/field'
 import RowService from '@baserow/modules/database/services/row'
 import { populateField } from '@baserow/modules/database/store/field'
 import { notifyIf } from '@baserow/modules/core/utils/error'
+import { uuid } from '@baserow/modules/core/utils/string'
 
 /**
  * This component can open the row edit modal having the fields of that table in the
@@ -32,58 +33,57 @@ export default {
     tableId: {
       type: Number,
       required: true,
-    }
+    },
   },
   data() {
     return {
       fetchedTableAndFields: false,
       table: {},
       fields: [],
+      id: uuid(),
       primary: undefined,
     }
   },
   methods: {
-   async udate(event){
-     let objs ={}
-     objs[`field_${event.field.id}`] = event.value
-     // console.log(objs);
-     // console.log(event.table.id);
-     // console.log(event.row.id);
-     let toSendObj = {}
+    async udate(event) {
+      const objs = {}
+      objs[`field_${event.field.id}`] = event.value
+      // console.log(objs);
+      // console.log(event.table.id);
+      // console.log(event.row.id);
+      const toSendObj = {}
 
-     Object.keys(objs).map(key => {
-       if (Array.isArray(objs[key])) {
-         toSendObj[key] = []
-         objs[key].map(el => {
-           toSendObj[key].push(el.id)
-         })
-       } else {
-         toSendObj[key] = objs[key]
-       }
-     })
+      Object.keys(objs).forEach((key) => {
+        if (Array.isArray(objs[key])) {
+          toSendObj[key] = []
+          objs[key].forEach((el) => {
+            toSendObj[key].push(el.id)
+          })
+        } else {
+          toSendObj[key] = objs[key]
+        }
+      })
 
-     const { data } = await RowService(this.$client).update(
-             event.table.id,
-             event.row.id,
-             toSendObj
-     )
+      const { data } = await RowService(this.$client).update(
+        event.table.id,
+        event.row.id,
+        toSendObj
+      )
 
-     try {
-       await this.$store.dispatch(
-               'page/view/grid/updateRowValue', {
-                 table: this.table,
-                 fields: this.fields,
-                 primary: this.primary,
-                 row: event.row,
-                 field: event.field,
-                 value: event.value,
-                 oldValue: event.oldValue,
-                 view: this.view
-               }
-       )
-     } catch (error) {
-       notifyIf(error, 'field')
-     }
+      try {
+        await this.$store.dispatch('page/view/grid/updateRowValue', {
+          table: this.table,
+          fields: this.fields,
+          primary: this.primary,
+          row: event.row,
+          field: event.field,
+          value: event.value,
+          oldValue: event.oldValue,
+          view: this.view,
+        })
+      } catch (error) {
+        notifyIf(error, 'field')
+      }
     },
     async fetchTableAndFields() {
       // Find the table in the applications to prevent a request to the backend and to
@@ -134,7 +134,7 @@ export default {
         this.tableId,
         rowId
       )
-      this.$refs.modal.show(rowData.id, rowData)
+      this.$refs['modal' + this.id].show(rowData.id, rowData)
     },
   },
 }

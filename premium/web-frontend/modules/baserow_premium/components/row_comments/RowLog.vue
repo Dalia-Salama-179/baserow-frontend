@@ -115,7 +115,7 @@
         return moment.utc(this.comment.created_on).format('L LT')
       },
       fieldName() {
-        return (id) => this.fields.find(f => f.id == id.replace('field_', '')).name
+        return (id) => this.fields.find(f => f.id == id.replace('field_', ''))?.name
       }
     }
   }
