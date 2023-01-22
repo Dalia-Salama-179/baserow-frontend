@@ -21,7 +21,8 @@
           row._.duplicated ||
           (row[getFieldByName('potential_duplicate')] &&
             (table.name == 'organizations' ||
-              table.name == 'Organization_POC' || table.name == 'Organization_R2')),
+              table.name == 'Organization_POC' ||
+              table.name == 'Organization_R2')),
       }"
       @mouseover="$emit('row-hover', { row, value: true })"
       @mouseleave="$emit('row-hover', { row, value: false })"
@@ -36,7 +37,8 @@
             row._.duplicated ||
             (row[getFieldByName('potential_duplicate')] &&
               (table.name == 'organizations' ||
-                table.name == 'Organization_POC' || table.name == 'Organization_R2'))
+                table.name == 'Organization_POC' ||
+                table.name == 'Organization_R2'))
           "
           class="grid-view__row-warning"
         >
@@ -51,7 +53,8 @@
               row._.duplicated ||
               (row[getFieldByName('potential_duplicate')] &&
                 (table.name == 'organizations' ||
-                  table.name == 'Organization_POC' || table.name == 'Organization_R2'))
+                  table.name == 'Organization_POC' ||
+                  table.name == 'Organization_R2'))
             "
             >{{ $t('gridViewRow.rowHasDuplicated') }}
           </template>
@@ -93,7 +96,8 @@
             <button
               v-if="
                 table.name == 'organizations' ||
-                table.name == 'Organization_POC' || table.name == 'Organization_R2'
+                table.name == 'Organization_POC' ||
+                table.name == 'Organization_R2'
               "
               v-show="row._.hover"
               title="Get crunch base"
@@ -106,8 +110,10 @@
               v-if="
                 table.name == 'Founders' ||
                 table.name == 'person' ||
-                table.name == 'Founder_POC' || table.name == 'Founders_R2' ||
-                table.name == 'Person_POC' || table.name == 'Person_R2'
+                table.name == 'Founder_POC' ||
+                table.name == 'Founders_R2' ||
+                table.name == 'Person_POC' ||
+                table.name == 'Person_R2'
               "
               v-show="row._.hover"
               title="Get crunch base"

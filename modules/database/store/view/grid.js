@@ -1,4 +1,5 @@
-//  edited By Ahmed Elsayed 
+/* eslint-disable eqeqeq */
+//  edited By Ahmed Elsayed
 import Vue from 'vue'
 import axios from 'axios'
 import _ from 'lodash'
@@ -12,7 +13,7 @@ import RowService from '@baserow/modules/database/services/row'
 import {
   calculateSingleRowSearchMatches,
   getRowSortFunction,
-  matchSearchFilters
+  matchSearchFilters,
 } from '@baserow/modules/database/utils/view'
 import { RefreshCancelledError } from '@baserow/modules/core/errors'
 import gridViewHelpers from '@baserow/modules/database/mixins/gridViewHelpers'
@@ -34,7 +35,7 @@ export function populateRow(row, metadata = {}) {
     // Keeping the selected state with the row has the best performance when navigating
     // between cells.
     selected: false,
-    selectedFieldId: -1
+    selectedFieldId: -1,
   }
   return row
 }
@@ -142,7 +143,7 @@ export const state = () => ({
   publicAuthToken: null,
   fieldAggregationData: {},
   selectedRow: null,
-  selectedField: null
+  selectedField: null,
 })
 
 export const mutations = {
@@ -269,7 +270,7 @@ export const mutations = {
       Object.assign(state.fieldOptions[fieldId], values)
     } else {
       state.fieldOptions = Object.assign({}, state.fieldOptions, {
-        [fieldId]: values
+        [fieldId]: values,
       })
     }
   },
@@ -425,7 +426,7 @@ export const mutations = {
     // console.log(row);
     // console.log(values);
     if (index !== -1) {
-      let existingRowState = state.rows[index]
+      const existingRowState = state.rows[index]
       Object.assign(existingRowState, values)
       if (metadata) {
         existingRowState._.metadata = metadata
@@ -472,12 +473,12 @@ export const mutations = {
   },
   SET_FIELD_AGGREGATION_DATA(state, { fieldId, value: newValue }) {
     const current = state.fieldAggregationData[fieldId] || {
-      loading: false
+      loading: false,
     }
 
     state.fieldAggregationData = {
       ...state.fieldAggregationData,
-      [fieldId]: { ...current, value: newValue }
+      [fieldId]: { ...current, value: newValue },
     }
   },
   SET_FIELD_AGGREGATION_DATA_LOADING(
@@ -485,14 +486,14 @@ export const mutations = {
     { fieldId, value: newLoadingValue }
   ) {
     const current = state.fieldAggregationData[fieldId] || {
-      value: null
+      value: null,
     }
 
     state.fieldAggregationData = {
       ...state.fieldAggregationData,
-      [fieldId]: { ...current, loading: newLoadingValue }
+      [fieldId]: { ...current, loading: newLoadingValue },
     }
-  }
+  },
 }
 
 // Contains the info needed for the delayed scroll top action.
@@ -500,7 +501,7 @@ const fireScrollTop = {
   last: Date.now(),
   timeout: null,
   processing: false,
-  distance: 0
+  distance: 0,
 }
 
 // Contains the last row request to be able to cancel it.
@@ -553,12 +554,12 @@ export const actions = {
     const bufferRequestSize = getters.getBufferRequestSize
     const bufferStartIndex = Math.max(
       Math.ceil((visibleStartIndex - bufferRequestSize) / bufferRequestSize) *
-      bufferRequestSize,
+        bufferRequestSize,
       0
     )
     const bufferEndIndex = Math.min(
       Math.ceil((visibleEndIndex + bufferRequestSize) / bufferRequestSize) *
-      bufferRequestSize,
+        bufferRequestSize,
       getters.getCount
     )
     const bufferLimit = bufferEndIndex - bufferStartIndex
@@ -632,7 +633,7 @@ export const actions = {
           publicUrl: getters.isPublic,
           publicAuthToken: getters.getPublicAuthToken,
           orderBy: getOrderBy(getters, rootGetters),
-          filters: getFilters(getters, rootGetters)
+          filters: getFilters(getters, rootGetters),
         })
         .then(({ data }) => {
           data.results.forEach((part, index) => {
@@ -644,7 +645,7 @@ export const actions = {
             appendToRows: appendToBuffer,
             count: data.count,
             bufferStartIndex,
-            bufferLimit
+            bufferLimit,
           })
           dispatch('visibleByScrollTop')
           dispatch('updateSearch', { fields, primary })
@@ -723,7 +724,7 @@ export const actions = {
       commit('SET_ROWS_INDEX', {
         startIndex: visibleRowStartIndex,
         endIndex: visibleRowEndIndex,
-        top
+        top,
       })
     }
   },
@@ -741,7 +742,7 @@ export const actions = {
       dispatch('fetchByScrollTop', {
         scrollTop,
         fields,
-        primary
+        primary,
       })
       dispatch('visibleByScrollTop', scrollTop)
     }
@@ -779,7 +780,7 @@ export const actions = {
 
     commit('SET_SEARCH', {
       activeSearchTerm: '',
-      hideRowsNotMatchingSearch: true
+      hideRowsNotMatchingSearch: true,
     })
     commit('SET_LAST_GRID_ID', gridId)
 
@@ -793,7 +794,7 @@ export const actions = {
       publicUrl: getters.isPublic,
       publicAuthToken: getters.getPublicAuthToken,
       orderBy: getOrderBy(getters, rootGetters),
-      filters: getFilters(getters, rootGetters)
+      filters: getFilters(getters, rootGetters),
     })
     data.results.forEach((part, index) => {
       extractMetadataAndPopulateRow(data, index)
@@ -805,14 +806,14 @@ export const actions = {
       appendToRows: data.results.length,
       count: data.count,
       bufferStartIndex: 0,
-      bufferLimit: data.count > limit ? limit : data.count
+      bufferLimit: data.count > limit ? limit : data.count,
     })
     commit('SET_ROWS_INDEX', {
       startIndex: 0,
       // @TODO mut calculate how many rows would fit and based on that calculate
       // what the end index should be.
       endIndex: data.count > 31 ? 31 : data.count,
-      top: 0
+      top: 0,
     })
     commit('REPLACE_ALL_FIELD_OPTIONS', data.field_options)
     dispatch('updateSearch', { fields, primary })
@@ -840,7 +841,7 @@ export const actions = {
         signal: lastRefreshRequestController.signal,
         publicUrl: getters.isPublic,
         publicAuthToken: getters.getPublicAuthToken,
-        filters: getFilters(getters, rootGetters)
+        filters: getFilters(getters, rootGetters),
       })
       .then((response) => {
         const count = response.data.count
@@ -865,11 +866,11 @@ export const actions = {
             publicUrl: getters.isPublic,
             publicAuthToken: getters.getPublicAuthToken,
             orderBy: getOrderBy(getters, rootGetters),
-            filters: getFilters(getters, rootGetters)
+            filters: getFilters(getters, rootGetters),
           })
           .then(({ data }) => ({
             data,
-            offset
+            offset,
           }))
       )
       .then(({ data, offset }) => {
@@ -884,7 +885,7 @@ export const actions = {
           appendToRows: data.results.length,
           count: data.count,
           bufferStartIndex: offset,
-          bufferLimit: data.results.length
+          bufferLimit: data.results.length,
         })
         // commit('SET_SELECTED_CELL', { rowId, fieldId })
 
@@ -901,12 +902,12 @@ export const actions = {
         }
         // console.log('VIEW ==== VIEW', view);
         dispatch('fetchAllFieldAggregationData', {
-          view
+          view,
         })
         lastRefreshRequest = null
         dispatch('setSelectedCell', {
           rowId: state.selectedRow,
-          fieldId: state.selectedField
+          fieldId: state.selectedField,
         })
       })
       .catch((error) => {
@@ -942,13 +943,13 @@ export const actions = {
       commit('SET_FIELD_AGGREGATION_DATA', { fieldId: field.id, value: null })
       commit('SET_FIELD_AGGREGATION_DATA_LOADING', {
         fieldId: field.id,
-        value: true
+        value: true,
       })
     }
 
     commit('UPDATE_FIELD_OPTIONS_OF_FIELD', {
       fieldId: field.id,
-      values
+      values,
     })
 
     if (!readOnly) {
@@ -959,12 +960,12 @@ export const actions = {
       try {
         await ViewService(this.$client).updateFieldOptions({
           viewId: gridId,
-          values: updateValues
+          values: updateValues,
         })
       } catch (error) {
         commit('UPDATE_FIELD_OPTIONS_OF_FIELD', {
           fieldId: field.id,
-          values: oldValues
+          values: oldValues,
         })
         throw error
       } finally {
@@ -981,7 +982,7 @@ export const actions = {
   setFieldOptionsOfField({ commit, getters }, { field, values }) {
     commit('UPDATE_FIELD_OPTIONS_OF_FIELD', {
       fieldId: field.id,
-      values
+      values,
     })
   },
   /**
@@ -1001,7 +1002,7 @@ export const actions = {
       try {
         await ViewService(this.$client).updateFieldOptions({
           viewId: gridId,
-          values: updateValues
+          values: updateValues,
         })
       } catch (error) {
         dispatch('forceUpdateAllFieldOptions', oldFieldOptions)
@@ -1038,7 +1039,7 @@ export const actions = {
       if (options.aggregation_raw_type) {
         commit('SET_FIELD_AGGREGATION_DATA_LOADING', {
           fieldId,
-          value: true
+          value: true,
         })
         atLeastOneAggregation = true
       }
@@ -1059,7 +1060,7 @@ export const actions = {
       ).fetchFieldAggregations({
         gridId: view.id,
         search,
-        signal: lastAggregationRequest.controller.signal
+        signal: lastAggregationRequest.controller.signal,
       })
 
       const { data } = await lastAggregationRequest.request
@@ -1069,7 +1070,7 @@ export const actions = {
         if (options.aggregation_raw_type) {
           commit('SET_FIELD_AGGREGATION_DATA', {
             fieldId,
-            value: data[`field_${fieldId}`]
+            value: data[`field_${fieldId}`],
           })
         }
       })
@@ -1078,7 +1079,7 @@ export const actions = {
         if (options.aggregation_raw_type) {
           commit('SET_FIELD_AGGREGATION_DATA_LOADING', {
             fieldId,
-            value: false
+            value: false,
           })
         }
       })
@@ -1091,7 +1092,7 @@ export const actions = {
           if (options.aggregation_raw_type) {
             commit('SET_FIELD_AGGREGATION_DATA', {
               fieldId,
-              value: null
+              value: null,
             })
           }
         })
@@ -1101,7 +1102,7 @@ export const actions = {
           if (options.aggregation_raw_type) {
             commit('SET_FIELD_AGGREGATION_DATA_LOADING', {
               fieldId,
-              value: false
+              value: false,
             })
           }
         })
@@ -1142,7 +1143,7 @@ export const actions = {
     return await dispatch('updateAllFieldOptions', {
       oldFieldOptions,
       newFieldOptions,
-      readOnly
+      readOnly,
     })
   },
   /**
@@ -1198,7 +1199,7 @@ export const actions = {
       commit('UPDATE_MULTISELECT', {
         position: 'tail',
         rowIndex: getters.getRowIndexById(rowId),
-        fieldIndex
+        fieldIndex,
       })
 
       commit('SET_MULTISELECT_ACTIVE', true)
@@ -1228,7 +1229,7 @@ export const actions = {
       rows = await dispatch('fetchRowsByIndex', {
         startIndex: minRowIndex,
         limit,
-        fields
+        fields,
       })
     }
 
@@ -1276,7 +1277,7 @@ export const actions = {
       orderBy: getOrderBy(getters, rootGetters),
       filters: getFilters(getters, rootGetters),
       includeFields: fields,
-      excludeFields
+      excludeFields,
     })
     return data.results
   },
@@ -1315,77 +1316,164 @@ export const actions = {
    */
   async createNewRow(
     { commit, getters, dispatch },
-    { view, table, fields, primary, values = {}, byField = null, byValue = null, before = null, isValueName = null, notInset = true, isValues = false }
+    {
+      view,
+      table,
+      fields,
+      primary,
+      values = {},
+      byField = null,
+      byValue = null,
+      before = null,
+      isValueName = null,
+      notInset = true,
+      isValues = false,
+    }
   ) {
     console.log(getters.getAllRows)
     // Fill the not provided values with the empty value of the field type so we can
     // immediately commit the created row to the state.
     const valuesForApiRequest = {}
     const allFields = [primary].concat(fields)
-    let last_id
-    console.log(allFields ,table)
-    if (table.name == 'Founders' ||
-        table.name == 'in customer request' ||
-        table.name == 'org_founder_map'
-        || table.name == 'Founder_POC' || table.name == 'Founder_R2'
-        || table.name == 'In_Customer_Request_POC' || table.name == 'In_Customer_Request_R2'
-        || table.name == 'Org_founder_map_POC' || table.name == 'Org_founder_map_R2' ){
-        let filed
-        switch (table.name) {
-            case 'Founders':
-                filed = allFields.find((x)=>x.name=='founder_record_id')
-              break;
-            case 'in customer request':
-                filed = allFields.find((x)=>x.name=='Request_Id')
-              break;
-            case 'org_founder_map':
-                filed = allFields.find((x)=>x.name=='org_record_id')
-              break;
-          }
-          if(filed){
-            const id = await GridService(this.$client).getLatest(filed.table_id, filed.id )
-            last_id = Number(id.data.max_id)
-          }
+    let lastId
+    console.log(allFields, table)
+    if (
+      table.name == 'Founders' ||
+      table.name == 'in customer request' ||
+      table.name == 'org_founder_map' ||
+      table.name == 'Founder_POC' ||
+      table.name == 'Founder_R2' ||
+      table.name == 'In_Customer_Request_POC' ||
+      table.name == 'In_Customer_Request_R2' ||
+      table.name == 'Org_founder_map_POC' ||
+      table.name == 'Org_founder_map_R2'
+    ) {
+      let filed
+      switch (table.name) {
+        case 'Founders':
+          filed = allFields.find((x) => x.name == 'founder_record_id')
+          break
+        case 'in customer request':
+          filed = allFields.find((x) => x.name == 'Request_Id')
+          break
+        case 'org_founder_map':
+          filed = allFields.find((x) => x.name == 'org_record_id')
+          break
+        case 'Founder_POC':
+          filed = allFields.find((x) => x.name == 'founder_record_id')
+          break
+        case 'In_Customer_Request_R2':
+          filed = allFields.find((x) => x.name == 'Request_Id')
+          break
+        case 'Org_founder_map_POC':
+          filed = allFields.find((x) => x.name == 'org_record_id')
+          break
+        case 'Founder_R2':
+          filed = allFields.find((x) => x.name == 'founder_record_id')
+          break
+        case 'In_Customer_Request_POC':
+          filed = allFields.find((x) => x.name == 'Request_Id')
+          break
+        case 'Org_founder_map_R2':
+          filed = allFields.find((x) => x.name == 'org_record_id')
+          break
+      }
+      if (filed) {
+        const id = await GridService(this.$client).getLatest(
+          filed.table_id,
+          filed.id
+        )
+        lastId = Number(id.data.max_id)
+      }
     }
     allFields.forEach((field) => {
       const name = `field_${field.id}`
       // console.log('field', field);
-      const fieldType = this.$registry.get('field', field._ && field._.type && field._.type.type ? field._.type.type : field.type)
+      const fieldType = this.$registry.get(
+        'field',
+        field._ && field._.type && field._.type.type
+          ? field._.type.type
+          : field.type
+      )
       if (!(name in values) && !isValues) {
         const empty = fieldType.getNewRowValue(field)
 
-        if ((field.name == 'created_at' && ( table.name == 'Person_POC' || table.name == 'Person_R2' || table.name == 'person')) ||
-            (field.name == 'Date Of Creation' && ( table.name == 'Founder_POC' || table.name == 'Founder_R2' || table.name == 'Founders')) ||
-            (field.name == 'creation_date' && ( table.name == 'Org_founder_map_POC' || table.name == 'Org_founder_map_R2' || table.name == 'org_founder_map')) ||
-            (field.name == 'created_at' && ( table.name == 'Organization_POC' || table.name == 'Organization_R2' || table.name == 'organizations'))
+        if (
+          (field.name == 'created_at' &&
+            (table.name == 'Person_POC' ||
+              table.name == 'Person_R2' ||
+              table.name == 'person')) ||
+          (field.name == 'Date Of Creation' &&
+            (table.name == 'Founder_POC' ||
+              table.name == 'Founder_R2' ||
+              table.name == 'Founders')) ||
+          (field.name == 'creation_date' &&
+            (table.name == 'Org_founder_map_POC' ||
+              table.name == 'Org_founder_map_R2' ||
+              table.name == 'org_founder_map')) ||
+          (field.name == 'created_at' &&
+            (table.name == 'Organization_POC' ||
+              table.name == 'Organization_R2' ||
+              table.name == 'organizations'))
         ) {
-          values[name] =  new Date().toLocaleString().replace(',','')
-        } else {
-          if ((field.name == 'aingel_id' && ( table.name == 'Organization_POC' || table.name == 'Organization_R2' || table.name == 'organizations')) ||
-            (field.name == 'RecordID' && ( table.name == 'Person_POC' || table.name == 'Person_R2' || table.name == 'person')) ||
-            (field.name == 'RecordID' && ( table.name == 'In_Customer_POC' || table.name == 'In_Customer_R2' || table.name == 'in_customer')) ||
-            (field.name == 'RecordID' && ( table.name == 'Founder_POC' || table.name == 'Founder_R2' || table.name == 'Founders')) ||
-            (field.name == 'RecordID' && ( table.name == 'Org_founder_map_POC' || table.name == 'Org_founder_map_R2' || table.name == 'org_founder_map')) ||
-            (field.name == 'RecordID' && ( table.name == 'In_Customer_Request_POC' || table.name == 'In_Customer_Request_R2' || table.name == 'in customer request')) ||
-            (field.name == 'RecordID' && ( table.name == 'Organization_POC' || table.name == 'Organization_R2' || table.name == 'organizations'))
-          ) {
-            values[name] = uuid()
-          }else if( (field.name == 'Request_Id' && ( table.name == 'In_Customer_Request_POC' || table.name == 'In_Customer_Request_R2' || table.name == 'in customer request')) ||
-                    (field.name == 'org_record_id' && ( table.name == 'Org_founder_map_POC' || table.name == 'Org_founder_map_R2' || table.name == 'org_founder_map'))||
-                    (field.name == 'founder_record_id' && ( table.name == 'Founder_POC' || table.name == 'Founder_R2' || table.name == 'Founders'))){
-            values[name] = last_id?(last_id + 1) :'NAN'
-           } else if (isValueName !== null) {
-            if (field.primary) {
-              values[name] = isValueName
-            } else {
-              values[name] = empty
-            }
-          } else if (byField && byValue && field.name == byField.name) {
-            // console.log('ccccccccccccccccccccccccccccccc');
-            values[`field_${byField.id}`] = byValue
+          values[name] = new Date().toLocaleString().replace(',', '')
+        } else if (
+          (field.name == 'aingel_id' &&
+            (table.name == 'Organization_POC' ||
+              table.name == 'Organization_R2' ||
+              table.name == 'organizations')) ||
+          (field.name == 'RecordID' &&
+            (table.name == 'Person_POC' ||
+              table.name == 'Person_R2' ||
+              table.name == 'person')) ||
+          (field.name == 'RecordID' &&
+            (table.name == 'In_Customer_POC' ||
+              table.name == 'In_Customer_R2' ||
+              table.name == 'in_customer')) ||
+          (field.name == 'RecordID' &&
+            (table.name == 'Founder_POC' ||
+              table.name == 'Founder_R2' ||
+              table.name == 'Founders')) ||
+          (field.name == 'RecordID' &&
+            (table.name == 'Org_founder_map_POC' ||
+              table.name == 'Org_founder_map_R2' ||
+              table.name == 'org_founder_map')) ||
+          (field.name == 'RecordID' &&
+            (table.name == 'In_Customer_Request_POC' ||
+              table.name == 'In_Customer_Request_R2' ||
+              table.name == 'in customer request')) ||
+          (field.name == 'RecordID' &&
+            (table.name == 'Organization_POC' ||
+              table.name == 'Organization_R2' ||
+              table.name == 'organizations'))
+        ) {
+          values[name] = uuid()
+        } else if (
+          (field.name == 'Request_Id' &&
+            (table.name == 'In_Customer_Request_POC' ||
+              table.name == 'In_Customer_Request_R2' ||
+              table.name == 'in customer request')) ||
+          (field.name == 'org_record_id' &&
+            (table.name == 'Org_founder_map_POC' ||
+              table.name == 'Org_founder_map_R2' ||
+              table.name == 'org_founder_map')) ||
+          (field.name == 'founder_record_id' &&
+            (table.name == 'Founder_POC' ||
+              table.name == 'Founder_R2' ||
+              table.name == 'Founders'))
+        ) {
+          values[name] = lastId ? lastId + 1 : 'NAN'
+        } else if (isValueName !== null) {
+          if (field.primary) {
+            values[name] = isValueName
           } else {
             values[name] = empty
           }
+        } else if (byField && byValue && field.name == byField.name) {
+          // console.log('ccccccccccccccccccccccccccccccc');
+          values[`field_${byField.id}`] = byValue
+        } else {
+          values[name] = empty
         }
       }
       // if (isValues) {
@@ -1436,14 +1524,14 @@ export const actions = {
         oldId: row.id,
         id: data.id,
         order: data.order,
-        values: data
+        values: data,
       })
       await dispatch('onRowChange', { view, row, fields, primary })
       await dispatch('fetchAllFieldAggregationData', {
-        view
+        view,
       })
-      let newData = { ...data }
-      newData['_'] = row._
+      const newData = { ...data }
+      newData._ = row._
       return newData
     } catch (error) {
       commit('DELETE_ROW_IN_BUFFER', row)
@@ -1561,7 +1649,7 @@ export const actions = {
       fields,
       primary,
       row,
-      values: { order, ...optimisticFieldValues }
+      values: { order, ...optimisticFieldValues },
     })
 
     try {
@@ -1582,7 +1670,7 @@ export const actions = {
       dispatch('fetchByScrollTopDelayed', {
         scrollTop: getScrollTop(),
         fields,
-        primary
+        primary,
       })
       dispatch('fetchAllFieldAggregationData', { view: grid })
     } catch (error) {
@@ -1591,7 +1679,7 @@ export const actions = {
         fields,
         primary,
         row,
-        values: { order: oldOrder, ...valuesBeforeOptimisticUpdate }
+        values: { order: oldOrder, ...valuesBeforeOptimisticUpdate },
       })
       throw error
     }
@@ -1641,7 +1729,7 @@ export const actions = {
     })
     commit('UPDATE_ROW_IN_BUFFER', {
       row,
-      values: { ...optimisticFieldValues }
+      values: { ...optimisticFieldValues },
     })
     dispatch('onRowChange', { view, row, fields, primary })
     const fieldType = this.$registry.get('field', field._.type.type)
@@ -1650,7 +1738,12 @@ export const actions = {
     values[`field_${field.id}`] = newValue
     const refresh = JSON.parse(localStorage.getItem('refresh'))
 
-    if (field.name == 'organization' && value && value[0] && (table.name =='org_founder_map' || table.name == 'org_founder_map')) {
+    if (
+      field.name == 'organization' &&
+      value &&
+      value[0] &&
+      (table.name == 'org_founder_map' || table.name == 'org_founder_map')
+    ) {
       values[`field_${primary.id}`] = value[0].value
     }
     // console.log('table', table);
@@ -1658,16 +1751,43 @@ export const actions = {
     // console.log('row', row);
     // console.log('values', values);
     // console.log('value[0]', value[0]);
-    if (field.name == 'person' && value && (table.name== 'Founder_POC' || table.name == 'Founder_R2' || table.name == 'Founders')) {
-      const organizationOfInterest = gridViewHelpers.methods.getFieldByName('organization_of_interest')
-      values[`field_${primary.id}`] = `${row[organizationOfInterest][0] ? row[organizationOfInterest][0].value + '_' : ''}${value[0] ? value[0].value : ''}`
+    if (
+      field.name == 'person' &&
+      value &&
+      (table.name == 'Founder_POC' ||
+        table.name == 'Founder_R2' ||
+        table.name == 'Founders')
+    ) {
+      const organizationOfInterest = gridViewHelpers.methods.getFieldByName(
+        'organization_of_interest'
+      )
+      values[`field_${primary.id}`] = `${
+        row[organizationOfInterest][0]
+          ? row[organizationOfInterest][0].value + '_'
+          : ''
+      }${value[0] ? value[0].value : ''}`
     }
-    if (field.name == 'organization_of_interest' && value && (table.name== 'Founder_POC' || table.name == 'Founder_R2' || table.name == 'Founders')) {
+    if (
+      field.name == 'organization_of_interest' &&
+      value &&
+      (table.name == 'Founder_POC' ||
+        table.name == 'Founder_R2' ||
+        table.name == 'Founders')
+    ) {
       const person = gridViewHelpers.methods.getFieldByName('person')
 
-      values[`field_${primary.id}`] = `${value[0] ? value[0].value + '_' : ''}${row[person][0] ? row[person ][0].value : ''}`
+      values[`field_${primary.id}`] = `${value[0] ? value[0].value + '_' : ''}${
+        row[person][0] ? row[person][0].value : ''
+      }`
     }
-    if (field.name == 'org_founder_map' && value && value[0] && (table.name == 'Organization_POC' || table.name == 'Organization_R2' || table.name == 'organizations')) {
+    if (
+      field.name == 'org_founder_map' &&
+      value &&
+      value[0] &&
+      (table.name == 'Organization_POC' ||
+        table.name == 'Organization_R2' ||
+        table.name == 'organizations')
+    ) {
       // const { data } = await RowService(this.$client).fetchAll({
       //   tableId: table.id,
       //   search: value[0].value,
@@ -1679,18 +1799,52 @@ export const actions = {
       // console.log(`field_${primary.id}`);
       values[`field_${primary.id}`] = value[0].value
     }
-    if (field.name == 'first_name' && value && value[0] && (table.name=='Person_POC' || table.name == 'Person_R2'|| table.name == 'person')) {
+    if (
+      field.name == 'first_name' &&
+      value &&
+      value[0] &&
+      (table.name == 'Person_POC' ||
+        table.name == 'Person_R2' ||
+        table.name == 'person')
+    ) {
       const firstName = gridViewHelpers.methods.getFieldByName('first_name')
       const lastName = gridViewHelpers.methods.getFieldByName('last_name')
-      const twitterHandle = gridViewHelpers.methods.getFieldByName('twitter_handle')
+      const twitterHandle =
+        gridViewHelpers.methods.getFieldByName('twitter_handle')
 
-      values[`field_${primary.id}`] = `${values[firstName] ? values[firstName] + '_' : ''}${row[lastName] ? row[lastName] + '*' : ''}${row[twitterHandle] ? row[twitterHandle] : ''}`
+      values[`field_${primary.id}`] = `${
+        values[firstName] ? values[firstName] + '_' : ''
+      }${row[lastName] ? row[lastName] + '*' : ''}${
+        row[twitterHandle] ? row[twitterHandle] : ''
+      }`
     }
-    if (field.name == 'twitter_handle' && value && value[0] && (table.name=='Person_POC' || table.name == 'Person_R2'|| table.name == 'person')) {
-      values[`field_${primary.id}`] = `${row[firstName] ? row[firstName] + '_' : ''}${row[lastName] ? row[lastName] + '*' : ''}${values[twitterHandle] ? values[twitterHandle] : ''}`
+    if (
+      field.name == 'twitter_handle' &&
+      value &&
+      value[0] &&
+      (table.name == 'Person_POC' ||
+        table.name == 'Person_R2' ||
+        table.name == 'person')
+    ) {
+      values[`field_${primary.id}`] = `${
+        row[firstName] ? row[firstName] + '_' : ''
+      }${row[lastName] ? row[lastName] + '*' : ''}${
+        values[twitterHandle] ? values[twitterHandle] : ''
+      }`
     }
-    if (field.name == 'last_name' && value && value[0] && (table.name=='Person_POC' || table.name == 'Person_R2'|| table.name == 'person')) {
-      values[`field_${primary.id}`] = `${row[firstName] ? row[firstName] + '_' : ''}${values[lastName] ? values[lastName] + '*' : ''}${row[twitterHandle] ? row[twitterHandle] : ''}`
+    if (
+      field.name == 'last_name' &&
+      value &&
+      value[0] &&
+      (table.name == 'Person_POC' ||
+        table.name == 'Person_R2' ||
+        table.name == 'person')
+    ) {
+      values[`field_${primary.id}`] = `${
+        row[firstName] ? row[firstName] + '_' : ''
+      }${values[lastName] ? values[lastName] + '*' : ''}${
+        row[twitterHandle] ? row[twitterHandle] : ''
+      }`
     }
     try {
       const updatedRow = await RowService(this.$client).update(
@@ -1702,12 +1856,12 @@ export const actions = {
       commit('UPDATE_ROW_IN_BUFFER', { row, values: updatedRow.data })
       dispatch('onRowChange', { view, row, fields, primary })
       dispatch('fetchAllFieldAggregationData', {
-        view
+        view,
       })
     } catch (error) {
       commit('UPDATE_ROW_IN_BUFFER', {
         row,
-        values: { ...valuesBeforeOptimisticUpdate }
+        values: { ...valuesBeforeOptimisticUpdate },
       })
 
       dispatch('onRowChange', { view, row, fields, primary })
@@ -1724,8 +1878,8 @@ export const actions = {
     { getters, commit, dispatch },
     { table, view, primary, fields, getScrollTop, data, rowIndex, fieldIndex }
   ) {
-    let duplicated = {}
-    let rowsNew = []
+    const duplicated = {}
+    const rowsNew = []
     // If the origin origin row and field index are not provided, we need to use the
     // head indexes of the multiple select.
     const rowHeadIndex = rowIndex || getters.getMultiSelectHeadRowIndex
@@ -1747,12 +1901,12 @@ export const actions = {
     commit('UPDATE_MULTISELECT', {
       position: 'head',
       rowIndex: rowHeadIndex,
-      fieldIndex: fieldHeadIndex
+      fieldIndex: fieldHeadIndex,
     })
     commit('UPDATE_MULTISELECT', {
       position: 'tail',
       rowIndex: rowTailIndex,
-      fieldIndex: fieldTailIndex
+      fieldIndex: fieldTailIndex,
     })
     commit('SET_MULTISELECT_ACTIVE', true)
     // Unselect a single selected cell because we've just updated the multiple
@@ -1790,7 +1944,7 @@ export const actions = {
     if (limit > 0) {
       const rowsNotInBuffer = await dispatch('fetchRowsByIndex', {
         startIndex,
-        limit
+        limit,
       })
       // Depends on whether the missing rows are before or after the buffer.
       rowsInOrder =
@@ -1798,7 +1952,6 @@ export const actions = {
           ? [...rowsNotInBuffer, ...rowsInOrder]
           : [...rowsInOrder, ...rowsNotInBuffer]
     }
-
 
     // Create a copy of the existing (old) rows, which are needed to create the
     // comparison when checking if the rows still matches the filters and position.
@@ -1820,7 +1973,7 @@ export const actions = {
         const preparedValue = fieldType.prepareValueForPaste(field, value)
         const newValue = fieldType.prepareValueForUpdate(field, preparedValue)
         valuesForUpdate[rowIndex][fieldId] = newValue
-        var resultIndex = rowsNew.findIndex(obj => {
+        const resultIndex = rowsNew.findIndex((obj) => {
           return obj.id === row.id
         })
         let newEle
@@ -1833,31 +1986,73 @@ export const actions = {
           newEle[fieldId] = newValue
           rowsNew[resultIndex] = newEle
         }
-        if ((table.name == 'Organization_POC' || table.name == 'Organization_R2' || table.name == 'organizations') && field.name == 'org_crunchbase_url') {
+        if (
+          (table.name == 'Organization_POC' ||
+            table.name == 'Organization_R2' ||
+            table.name == 'organizations') &&
+          field.name == 'org_crunchbase_url'
+        ) {
           const { data } = await RowService(this.$client).fetchAll({
             tableId: table.id,
-            search: newValue
+            search: newValue,
           })
           const Name = gridViewHelpers.methods.getFieldByName('', true)
-          const orUrl = gridViewHelpers.methods.getFieldByName('org_crunchbase_url')
-          const potentialDuplicate = gridViewHelpers.methods.getFieldByName('potential_duplicate')
+          const orUrl =
+            gridViewHelpers.methods.getFieldByName('org_crunchbase_url')
+          const potentialDuplicate = gridViewHelpers.methods.getFieldByName(
+            'potential_duplicate'
+          )
 
           if (data.results.length) {
-            let newArray = [...data.results]
-            let bigCities = newArray.filter(function(e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex][Name] != '') return e[orUrl] === newValue && e[Name] === rowsNew[resultIndex][Name] && rowsNew[resultIndex] && rowsNew[resultIndex][Name] != '' && rowsNew[resultIndex].id != e.id
-              else return e[orUrl] === newValue && e[Name] === row[Name] && row[Name] != '' && row.id != e.id
+            const newArray = [...data.results]
+            const bigCities = newArray.filter(function (e) {
+              if (
+                resultIndex != -1 &&
+                rowsNew[resultIndex] &&
+                rowsNew[resultIndex][Name] != ''
+              )
+                return (
+                  e[orUrl] === newValue &&
+                  e[Name] === rowsNew[resultIndex][Name] &&
+                  rowsNew[resultIndex] &&
+                  rowsNew[resultIndex][Name] != '' &&
+                  rowsNew[resultIndex].id != e.id
+                )
+              else
+                return (
+                  e[orUrl] === newValue &&
+                  e[Name] === row[Name] &&
+                  row[Name] != '' &&
+                  row.id != e.id
+                )
             })
             // console.log(rowsNew);
-            let resultNew = rowsNew.filter(function(e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex][Name] != '') return e[orUrl] === newValue && e[Name] === rowsNew[resultIndex][Name] && rowsNew[resultIndex] && rowsNew[resultIndex][Name] != '' && rowsNew[resultIndex].id != e.id
-              else return e[orUrl] === newValue && e[Name] === row[Name] && row[Name] != '' && row.id != e.id
+            const resultNew = rowsNew.filter(function (e) {
+              if (
+                resultIndex != -1 &&
+                rowsNew[resultIndex] &&
+                rowsNew[resultIndex][Name] != ''
+              )
+                return (
+                  e[orUrl] === newValue &&
+                  e[Name] === rowsNew[resultIndex][Name] &&
+                  rowsNew[resultIndex] &&
+                  rowsNew[resultIndex][Name] != '' &&
+                  rowsNew[resultIndex].id != e.id
+                )
+              else
+                return (
+                  e[orUrl] === newValue &&
+                  e[Name] === row[Name] &&
+                  row[Name] != '' &&
+                  row.id != e.id
+                )
             })
             // console.log(bigCities);
             // console.log(resultNew);
             if (bigCities.length || resultNew.length) {
               duplicated[row.id] = true
-              let values = {}
+              const values = {}
               values[potentialDuplicate] = true
               const updatedRow = await RowService(this.$client).update(
                 table.id,
@@ -1867,7 +2062,7 @@ export const actions = {
               // console.log(updatedRow);
             } else {
               duplicated[row.id] = false
-              let values = {}
+              const values = {}
               values[potentialDuplicate] = false
               const updatedRow = await RowService(this.$client).update(
                 table.id,
@@ -1878,28 +2073,70 @@ export const actions = {
             return
           }
         }
-        if ((table.name == 'Organization_POC' || table.name == 'Organization_R2' || table.name == 'organizations') && field.name == 'Name') {
+        if (
+          (table.name == 'Organization_POC' ||
+            table.name == 'Organization_R2' ||
+            table.name == 'organizations') &&
+          field.name == 'Name'
+        ) {
           const { data } = await RowService(this.$client).fetchAll({
             tableId: table.id,
-            search: newValue
+            search: newValue,
           })
           const Name = gridViewHelpers.methods.getFieldByName('', true)
-          const orUrl = gridViewHelpers.methods.getFieldByName('org_crunchbase_url')
-          const potentialDuplicate = gridViewHelpers.methods.getFieldByName('potential_duplicate')
+          const orUrl =
+            gridViewHelpers.methods.getFieldByName('org_crunchbase_url')
+          const potentialDuplicate = gridViewHelpers.methods.getFieldByName(
+            'potential_duplicate'
+          )
 
           if (data.results.length) {
-            let newArray = [...data.results]
-            let bigCities = newArray.filter(function(e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex][orUrl] != '') return e[Name] === newValue && e[orUrl] === rowsNew[resultIndex][orUrl] && rowsNew[resultIndex] && rowsNew[resultIndex][orUrl] != '' && rowsNew[resultIndex].id != e.id
-              else return e[Name] === newValue && e[orUrl] === row[orUrl] && row[orUrl] != '' && row.id != e.id
+            const newArray = [...data.results]
+            const bigCities = newArray.filter(function (e) {
+              if (
+                resultIndex != -1 &&
+                rowsNew[resultIndex] &&
+                rowsNew[resultIndex][orUrl] != ''
+              )
+                return (
+                  e[Name] === newValue &&
+                  e[orUrl] === rowsNew[resultIndex][orUrl] &&
+                  rowsNew[resultIndex] &&
+                  rowsNew[resultIndex][orUrl] != '' &&
+                  rowsNew[resultIndex].id != e.id
+                )
+              else
+                return (
+                  e[Name] === newValue &&
+                  e[orUrl] === row[orUrl] &&
+                  row[orUrl] != '' &&
+                  row.id != e.id
+                )
             })
-            let resultNew = rowsNew.filter(function(e) {
-              if (resultIndex != -1 && rowsNew[resultIndex] && rowsNew[resultIndex][orUrl] != '') return e[Name] === newValue && e[orUrl] === rowsNew[resultIndex][orUrl] && rowsNew[resultIndex] && rowsNew[resultIndex][orUrl] != '' && rowsNew[resultIndex].id != e.id
-              else return e[Name] === newValue && e[orUrl] === row[orUrl] && row[orUrl] != '' && row.id != e.id
+            const resultNew = rowsNew.filter(function (e) {
+              if (
+                resultIndex != -1 &&
+                rowsNew[resultIndex] &&
+                rowsNew[resultIndex][orUrl] != ''
+              )
+                return (
+                  e[Name] === newValue &&
+                  e[orUrl] === rowsNew[resultIndex][orUrl] &&
+                  rowsNew[resultIndex] &&
+                  rowsNew[resultIndex][orUrl] != '' &&
+                  rowsNew[resultIndex].id != e.id
+                )
+              else
+                return (
+                  e[Name] === newValue &&
+                  e[orUrl] === row[orUrl] &&
+                  row[orUrl] != '' &&
+                  row.id != e.id
+                )
             })
             if (bigCities.length || resultNew.length) {
               duplicated[row.id] = true
-              let values = {}
+              const values = {}
               values[potentialDuplicate] = true
               const updatedRow = await RowService(this.$client).update(
                 table.id,
@@ -1909,7 +2146,7 @@ export const actions = {
               // console.log(updatedRow);
             } else {
               duplicated[row.id] = false
-              let values = {}
+              const values = {}
               values[potentialDuplicate] = false
               const updatedRow = await RowService(this.$client).update(
                 table.id,
@@ -1917,7 +2154,6 @@ export const actions = {
                 values
               )
             }
-            return
           }
         }
       })
@@ -1935,7 +2171,9 @@ export const actions = {
 
     // Loop over the old rows, find the matching updated row and update them in the
     // buffer accordingly.
-    const potentialDuplicate = gridViewHelpers.methods.getFieldByName('potential_duplicate')
+    const potentialDuplicate = gridViewHelpers.methods.getFieldByName(
+      'potential_duplicate'
+    )
 
     for (const row of oldRowsInOrder) {
       // The values are the updated row returned by the response.
@@ -1944,7 +2182,7 @@ export const actions = {
       // console.log('duplicatedvaluesvalues', duplicated[row.id]);
       // console.log('duplicatedvaluesvalues', Object.keys(duplicated)[row.id]);
       if (duplicated[row.id]) row.duplicated = true
-      else row.duplicated = false 
+      else row.duplicated = false
       if (duplicated[row.id]) row[potentialDuplicate] = true
       else row[potentialDuplicate] = false
       // console.log('duplicated row row row', row);
@@ -1957,7 +2195,7 @@ export const actions = {
         fields,
         primary,
         row,
-        values
+        values,
       })
     }
 
@@ -1966,21 +2204,26 @@ export const actions = {
     await dispatch('fetchByScrollTopDelayed', {
       scrollTop: getScrollTop(),
       fields,
-      primary
+      primary,
     })
     dispatch('fetchAllFieldAggregationData', { view })
     if (limit == 0) {
-      let newArray = data.slice(rowsInOrder.length, data.length)
+      const newArray = data.slice(rowsInOrder.length, data.length)
       // console.log('newArraynewArray', newArray);
       // console.log('fieldsInOrder', fieldsInOrder);
-      newArray.forEach(async element => {
+      newArray.forEach(async (element) => {
         // console.log(element[0]);
         // console.log(fieldsInOrder[0]);
         if (element[0] != '') {
-          let byField = fieldsInOrder[0]
-          let byValue = element[0]
-          let result = await dispatch('createNewRow', {
-            view, table, fields, primary, byField, byValue
+          const byField = fieldsInOrder[0]
+          const byValue = element[0]
+          const result = await dispatch('createNewRow', {
+            view,
+            table,
+            fields,
+            primary,
+            byField,
+            byValue,
           })
         }
         // console.log('result', result);
@@ -2018,7 +2261,7 @@ export const actions = {
         fields,
         primary,
         values: newRow,
-        metadata
+        metadata,
       })
     } else if (oldRowExists && newRowExists) {
       // If the new order already exists in the buffer and is not the row that has
@@ -2098,7 +2341,7 @@ export const actions = {
         if (index !== newIndex) {
           commit('MOVE_EXISTING_ROW_IN_BUFFER', {
             row: oldRow,
-            index: newIndex
+            index: newIndex,
           })
         }
         commit('SET_BUFFER_LIMIT', getters.getBufferLimit + 1)
@@ -2106,7 +2349,7 @@ export const actions = {
         // If the new row should be in the buffer, but wasn't.
         commit('INSERT_EXISTING_ROW_IN_BUFFER_AT_INDEX', {
           row: newRow,
-          index: newIndex
+          index: newIndex,
         })
         commit('SET_BUFFER_LIMIT', getters.getBufferLimit + 1)
       } else if (newIsFirst) {
@@ -2138,12 +2381,12 @@ export const actions = {
         fields,
         primary,
         row,
-        getScrollTop
+        getScrollTop,
       })
       await dispatch('fetchByScrollTopDelayed', {
         scrollTop: getScrollTop(),
         fields,
-        primary
+        primary,
       })
       dispatch('fetchAllFieldAggregationData', { view })
     } catch (error) {
@@ -2172,7 +2415,7 @@ export const actions = {
       rows = await dispatch('fetchRowsByIndex', {
         startIndex: minRowIndex,
         limit,
-        includeFields: fields
+        includeFields: fields,
       })
     }
     const rowIdsToDelete = rows.map((r) => r.id)
@@ -2184,14 +2427,14 @@ export const actions = {
         fields,
         primary,
         row,
-        getScrollTop
+        getScrollTop,
       })
     }
     dispatch('clearAndDisableMultiSelect', { view })
     await dispatch('fetchByScrollTopDelayed', {
       scrollTop: getScrollTop(),
       fields,
-      primary
+      primary,
     })
     dispatch('fetchAllFieldAggregationData', { view })
   },
@@ -2274,12 +2517,12 @@ export const actions = {
     const matches = view.filters_disabled
       ? true
       : matchSearchFilters(
-        this.$registry,
-        view.filter_type,
-        view.filters,
-        primary === null ? fields : [primary, ...fields],
-        values
-      )
+          this.$registry,
+          view.filter_type,
+          view.filters,
+          primary === null ? fields : [primary, ...fields],
+          values
+        )
     commit('SET_ROW_MATCH_FILTERS', { row, value: matches })
   },
   /**
@@ -2294,7 +2537,7 @@ export const actions = {
       primary = null,
       activeSearchTerm = state.activeSearchTerm,
       hideRowsNotMatchingSearch = state.hideRowsNotMatchingSearch,
-      refreshMatchesOnClient = true
+      refreshMatchesOnClient = true,
     }
   ) {
     commit('SET_SEARCH', { activeSearchTerm, hideRowsNotMatchingSearch })
@@ -2304,7 +2547,7 @@ export const actions = {
           row,
           fields,
           primary,
-          forced: true
+          forced: true,
         })
       )
     }
@@ -2372,14 +2615,14 @@ export const actions = {
         fields,
         primary,
         row,
-        values: row
+        values: row,
       })
       commit('SET_ROW_MATCH_SORTINGS', { row, value: true })
     }
     dispatch('fetchByScrollTopDelayed', {
       scrollTop: getScrollTop(),
       fields,
-      primary
+      primary,
     })
   },
   updateRowMetadata(
@@ -2406,8 +2649,7 @@ export const actions = {
       rows = getters.getSelectedRows
     }
     return rows
-  }
-
+  },
 }
 
 export const getters = {
@@ -2516,7 +2758,7 @@ export const getters = {
   getMultiSelectRowIndexSorted(state) {
     return [
       Math.min(state.multiSelectHeadRowIndex, state.multiSelectTailRowIndex),
-      Math.max(state.multiSelectHeadRowIndex, state.multiSelectTailRowIndex)
+      Math.max(state.multiSelectHeadRowIndex, state.multiSelectTailRowIndex),
     ]
   },
   getMultiSelectFieldIndexSorted(state) {
@@ -2528,7 +2770,7 @@ export const getters = {
       Math.max(
         state.multiSelectHeadFieldIndex,
         state.multiSelectTailFieldIndex
-      )
+      ),
     ]
   },
   getMultiSelectHeadFieldIndex(state) {
@@ -2569,7 +2811,7 @@ export const getters = {
   },
   getAllFieldAggregationData(state) {
     return state.fieldAggregationData
-  }
+  },
 }
 
 export default {
@@ -2577,5 +2819,5 @@ export default {
   state,
   getters,
   actions,
-  mutations
+  mutations,
 }

@@ -72,7 +72,6 @@ export default {
   },
   methods: {
     update(event) {
-      console.log(event)
       this.items = []
       this.items.push(this.item)
       this.item[`field_${event.field.id}`] = event.value
