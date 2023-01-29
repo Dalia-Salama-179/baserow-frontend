@@ -463,15 +463,15 @@ export default {
         selectedRows.forEach((r) => {
           this.$client
             .post(`t2/crunch_base_founder/${this.table.id}/${r.id}/`, {
-              cb_url_field_name: 'field_320',
-              cb_uuid_field_name: 'field_659',
-              company_prev_raised_count_field_name: 'field_657',
-              company_total_raised_value_field_name: 'field_658',
-              cb_updated_at: 'field_656',
-              organization_of_interest_link_table: 'field_487',
-              org_founder_map_founding_date_field_name: 'field_476',
-              organization_of_interest_from_org_founder_map: 'field_484',
-              organization_of_interest_cb_link: 'field_604',
+              cb_url_field_name: 'field_1008',
+              cb_uuid_field_name: 'field_1336',
+              company_prev_raised_count_field_name: 'field_1123',
+              company_total_raised_value_field_name: 'field_1124',
+              cb_updated_at: 'field_1126',
+              organization_of_interest_link_table: 'field_1151',
+              org_founder_map_founding_date_field_name: 'field_912',
+              organization_of_interest_from_org_founder_map: 'field_1114',
+              organization_of_interest_cb_link: 'field_868',
             })
             .then(() => {
               const refresh = JSON.parse(localStorage.getItem('refresh'))
@@ -491,15 +491,15 @@ export default {
       } else {
         this.$client
           .post(`t2/crunch_base_founder/${this.table.id}/${row.id}/`, {
-            cb_url_field_name: 'field_320',
-            cb_uuid_field_name: 'field_659',
-            company_prev_raised_count_field_name: 'field_657',
-            company_total_raised_value_field_name: 'field_658',
-            cb_updated_at: 'field_656',
-            organization_of_interest_link_table: 'field_487',
-            org_founder_map_founding_date_field_name: 'field_476',
-            organization_of_interest_from_org_founder_map: 'field_484',
-            organization_of_interest_cb_link: 'field_604',
+            cb_url_field_name: 'field_1008',
+            cb_uuid_field_name: 'field_1336',
+            company_prev_raised_count_field_name: 'field_1123',
+            company_total_raised_value_field_name: 'field_1124',
+            cb_updated_at: 'field_1126',
+            organization_of_interest_link_table: 'field_1151',
+            org_founder_map_founding_date_field_name: 'field_912',
+            organization_of_interest_from_org_founder_map: 'field_1114',
+            organization_of_interest_cb_link: 'field_868',
           })
           .then((response) => {
             // console.log('response',response);
