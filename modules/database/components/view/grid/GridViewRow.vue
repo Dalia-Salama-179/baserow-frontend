@@ -119,7 +119,9 @@
               title="Get crunch base"
               class="button button--primary buttonNew"
               @click="
-                table.name == 'Founders'
+                table.name == 'Founders' ||
+                table.name == 'Founder_POC' ||
+                table.name == 'Founders_R2'
                   ? getCrunchFounders(row)
                   : getCrunchPerson(row)
               "
