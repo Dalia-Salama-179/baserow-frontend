@@ -467,7 +467,11 @@ export default {
               cb_uuid_field_name: 'field_1336',
               company_prev_raised_count_field_name: 'field_1123',
               company_total_raised_value_field_name: 'field_1124',
-              organization_of_interest_link_table: 'field_1002',
+              cb_updated_at: 'field_1126',
+              organization_of_interest_link_table: 'field_1151',
+              org_founder_map_founding_date_field_name: 'field_912',
+              organization_of_interest_from_org_founder_map: 'field_1114',
+              organization_of_interest_cb_link: 'field_868',
             })
             .then(() => {
               const refresh = JSON.parse(localStorage.getItem('refresh'))
@@ -491,7 +495,11 @@ export default {
             cb_uuid_field_name: 'field_1336',
             company_prev_raised_count_field_name: 'field_1123',
             company_total_raised_value_field_name: 'field_1124',
-            organization_of_interest_link_table: 'field_1002',
+            cb_updated_at: 'field_1126',
+            organization_of_interest_link_table: 'field_1151',
+            org_founder_map_founding_date_field_name: 'field_912',
+            organization_of_interest_from_org_founder_map: 'field_1114',
+            organization_of_interest_cb_link: 'field_868',
           })
           .then((response) => {
             // console.log('response',response);
