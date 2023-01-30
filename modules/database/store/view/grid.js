@@ -1416,7 +1416,7 @@ export const actions = {
               table.name == 'Organization_R2' ||
               table.name == 'organizations'))
         ) {
-          values[name] = new Date().toLocaleString().replace(',', '')
+          values[name] = new Date().toISOString()
         } else if (
           (field.name == 'aingel_id' &&
             (table.name == 'Organization_POC' ||
