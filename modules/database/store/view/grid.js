@@ -1445,7 +1445,19 @@ export const actions = {
           (field.name == 'RecordID' &&
             (table.name == 'Organization_POC' ||
               table.name == 'Organization_R2' ||
-              table.name == 'organizations'))
+              table.name == 'organizations')) ||
+          (field.name == 'RecordID' &&
+            (table.name == 'bigCompExp_by_url1-Main' ||
+              table.name == 'bigCompExp_by_url1_POC' ||
+              table.name == 'bigCompExp_by_url1_R2')) ||
+          (field.name == 'RecordID' &&
+            (table.name == 'bigCompExp_by_Name-Main' ||
+              table.name == 'bigCompExp_by_Name_POC' ||
+              table.name == 'bigCompExp_by_Name_R2')) ||
+          (field.name == 'RecordID' &&
+            (table.name == 'Org_total_funding_usd-Main' ||
+              table.name == 'Org_total_funding_usd_POC' ||
+              table.name == 'Org_total_funding_usd_R2'))
         ) {
           values[name] = uuid()
         } else if (

@@ -320,9 +320,9 @@ export default {
                 const orgUrlName = this.getFieldByName('org_crunchbase_url')
                 const bigCities = newArray.filter(function (e) {
                   return (
-                    e[orgUrlName] == r[orgUrlName] &&
-                    e[Name] == r[Name] &&
-                    e.id != r.id
+                    e[orgUrlName] === r[orgUrlName] &&
+                    e[Name] === r[Name] &&
+                    e.id !== r.id
                   )
                 })
                 if (bigCities.length >= 1) {
@@ -396,9 +396,9 @@ export default {
               const orgUrlName = this.getFieldByName('org_crunchbase_url')
               const bigCities = newArray.filter(function (e) {
                 return (
-                  e[orgUrlName] == row[orgUrlName] &&
-                  e[Name] == row[Name] &&
-                  e.id != row.id
+                  e[orgUrlName] === row[orgUrlName] &&
+                  e[Name] === row[Name] &&
+                  e.id !== row.id
                 )
               })
               if (bigCities.length >= 1) {

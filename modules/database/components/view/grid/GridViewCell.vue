@@ -46,7 +46,7 @@
       :field="props.field"
       :value="props.row['field_' + props.field.id]"
       :state="props.state"
-      :read-only="$options.methods.check(props) "
+      :read-only="$options.methods.check(props)"
     />
     <component
       :is="$options.methods.getComponent(parent, props)"
@@ -57,7 +57,7 @@
       :value="props.row['field_' + props.field.id]"
       :selected="parent.isCellSelected(props.field.id)"
       :store-prefix="props.storePrefix"
-      :read-only="$options.methods.check(props) "
+      :read-only="$options.methods.check(props)"
       @update="(...args) => $options.methods.update(listeners, props, ...args)"
       @paste="(...args) => $options.methods.paste(listeners, props, ...args)"
       @edit="(...args) => $options.methods.edit(listeners, props, ...args)"
@@ -87,24 +87,38 @@ export default {
      * cell, it is replaced with a the real field component which has the ability to
      * change the data.
      */
-     check(props) {
-      if (props.field.name == 'Name' && props.table.name == 'organizations') {
+    check(props) {
+      if (props.field.name === 'Name' && props.table.name === 'organizations') {
         return false
       }
       if (
-        props.field.name == 'created_at' &&
-        (props.table.name == 'Organization_POC' ||
-          props.table.name == 'organization_R2' ||
-          props.table.name == 'organizations')
+        props.field.name === 'created_at' &&
+        (props.table.name === 'Organization_POC' ||
+          props.table.name === 'organization_R2' ||
+          props.table.name === 'organizations')
       ) {
         return true
       }
-     return ((props.field.primary || props.field.name == 'org_record_id' || props.field.name == 'RecordID'|| props.field.name == 'creation_date'  ) && (props.table.name == "Org_founder_map_POC" || props.table.name == "Org_founder_map_R2" || props.table.name == 'org_founder_map' )? true : props.readOnly ||
-     (props.field.primary || props.field.name == 'Request_Id' || props.field.name == 'RecordID'  ) && (props.table.name == "In_Customer_Request_POC" || props.table.name == "In_Customer_Request_R2" || props.table.name == 'in customer request' ? true : props.readOnly ||
-     (props.field.primary || props.field.name == 'founder_record_id' || props.field.name == 'RecordID' || props.field.name == 'Date Of Creation'  ) && (props.table.name == "Founder_POC" || props.table.name == "Founder_R2" || props.table.name == 'Founders') ? true : props.readOnly ||
-     (props.field.primary || props.field.name == 'created_at' || props.field.name == 'RecordID'  ) && (props.table.name == "Organization_POC" || props.table.name == "organization_R2" || props.table.name == 'organizations') ) ? true : props.readOnly ||
-     (props.field.primary || props.field.name == 'RecordID'  ) && (props.table.name == "In_Customer_POC" || props.table.name == "In_Customer_R2" || props.table.name == 'in_customer' )? true : props.readOnly ||
-     (props.field.primary || props.field.name == 'RecordID'|| props.field.name == 'created_at'  ) && (props.table.name == "Person_POC" || props.table.name == "Person_R2" || props.table.name == 'person' )? true : props.readOnly )
+      if (
+        props.field.name === 'RecordID' &&
+        (props.table.name === 'bigCompExp_by_Name_R2' ||
+          props.table.name === 'bigCompExp_by_url1_R2' ||
+          props.table.name === 'Org_total_funding_usd_R2' ||
+          props.table.name === 'bigCompExp_by_Name_POC' ||
+          props.table.name === 'bigCompExp_by_url1_POC' ||
+          props.table.name === 'Org_total_funding_usd_POC' ||
+          props.table.name === 'bigCompExp_by_Name-Main' ||
+          props.table.name === 'bigCompExp_by_url1-Main' ||
+          props.table.name === 'Org_total_funding_usd-Main')
+      ) {
+        return true
+      }
+     return ((props.field.primary || props.field.name === 'org_record_id' || props.field.name === 'RecordID'|| props.field.name === 'creation_date'  ) && (props.table.name === "Org_founder_map_POC" || props.table.name === "Org_founder_map_R2" || props.table.name === 'org_founder_map' )? true : props.readOnly ||
+     (props.field.primary || props.field.name === 'Request_Id' || props.field.name === 'RecordID'  ) && (props.table.name === "In_Customer_Request_POC" || props.table.name === "In_Customer_Request_R2" || props.table.name === 'in customer request' ? true : props.readOnly ||
+     (props.field.primary || props.field.name === 'founder_record_id' || props.field.name === 'RecordID' || props.field.name === 'Date Of Creation'  ) && (props.table.name === "Founder_POC" || props.table.name === "Founder_R2" || props.table.name === 'Founders') ? true : props.readOnly ||
+     (props.field.primary || props.field.name === 'created_at' || props.field.name === 'RecordID'  ) && (props.table.name === "Organization_POC" || props.table.name === "organization_R2" || props.table.name === 'organizations') ) ? true : props.readOnly ||
+     (props.field.primary || props.field.name === 'RecordID'  ) && (props.table.name === "In_Customer_POC" || props.table.name === "In_Customer_R2" || props.table.name === 'in_customer' )? true : props.readOnly ||
+     (props.field.primary || props.field.name === 'RecordID'|| props.field.name === 'created_at'  ) && (props.table.name === "Person_POC" || props.table.name === "Person_R2" || props.table.name === 'person' )? true : props.readOnly )
     },
     getFunctionalComponent(parent, props) {
       return parent.$registry
