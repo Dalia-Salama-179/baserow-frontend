@@ -17,6 +17,7 @@ import {
 } from '@baserow/modules/database/utils/view'
 import { RefreshCancelledError } from '@baserow/modules/core/errors'
 import gridViewHelpers from '@baserow/modules/database/mixins/gridViewHelpers'
+import moment from '@baserow/modules/core/moment'
 
 export function populateRow(row, metadata = {}) {
   row._ = {
@@ -1838,6 +1839,11 @@ export const actions = {
         table.name == 'Person_R2' ||
         table.name == 'person')
     ) {
+      const firstName = gridViewHelpers.methods.getFieldByName('first_name')
+      const lastName = gridViewHelpers.methods.getFieldByName('last_name')
+      const twitterHandle =
+        gridViewHelpers.methods.getFieldByName('twitter_handle')
+
       values[`field_${primary.id}`] = `${
         row[firstName] ? row[firstName] + '_' : ''
       }${row[lastName] ? row[lastName] + '*' : ''}${
@@ -1852,11 +1858,31 @@ export const actions = {
         table.name == 'Person_R2' ||
         table.name == 'person')
     ) {
+      const firstName = gridViewHelpers.methods.getFieldByName('first_name')
+      const lastName = gridViewHelpers.methods.getFieldByName('last_name')
+      const twitterHandle =
+        gridViewHelpers.methods.getFieldByName('twitter_handle')
+
       values[`field_${primary.id}`] = `${
         row[firstName] ? row[firstName] + '_' : ''
       }${values[lastName] ? values[lastName] + '*' : ''}${
         row[twitterHandle] ? row[twitterHandle] : ''
       }`
+    }
+    if (
+      field.name == 'Request_Date' &&
+      value &&
+      value[0] &&
+      (table.name == 'In_Customer_Request_POC' ||
+        table.name == 'In_Customer_Request_R2' ||
+        table.name == 'in customer request')
+    ) {
+      const start = moment(value)
+      const end = moment(new Date())
+      const timeSinceRequest =
+        gridViewHelpers.methods.getFieldByName('Time_Since_Request')
+
+      values[timeSinceRequest] = Math.abs(start.diff(end, 'days'))
     }
     try {
       const updatedRow = await RowService(this.$client).update(
