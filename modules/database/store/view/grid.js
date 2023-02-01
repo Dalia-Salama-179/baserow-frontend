@@ -1755,7 +1755,9 @@ export const actions = {
       field.name == 'organization' &&
       value &&
       value[0] &&
-      (table.name == 'org_founder_map' || table.name == 'org_founder_map')
+      (table.name == 'Org_founder_map_POC' ||
+        table.name == 'Org_founder_map_R2' ||
+        table.name == 'org_founder_map')
     ) {
       values[`field_${primary.id}`] = value[0].value
     }

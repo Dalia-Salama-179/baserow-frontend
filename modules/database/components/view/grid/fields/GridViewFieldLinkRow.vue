@@ -39,12 +39,20 @@
         </a>
       </component>
       <a
-        v-if="!readOnly && value.length < 1 && ( tableName == 'org_founder_map' || tableName == 'Founders' || tableName == 'organizations' )
-              || !readOnly && tableName != 'Founders' &&
-              tableName != 'org_founder_map' && tableName != 'organizations'  "
-        class="
-          grid-field-many-to-many__item grid-field-many-to-many__item--link
+        v-if="
+          (!readOnly &&
+            value.length < 1 &&
+            (tableName == 'org_founder_map' ||
+              tableName == 'Org_founder_map_POC' ||
+              tableName == 'Founders' ||
+              tableName == 'organizations')) ||
+          (!readOnly &&
+            tableName != 'Founders' &&
+            tableName != 'org_founder_map' &&
+            tableName != 'Org_founder_map_POC' &&
+            tableName != 'organizations')
         "
+        class="grid-field-many-to-many__item grid-field-many-to-many__item--link"
         @click.prevent="showModal()"
       >
         <i class="fas fa-plus"></i>
@@ -103,8 +111,10 @@ export default {
       }),
     }
   },
-  async mounted(){
-    const { data } = await tableService(this.$client).get(this.$props.field.table_id);
+  async mounted() {
+    const { data } = await tableService(this.$client).get(
+      this.$props.field.table_id
+    )
     // console.log(data);
     this.tableName = data.name
   },
