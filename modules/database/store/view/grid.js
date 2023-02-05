@@ -1427,6 +1427,10 @@ export const actions = {
             (table.name == 'Person_POC' ||
               table.name == 'Person_R2' ||
               table.name == 'person')) ||
+          (field.name == 'aingel_id' &&
+            (table.name == 'Person_POC' ||
+              table.name == 'Person_R2' ||
+              table.name == 'person')) ||
           (field.name == 'RecordID' &&
             (table.name == 'In_Customer_POC' ||
               table.name == 'In_Customer_R2' ||
