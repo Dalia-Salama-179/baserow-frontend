@@ -11,9 +11,12 @@
         @horizontal="horizontalScroll"
       ></Scrollbars>
       <div class="select-row-modal__search">
-        <i v-if="!openForm" class="fas fa-search select-row-modal__search-icon"></i>
+        <i
+          v-if="!openForm"
+          class="fas fa-search select-row-modal__search-icon"
+        ></i>
         <input
-         v-if="!openForm"
+          v-if="!openForm"
           ref="search"
           v-model="visibleSearch"
           type="text"
@@ -22,8 +25,14 @@
           @keypress.enter="doSearch(visibleSearch)"
         />
       </div>
-      <div  class="select-row-modal__rows" 
-      :style="openForm ? 'height: auto;padding: 10px 20px;background-color: #ffffff;':''">
+      <div
+        class="select-row-modal__rows"
+        :style="
+          openForm
+            ? 'height: auto;padding: 10px 20px;background-color: #ffffff;'
+            : ''
+        "
+      >
         <div v-if="!openForm" class="select-row-modal__left">
           <div class="select-row-modal__head">
             <div
@@ -66,9 +75,11 @@
             ></Paginator>
           </div>
         </div>
-        <div ref="right"
-         :style="openForm ? 'position: revert;padding: 10px 20px;':''"
-         class="select-row-modal__right">
+        <div
+          ref="right"
+          :style="openForm ? 'position: revert;padding: 10px 20px;' : ''"
+          class="select-row-modal__right"
+        >
           <div v-show="!openForm" class="select-row-modal__head">
             <div
               v-for="field in fields"
@@ -111,33 +122,50 @@
               width: 3 * 200 + 'px',
             }"
           >
-          <button v-show="!openForm" type="button" @click="openForm = !openForm" class="addNewRow">
+            <button
+              v-show="!openForm"
+              type="button"
+              class="addNewRow"
+              @click="openForm = !openForm"
+            >
               Add New Row
-          </button>
+            </button>
           </div>
-          <button v-show="!openForm && openForm" type="button" @click="openForm = !openForm" class="addNewRow">
-              Add New Row
+          <button
+            v-show="!openForm && openForm"
+            type="button"
+            class="addNewRow"
+            @click="openForm = !openForm"
+          >
+            Add New Row
           </button>
-          <h4 class="titlePopup" v-if="openForm && table && table.name">{{table.name}}</h4>
-           <RowEditModalFieldsListCreate
+          <h4 v-if="openForm && table && table.name" class="titlePopup">
+            {{ table.name }}
+          </h4>
+          <RowEditModalFieldsListCreate
             v-if="openForm"
             :hidden="false"
             :sortable="false"
             :read-only="false"
             :row="row"
-            :isLength="rows.length"
+            :is-length="rows.length"
             :table="table"
             :fields="newFields"
             :primary="primary"
             @update="update"
           >
-          </RowEditModalFieldsListCreate> 
-          <button v-show="openForm" type="button" @click="addNewRow" class="buttonSave button button--large">
-              Save
+          </RowEditModalFieldsListCreate>
+          <button
+            v-show="openForm"
+            type="button"
+            class="buttonSave button button--large"
+            @click="addNewRow"
+          >
+            Save
           </button>
         </div>
       </div>
-    </div> 
+    </div>
   </div>
 </template>
 
@@ -155,7 +183,7 @@ import SelectRowField from './SelectRowField'
 
 export default {
   name: 'SelectRowContent',
-  components: { Paginator, SelectRowField ,RowEditModalFieldsListCreate},
+  components: { Paginator, SelectRowField, RowEditModalFieldsListCreate },
   props: {
     tableId: {
       type: Number,
@@ -191,8 +219,8 @@ export default {
     // The first time we have to fetch the fields because they are unknown for this
     // table.
     // console.log(this.fields);
-    
-    // 
+
+    //
     await this.fetchFields(this.tableId)
 
     // We want to start with some initial data when the modal opens for the first time.
@@ -210,26 +238,24 @@ export default {
     // this.row = this.rows[1];
   },
   methods: {
-    update(event){
+    update(event) {
       this.values = event
     },
-   async addNewRow(before = null, values = {}){
-    this.openForm = false;
-     values = this.values;
-      let view = JSON.parse(localStorage.getItem('view'));
-       try {
-        await this.$store.dispatch('page/view/grid/createNewRow',
-          {
-            view: view,
-            table: this.table,
-            // We need a list of all fields including the primary one here.
-            fields: this.fields,
-            notInset: false,
-            primary: this.primary,
-            values,
-            before,
-          }
-        )
+    async addNewRow(before = null, values = {}) {
+      this.openForm = false
+      values = this.values
+      const view = JSON.parse(localStorage.getItem('view'))
+      try {
+        await this.$store.dispatch('page/view/grid/createNewRow', {
+          view,
+          table: this.table,
+          // We need a list of all fields including the primary one here.
+          fields: this.fields,
+          notInset: false,
+          primary: this.primary,
+          values,
+          before,
+        })
         await this.fetch(1)
       } catch (error) {
         notifyIf(error, 'row')
@@ -283,20 +309,21 @@ export default {
      */
     async fetchFields(tableId) {
       try {
-        const table = await tableService(this.$client).get(tableId);
+        const table = await tableService(this.$client).get(tableId)
         // console.log(total);
         this.table = table.data
-        const { data } = await FieldService(this.$client).fetchAll(tableId);
+        const { data } = await FieldService(this.$client).fetchAll(tableId)
         data.forEach((part, index, d) => {
           populateField(data[index], this.$registry)
         })
         const primaryIndex = data.findIndex((item) => item.primary === true)
         // console.log('primaryIndex',primaryIndex);
         // console.log('data',data);
-        this.primary = primaryIndex !== -1 ? data.splice(primaryIndex, 1)[0] : null
-        this.fields = data;
-        this.newFields = [...data];
-        this.newFields.unshift(this.primary);
+        this.primary =
+          primaryIndex !== -1 ? data.splice(primaryIndex, 1)[0] : null
+        this.fields = data
+        this.newFields = [...data]
+        this.newFields.unshift(this.primary)
       } catch (error) {
         this.loading = false
         notifyIf(error, 'row')
@@ -358,31 +385,31 @@ export default {
 </script>
 <style scoped>
 .addNewRow {
-    background: none;
-    border: none;
-    font-size: 14px;
-    display: inline-block;
-    position: sticky;
-    left: 0;
-    font-weight: bold;
-    color: #198dd6;
-    /* margin-top: -5px; */
-    cursor: pointer;
-    text-decoration: underline;
-    padding: 0px 12px;
-    text-align: right;
+  background: none;
+  border: none;
+  font-size: 14px;
+  display: inline-block;
+  position: sticky;
+  left: 0;
+  font-weight: bold;
+  color: #198dd6;
+  /* margin-top: -5px; */
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0px 12px;
+  text-align: right;
 }
 .buttonSave {
-    max-width: 40%;
-    margin-left: auto;
+  max-width: 40%;
+  margin-left: auto;
 }
-.titlePopup{
-    padding: 0 0 8px 0;
-    margin: 0 0 20px 0;
-    font-size: 16px;
-    font-weight: bold;
-    border-bottom: 2px solid #333;
-    max-width: 24%;
-    color: #188dd6;
+.titlePopup {
+  padding: 0 0 8px 0;
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  font-weight: bold;
+  border-bottom: 2px solid #333;
+  max-width: 24%;
+  color: #188dd6;
 }
 </style>

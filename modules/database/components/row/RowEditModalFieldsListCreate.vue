@@ -75,11 +75,14 @@ export default {
       this.items = []
       this.items.push(this.item)
       this.item[`field_${event.field.id}`] = event.value
-
       const { field, value } = event
-      const firstName = this.getFieldByName('first_name')
-      const lastName = this.getFieldByName('last_name')
-      const twitterHandle = this.getFieldByName('twitter_handle')
+      const firstName = this.getFieldByName('first_name', false, this.fields)
+      const lastName = this.getFieldByName('last_name', false, this.fields)
+      const twitterHandle = this.getFieldByName(
+        'twitter_handle',
+        false,
+        this.fields
+      )
 
       if (
         (this.table.name === 'person' ||
@@ -89,11 +92,13 @@ export default {
           field.name === 'twitter_handle' ||
           field.name === 'last_name')
       ) {
-        this.item[`field_${this.primary.id}`] = `${
+        const PersonName = `${
           this.item[firstName] ? this.item[firstName] + '_' : ''
         }${this.item[lastName] ? this.item[lastName] + '*' : ''}${
           this.item[twitterHandle] ? this.item[twitterHandle] : ''
         }`
+
+        this.item[`field_${this.primary.id}`] = PersonName
       }
 
       this.$emit('update', this.item)

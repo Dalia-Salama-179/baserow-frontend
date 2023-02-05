@@ -35,15 +35,20 @@ export default {
 
       return hasFieldOptions ? this.fieldOptions[fieldId].width : 200
     },
-    getFieldByName(name, isPrimary = false) {
+    getFieldByName(name, isPrimary = false, fields = null) {
       if (typeof window !== 'undefined') {
-        const refresh = JSON.parse(localStorage.getItem('refresh'))
-        if (refresh) {
-          if (isPrimary) {
-            return `field_${refresh.primary.id}`
-          } else {
-            const field = refresh.fields.find((x) => x.name == name)
-            return `field_${field?.id}`
+        if (fields) {
+          const field = fields.find((x) => x.name === name)
+          return `field_${field?.id}`
+        } else {
+          const refresh = JSON.parse(localStorage.getItem('refresh'))
+          if (refresh) {
+            if (isPrimary) {
+              return `field_${refresh.primary.id}`
+            } else {
+              const field = refresh.fields.find((x) => x.name === name)
+              return `field_${field?.id}`
+            }
           }
         }
       }
