@@ -26,12 +26,13 @@
             <div v-for="c in comments" :key="c.id">
               <template
                 v-if="
-                  Object.keys(c.params.new_row_values)[0] !=
-                  getFieldByName('potential_duplicate', false, fields)
+                  c.type === 'create_row' ||
+                  getKey(c) !=
+                    getFieldByName('potential_duplicate', false, fields)
                 "
               >
                 <RowLog
-                  v-if="c.type === 'update_row'"
+                  v-if="c.type === 'update_row' || c.type === 'create_row'"
                   :key="'row-log-' + c.id"
                   :comment="c"
                   :fields="fields"
@@ -172,6 +173,13 @@ export default {
         })
       } catch (e) {
         notifyIf(e, 'application')
+      }
+    },
+    getKey(c) {
+      if (c.params?.new_row_values) {
+        return Object.keys(c.params.new_row_values)[0]
+      } else {
+        return ''
       }
     },
   },

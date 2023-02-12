@@ -29,7 +29,8 @@
         "comment": "Comment"
     },
     "rowComment": {
-        "you": "You"
+        "you": "You",
+        "rowCreated":"New row Created"
     },
     "registerLicenseModal": {
         "titleRegisterLicense": "Register a license",
