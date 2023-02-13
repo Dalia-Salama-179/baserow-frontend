@@ -17,99 +17,102 @@
       </div>
     </div>
     <div class="row-comments__comment-text white-space-normal">
-    <template v-if="comment.type === 'update_row'">
-      <div
-        v-for="(key, idx) in Object.keys(comment.params.original_row_values)"
-        :key="idx"
-        :class="{
-          'dotted-line-separator':
-            idx < Object.keys(comment.params.original_row_values).length - 1,
-        }"
-      >
-        <p
-          class="field-title color-black margin-top-1 d-flex margin-bottom-1 font-bold"
+      <template v-if="comment.type === 'update_row'">
+        <div
+          v-for="(key, idx) in comments"
+          :key="idx"
+          :class="{
+            'dotted-line-separator': idx < comments.length - 1,
+          }"
         >
-          {{ fieldName(key) }} :
-        </p>
-        <div class="margin-top-0 margin-bottom-1">
-          <template
-            v-if="Array.isArray(comment.params.original_row_values[key])"
+          <p
+            class="field-title color-black margin-top-1 d-flex margin-bottom-1 font-bold"
           >
+            {{ fieldName(key) }} :
+          </p>
+          <div class="margin-top-0 margin-bottom-1">
             <template
-              v-if="
-                comment.params.original_row_values[key] &&
-                comment.params.original_row_values[key].length > 0
-              "
+              v-if="Array.isArray(comment.params.original_row_values[key])"
             >
               <template
-                v-for="(el, index) in comment.params.original_row_values[key]"
+                v-if="
+                  comment.params.original_row_values[key] &&
+                  comment.params.original_row_values[key].length > 0
+                "
               >
-                <template v-if="typeof el === 'object'">
-                  <div
-                    v-for="objKey in Object.keys(el)"
-                                         class="color-primary-dark">
-                  >
-                    <del
-                      v-if="objKey !== 'id'"
-                                             class="old-val align-left forced-block"> {{ el[objKey] }}
-                                        </del>
+                <template
+                  v-for="(el, index) in comment.params.original_row_values[key]"
+                >
+                  <template v-if="typeof el === 'object'">
+                    <div
+                      v-for="objKey in Object.keys(el)"
+                      class="color-primary-dark"
+                    >
+                      <del
+                        v-if="objKey !== 'id'"
+                        class="old-val align-left forced-block"
+                      >
+                        {{ el[objKey] }}
+                      </del>
+                    </div>
+                  </template>
+                  <div v-else class="color-primary-dark">
+                    <del class="old-val align-left forced-block">
+                      {{ el }}
                     </del>
                   </div>
                 </template>
-                <div v-else class="color-primary-dark">
-                  <del class="old-val align-left forced-block"> {{ el }} </del>
-                </div>
               </template>
-            </template>
 
-            <template
-              v-if="
-                comment.params.new_row_values[key] &&
-                comment.params.new_row_values[key].length > 0
-              "
-            >
               <template
-                v-for="(el, index) in comment.params.new_row_values[key]"
+                v-if="
+                  comment.params.new_row_values[key] &&
+                  comment.params.new_row_values[key].length > 0
+                "
               >
-                <template v-if="typeof el === 'object'">
-                  <div
-                    v-for="objKey in Object.keys(el)"
-                                         class="color-primary-dark">
-                    <p
-                      v-if="objKey !== 'id'"
-                      class="color-primary-dark align-right"
+                <template
+                  v-for="(el, index) in comment.params.new_row_values[key]"
+                >
+                  <template v-if="typeof el === 'object'">
+                    <div
+                      v-for="objKey in Object.keys(el)"
+                      class="color-primary-dark"
                     >
-                      {{ el[objKey] }}
+                      <p
+                        v-if="objKey !== 'id'"
+                        class="color-primary-dark align-right"
+                      >
+                        {{ el[objKey] }}
+                      </p>
+                    </div>
+                  </template>
+                  <div v-else class="color-primary-dark">
+                    <p class="color-primary-dark align-right">
+                      {{ el }}
                     </p>
                   </div>
                 </template>
-                <div v-else class="color-primary-dark">
-                  <p class="color-primary-dark align-right">
-                    {{ el }}
-                  </p>
-                </div>
               </template>
             </template>
-          </template>
 
-          <div v-else class="color-primary-dark">
-            <del class="old-val align-left forced-block">
-              {{ comment.params.original_row_values[key] }}
-            </del>
-            <p class="color-primary-dark margin-y0 align-right">
-              {{ comment.params.new_row_values[key] }}
-            </p>
+            <div v-else class="color-primary-dark">
+              <del class="old-val align-left forced-block">
+                {{ comment.params.original_row_values[key] }}
+              </del>
+              <p class="color-primary-dark margin-y0 align-right">
+                {{ comment.params.new_row_values[key] }}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </template>
-        <template v-else>
-         <p
+      </template>
+      <template v-else>
+        <p
           class="field-title color-black margin-top-1 d-flex margin-bottom-1 font-bold"
         >
-          {{$t('rowComment.rowCreated')}}
+          {{ $t('rowComment.rowCreated') }}
         </p>
-        </template>
+      </template>
     </div>
   </div>
 </template>
@@ -137,6 +140,10 @@ export default {
     }),
     ownComment() {
       return this.comment.user.id === this.userId
+    },
+    comments() {
+      const comments = Object.keys(this.comment.params.original_row_values)
+      return comments.filter((e) => e !== 'id')
     },
     timeAgo() {
       if (
