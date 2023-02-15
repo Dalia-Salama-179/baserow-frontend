@@ -47,7 +47,9 @@
           ></ViewsContext>
         </li>
         <li
-          v-if="hasSelectedView && !readOnly && (editable() || user.is_superuser)"
+          v-if="
+            hasSelectedView && !readOnly && (editable() || user.is_superuser)
+          "
           class="header__filter-item header__filter-item--no-margin-left"
         >
           <a
@@ -116,6 +118,14 @@
             :disable-sort="disableSort"
             @changed="refresh()"
           ></ViewDecoratorMenu>
+        </li>
+        <li v-if="hasSelectedView" class="header__filter-item">
+          <a class="header__filter-link" @click="refresh">
+            <i class="header__filter-icon fas fa-sync-alt"></i>
+            <span class="header__filter-name">
+              {{ $tc('refresh') }}
+            </span>
+          </a>
         </li>
       </ul>
       <component
@@ -294,6 +304,13 @@ export default {
     this.$el.resizeObserver.unobserve(this.$el)
   },
   methods: {
+    refreshViwe() {
+      this.$store.dispatch(this.storePrefix + 'view/grid/refresh', {
+        view: this.view,
+        fields: this.fields,
+        primary: this.primary,
+      })
+    },
     getViewComponent(view) {
       const type = this.$registry.get('view', view.type)
       return type.getComponent()

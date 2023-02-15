@@ -1286,7 +1286,6 @@ export default {
           for (const item in dataNew) {
             // console.log('index',index);
             if (dataNew[item][0] == '') return
-            if (item != 0) rowIndex = rowIndex + 1
             if (typeof rows[rowIndex] !== 'undefined') {
               newRow = rows[rowIndex]
             }
