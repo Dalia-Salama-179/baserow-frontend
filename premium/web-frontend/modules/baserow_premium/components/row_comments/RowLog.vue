@@ -45,7 +45,8 @@
                 >
                   <template v-if="typeof el === 'object'">
                     <div
-                      v-for="objKey in Object.keys(el)"
+                      v-for="(objKey, j) in Object.keys(el)"
+                      :key="j"
                       class="color-primary-dark"
                     >
                       <del
@@ -56,7 +57,7 @@
                       </del>
                     </div>
                   </template>
-                  <div v-else class="color-primary-dark">
+                  <div v-else :key="index" class="color-primary-dark">
                     <del class="old-val align-left forced-block">
                       {{ el }}
                     </del>
@@ -75,7 +76,8 @@
                 >
                   <template v-if="typeof el === 'object'">
                     <div
-                      v-for="objKey in Object.keys(el)"
+                      v-for="(objKey, j) in Object.keys(el)"
+                      :key="j"
                       class="color-primary-dark"
                     >
                       <p
@@ -86,7 +88,7 @@
                       </p>
                     </div>
                   </template>
-                  <div v-else class="color-primary-dark">
+                  <div v-else :key="index" class="color-primary-dark">
                     <p class="color-primary-dark align-right">
                       {{ el }}
                     </p>
@@ -112,6 +114,26 @@
         >
           {{ $t('rowComment.rowCreated') }}
         </p>
+        <div
+          v-for="(key, idx) in NewComments"
+          :key="idx"
+          :class="{
+            'dotted-line-separator': idx < NewComments.length - 1,
+          }"
+        >
+          <p
+            class="field-title color-black margin-top-1 d-flex margin-bottom-1 font-bold"
+          >
+            {{ fieldName(key) }} :
+          </p>
+          <div class="margin-top-0 margin-bottom-1">
+            <div class="color-primary-dark">
+              <p class="color-primary-dark align-right">
+                {{ comment.params.new_row_values[key] }}
+              </p>
+            </div>
+          </div>
+        </div>
       </template>
     </div>
   </div>
@@ -143,6 +165,20 @@ export default {
     },
     comments() {
       const comments = Object.keys(this.comment.params.original_row_values)
+      return comments.filter((e) => e !== 'id')
+    },
+    NewComments() {
+      let comments = Object.keys(this.comment.params.new_row_values)
+      comments = comments.map((x) => {
+        if (
+          this.comment.params.new_row_values[x] != '' &&
+          this.comment.params.new_row_values[x] != null &&
+          this.comment.params.new_row_values[x] != []
+        ) {
+          return x
+        }
+        return 'id'
+      })
       return comments.filter((e) => e !== 'id')
     },
     timeAgo() {
