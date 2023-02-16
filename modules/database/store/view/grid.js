@@ -1547,8 +1547,6 @@ export const actions = {
       await dispatch('fetchAllFieldAggregationData', {
         view,
       })
-      await dispatch('refresh', { view, fields, primary })
-
       const newData = { ...data }
       newData._ = row._
       return newData
@@ -1934,7 +1932,7 @@ export const actions = {
     // console.log(getters.getMultiSelectHeadFieldIndex);
     // Based on the data, we can figure out in which cells we must paste. Here we find
     // the maximum tail indexes.
-    let rowTailIndex =
+    const rowTailIndex =
       Math.min(getters.getCount, rowHeadIndex + data.length) - 1
     const fieldTailIndex =
       Math.min(fields.length, fieldHeadIndex + data[0].length) - 1
@@ -1979,40 +1977,14 @@ export const actions = {
 
     // Calculate if there are rows outside of the buffer that need to be fetched and
     // prepended or appended to the `rowsInOrder`
-    let startIndex = rowHeadIndex + rowsInOrder.length
-    let limit = rowTailIndex - rowHeadIndex - rowsInOrder.length + 1
+    const startIndex = rowHeadIndex + rowsInOrder.length
+    const limit = rowTailIndex - rowHeadIndex - rowsInOrder.length + 1
     // console.log('startIndex', startIndex);
     // console.log('rowTailIndex', rowTailIndex);
     // console.log('rowHeadIndex', rowHeadIndex);
     // console.log('rowsInOrder.length', rowsInOrder.length);
     // console.log('startIndex', startIndex);
     // console.log('limit', limit);
-    if (limit == 0) {
-      const newArray = data.slice(rowsInOrder.length, data.length)
-      console.log('newArraynewArray', newArray)
-      // console.log('fieldsInOrder', fieldsInOrder);
-      for (const element of newArray) {
-        if (element[0] != '') {
-          const byField = fieldsInOrder[0]
-          const byValue = ''
-          await dispatch('createNewRow', {
-            view,
-            table,
-            fields,
-            primary,
-            byField,
-            byValue,
-          })
-        }
-      }
-    }
-    rowTailIndex = Math.min(getters.getCount, rowHeadIndex + data.length) - 1
-    rowsInOrder = getters.getAllRows.slice(
-      rowHeadIndex - getters.getBufferStartIndex,
-      rowTailIndex + 1 - getters.getBufferStartIndex
-    )
-    startIndex = rowHeadIndex + rowsInOrder.length
-    limit = rowTailIndex - rowHeadIndex - rowsInOrder.length + 1
     if (limit > 0) {
       const rowsNotInBuffer = await dispatch('fetchRowsByIndex', {
         startIndex,
@@ -2279,6 +2251,28 @@ export const actions = {
       primary,
     })
     dispatch('fetchAllFieldAggregationData', { view })
+    if (limit == 0) {
+      const newArray = data.slice(rowsInOrder.length, data.length)
+      // console.log('newArraynewArray', newArray);
+      // console.log('fieldsInOrder', fieldsInOrder);
+      newArray.forEach(async (element) => {
+        // console.log(element[0]);
+        // console.log(fieldsInOrder[0]);
+        if (element[0] != '') {
+          const byField = fieldsInOrder[0]
+          const byValue = element[0]
+          const result = await dispatch('createNewRow', {
+            view,
+            table,
+            fields,
+            primary,
+            byField,
+            byValue,
+          })
+        }
+        // console.log('result', result);
+      })
+    }
   },
   /**
    * Called after an existing row has been updated, which could be by the user or
