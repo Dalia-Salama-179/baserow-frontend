@@ -1060,7 +1060,7 @@ export default {
       ](row.id)
       const fieldIndex =
         this.visibleFields.findIndex((f) => f.id === field.id) + 1
-      await this.pasteData(data, rowIndex, fieldIndex)
+      await this.pasteData(data, rowIndex, fieldIndex, row.id)
       this.$store.dispatch('notification/setPasting', false)
     },
     /**
@@ -1223,7 +1223,12 @@ export default {
         ](this.isRow.id)
         const fieldIndex =
           this.visibleFields.findIndex((f) => f.id === this.isField.id) + 1
-        await this.pasteData(this.isNewValue.data, rowIndex, fieldIndex)
+        await this.pasteData(
+          this.isNewValue.data,
+          rowIndex,
+          fieldIndex,
+          this.isRow.id
+        )
         this.$store.dispatch('notification/setPasting', false)
       } else {
         this.$store.dispatch('notification/setPasting', true)
@@ -1241,7 +1246,12 @@ export default {
             ](row.id)
             const fieldIndex =
               this.visibleFields.findIndex((f) => f.id === allFields[i].id) + 1
-            await this.pasteData(this.isNewValue.data, rowIndex, fieldIndex)
+            await this.pasteData(
+              this.isNewValue.data,
+              rowIndex,
+              fieldIndex,
+              row.id
+            )
           }
         }
         this.$store.dispatch('notification/setPasting', false)
@@ -1258,7 +1268,7 @@ export default {
      * shows a loading animation while busy, so the user knows something is while the
      * update is in progress.
      */
-    async pasteData(data, rowIndex, fieldIndex) {
+    async pasteData(data, rowIndex, fieldIndex, rowId = -1) {
       console.log(data)
       const dataNew = [...data]
       // If the data is an empty array, we don't have to do anything because there is
@@ -1278,14 +1288,18 @@ export default {
         const rows =
           this.$store.getters[this.storePrefix + 'view/grid/getAllRows']
         if (typeof rows[rowIndex] === 'undefined') {
-          rowIndex = rows.findIndex((x) => x.id === rowIndex)
+          const index = rows.findIndex((x) => x.id === rowId)
+          if (index > -1) {
+            rowIndex = index
+          }
         }
         // let index = this.$store.state['page/view/grid'].rowIdFrist
         try {
           let newRow
           for (const item in dataNew) {
-            // console.log('index',index);
+            console.log('index', item)
             if (dataNew[item][0] == '') return
+            if (item != 0) rowIndex = rowIndex + 1
             if (typeof rows[rowIndex] !== 'undefined') {
               newRow = rows[rowIndex]
             }
